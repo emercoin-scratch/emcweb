@@ -9,7 +9,7 @@ URL:            http://www.emercoin.com
 Source0:        %{name}.tar.gz
 BuildArch:      noarch
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires:       emercoin emcssh pwgen httpd mod_wsgi mod_ssl openssl = 1:1.0.2d1 python-flask
+Requires:       emercoin emcssh pwgen httpd mod_wsgi mod_ssl openssl = 1:1.0.2d1 python-flask python-requests
 
 %description
 Emercoin Web Wallet
