@@ -40,6 +40,7 @@ getent passwd emc >/dev/null || { echo "User 'emc' not found. Probably you have 
   [ ! -f /etc/ssl/emc/emcweb.key ] || [ ! -f /etc/ssl/emc/emcweb.crt ] && {
     openssl req -nodes -x509 -newkey rsa:4096 -keyout /etc/ssl/emc/emcweb.key -out /etc/ssl/emc/emcweb.crt -days 3560 -subj /C=US/ST=Oregon/L=Portland/O=IT/CN=emercoin.emc
     chown emc.emc /etc/ssl/emc/emcweb.key /etc/ssl/emc/emcweb.crt
+    chmod 600 /etc/ssl/emc/emcweb.key
   } || true
   sed -i -e "s+\(^\"password\"\)\(.*\)+\"password\": \"$(grep rpcpassword /var/lib/emc/.emercoin/emercoin.conf | sed 's/rpcpassword=//')\",+" /var/lib/emcweb/config/rpc
   sed -i -e "s/\(app.secret_key\)\(.*\)/app.secret_key = '$(pwgen 30 1)'/" /var/lib/emcweb/server.py
