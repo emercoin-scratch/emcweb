@@ -1,0 +1,32 @@
+#!/bin/bash
+
+[ -f /var/lib/emcweb/config/rpc ] && exit 0
+[ ! -f /var/lib/emc/.emercoin/emercoin.conf ] && exit 1
+[ ! -f /etc/ssl/emc/emcweb.key ] || [ ! -f /etc/ssl/emc/emcweb.crt ] && {
+  mkdir -p /etc/ssl/emc
+  openssl req -nodes -x509 -newkey rsa:4096 -keyout /etc/ssl/emc/emcweb.key -out /etc/ssl/emc/emcweb.crt -days 3560 -subj /C=US/ST=Oregon/L=Portland/O=IT/CN=emercoin.emc
+}
+
+sed -i -e "s/\(app.secret_key\)\(.*\)/app.secret_key = '$(pwgen 30 1)'/" /var/lib/emcweb/server.py
+touch /etc/emercoin/emcssh.keys.d/emcweb
+
+a2enmod ssl
+a2enmod rewrite
+a2dissite 000-default
+a2ensite emcweb
+service apache2 restart
+
+cat<<EOF >/var/lib/emcweb/config/rpc
+{
+    "user": "emccoinrpc",
+    "password": "`grep rpcpassword /var/lib/emc/.emercoin/emercoin.conf | sed 's/rpcpassword=//'`",
+    "host": "127.0.0.1",
+    "port": "6662",
+    "ssl_verify": false
+}
+EOF
+
+chmod 600 /var/lib/emcweb/config/rpc
+chown -R emc.emc /var/lib/emcweb
+
+exit 0
