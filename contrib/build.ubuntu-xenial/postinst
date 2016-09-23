@@ -1,12 +1,13 @@
 #!/bin/bash
 
-[ ! -f /var/lib/emc/.emercoin/emercoin.conf ] && exit 1
-[ ! -f /etc/ssl/emc/emcweb.key ] || [ ! -f /etc/ssl/emc/emcweb.crt ] && {
-  mkdir -p /etc/ssl/emc
-  openssl req -nodes -x509 -newkey rsa:4096 -keyout /etc/ssl/emc/emcweb.key -out /etc/ssl/emc/emcweb.crt -days 3560 -subj /C=CY/L=Nicosia/O=Emercoin/CN=emercoin.local
-}
+set -e
+. /usr/share/debconf/confmodule
 
-chown -R emc.emc /var/lib/emcweb
-systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1
+case "$1" in
+  configure)
+    chown -R emc.emc /var/lib/emcweb
+    systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1
+  ;;
+esac
 
 exit 0

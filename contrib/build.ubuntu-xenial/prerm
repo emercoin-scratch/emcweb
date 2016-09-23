@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+case "$1" in
+  remove|deconfigure|abort-install)
+    rm -f /etc/ssl/emc/emcweb.key /etc/ssl/emc/emcweb.crt
+  ;;
+esac
+
+exit 0
