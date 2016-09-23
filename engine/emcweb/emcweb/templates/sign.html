@@ -1,0 +1,116 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/sign.js') }}"></script>
+
+<script type="text/ng-template" id="signedModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Your Signed Message</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="address">Address</label>
+                    <div class="col-md-10">
+                        <input class="form-control" id="address" name="address" disabled type="text" data-ng-model="address">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="m_message">Message</label>
+                    <div class="col-md-10">
+                        <input class="form-control" id="m_message" name="m_message" disabled type="text" data-ng-model="message">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="signature">Signature</label>
+                    <div class="col-md-10">
+                        <input class="form-control" id="signature" name="signature" disabled type="text" data-ng-model="signed">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Close</button>
+        </div>
+</script>
+{% endblock %}
+
+{% block content %}
+<div data-ng-controller="SignController">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Sign a Message</h5>
+        </div>
+        <div class="ibox-content">
+            <form class="form-horizontal" name="signForm">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="address">Address</label>
+                    <div class="col-md-10">
+                        <ui-select ng-model="message.address" theme="bootstrap" id="address" search-enabled="false">
+                            <ui-select-match>
+                                <span ng-bind="$select.selected"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in (addresses | filter: $select.search)">
+                                <span ng-bind="item"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="message">Message to Sign</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': signForm.message.$invalid && signForm.message.$dirty}">
+                        <input class="form-control" id="message" name="message" required="" type="text" data-ng-model="message.message">
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="form-group">
+                    <div class="col-md-10 col-md-offset-2">
+                        <button data-ng-disabled="signForm.$invalid" class="btn btn-primary" data-ng-click="sendMessage()">Sign</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Verify a Message</h5>
+        </div>
+        <div class="ibox-content">
+            <form class="form-horizontal" name="verifyForm">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="verify_address">Address</label>
+                    <div class="col-md-10">
+                        <ui-select ng-model="verify.address" theme="bootstrap" id="verify_address" search-enabled="false">
+                            <ui-select-match>
+                                <span ng-bind="$select.selected"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in (addresses | filter: $select.search)">
+                                <span ng-bind="item"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="verify_message">Message</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': verifyForm.verify_message.$invalid && verifyForm.verify_message.$dirty}">
+                        <input class="form-control" id="verify_message" name="verify_message" required type="text" data-ng-model="verify.message">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="verify_signature">Signature</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': verifyForm.verify_signature.$invalid && verifyForm.verify_signature.$dirty}">
+                        <input class="form-control" id="verify_signature" name="verify_signature" required type="text" data-ng-model="verify.signature">
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="form-group">
+                    <div class="col-md-10 col-md-offset-2">
+                        <button data-ng-disabled="verifyForm.$invalid" class="btn btn-primary" data-ng-click="verifyMessage()">Verify</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

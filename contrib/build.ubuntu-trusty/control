@@ -1,8 +1,0 @@
-Package: emcweb
-Version: 1.0
-Maintainer: Aspanta Limited <info@aspanta.com>
-Architecture: all
-Section: net
-Priority: optional
-Description: Emercoin Web Wallet
-Depends: emercoin, emcssh, pwgen, openssl, apache2, python-flask, libapache2-mod-wsgi

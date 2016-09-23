@@ -1,0 +1,126 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/wallet.js') }}"></script>
+
+<script type="text/ng-template" id="liveCoinModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{$ operation_title $}</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" name="liveCoinForm">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="liveCoinAmount">Amount</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': liveCoinForm.liveCoinAmount.$invalid && liveCoinForm.liveCoinAmount.$dirty}">
+                        <input class="form-control" id="liveCoinAmount" name="liveCoinAmount" type="number" data-ng-model="amount" required min="{$ minimal_value $}" step="0.000001" pattern="^\d+(\.[\d]{1,6})?$">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" data-ng-disabled="liveCoinForm.$invalid" type="button" data-ng-click="ok()">{$ btn_name $}</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+        </div>
+</script>
+{% endblock %}
+
+{% block content %}
+<div data-ng-controller="WalletController">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Wallet</h5>
+        </div>
+        <div class="ibox-content" data-ng-if="balance != undefined">
+            Balance: {$ balance || 0 $} EMC
+        </div>
+    </div>
+    {% if live_coin %}
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>LiveCoin Balance</h5>
+        </div>
+        <div class="ibox-content">
+            <div class="row" data-ng-if="live_coin">
+                <div class="col-md-2">
+                    Available: {$ live_coin.available || 0 $} EMC
+                    <br/>
+                    Trade: {$ live_coin.trade || 0 $} EMC
+                </div>
+                <div>
+                    <button class="btn btn-primary" data-toggle="tooltip" title="Send to LiveCoin account" data-ng-click="openModal('send')">Send</button>
+                    <button class="btn btn-primary" data-toggle="tooltip" title="Receive from LiveCoin account" data-ng-click="openModal('receive')">Receive</button>
+                </div>
+            </div>
+            <div class="row" data-ng-if="lc_setting">
+                <div class="col-md-2">
+                    <button class="btn btn-primary" onclick="location.href = '{{ url_for('emcweb.settings') }}';">Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Send Coins</h5>
+        </div>
+        <div class="ibox-content">
+            <form class="form-horizontal" name="transferForm">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="address">Address</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': transferForm.address.$invalid && transferForm.address.$dirty}">
+                        <input class="form-control" id="address" name="address" required type="text" data-ng-model="form_address">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="amount">Amount</label>
+                    <div class="col-md-10" data-ng-class="{'has-error': transferForm.amount.$invalid && transferForm.amount.$dirty}">
+                        <input class="form-control" id="amount" name="amount" required type="number" step="0.000001" data-ng-model="form_amount" pattern="^\d+(\.[\d]{1,6})?$">
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="form-group">
+                    <div class="col-md-10 col-md-offset-2">
+                        <button data-ng-disabled="transferForm.$invalid" class="btn btn-primary" data-ng-click="makeTransfer()">Transfer</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Last Transactions History</h5>
+        </div>
+        <div class="ibox-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Fee</th>
+                            <th>Confirmations</th>
+				    	    <th>Time</th>
+                            <th>TX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-ng-repeat="transaction in transactions">
+                            <td>{$ transaction.address $}</td>
+                            <td>{$ transaction.category $}</td>
+                            <td>{$ transaction.amount $}</td>
+                            <td>{$ transaction.fee || 0 $}</td>
+                            <td>{$ transaction.confirmations $}</td>
+                            <td>{$ transaction.sexy_time $}</td>
+                            <td>
+                                <a href="https://emercoin.mintr.org/tx/{$ transaction.txid $}" target="_blank">{$ transaction.txid.slice(0, 10) $}...{$ transaction.txid.slice(transaction.txid.length - 10, transaction.txid.length) $}</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

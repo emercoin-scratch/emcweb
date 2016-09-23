@@ -1,0 +1,27 @@
+Prerequisites:
+1.  MySQL server access
+2.  Redis server access
+3.  emercoin, emcssh, pwgen, openssl, apache, python3, supervisor, celery
+
+How to install (linux):
+1.  Copy engine/* to /var/lib/emcweb
+2.  Copy certs/* to /etc/ssl/emc
+3.  Copy bin/* to /usr/sbin
+4.  Copy config/apache/* to the Apache's conf.d directory
+5.  Copy config/supervisor/* to the Supervisor's conf.d directory
+6.  Make sure Apache has permissions to change any files at /var/lib/emcweb
+7.  Make sure Apache's config is correct
+8.  Move the wallet.dat as follows:
+  - stop the emercoind
+  - move /var/lib/emc/.emercoin/wallet.dat to /var/lib/emcweb/uploads
+  - make a symlink: /var/lib/emcweb/uploads/wallet.dat -> /var/lib/emc/.emercoin/wallet.dat
+  - start the emercoind
+9.  Copy /var/lib/emcweb/settings/flask.py.example to /var/lib/emcweb/settings/flask.py
+10. Edit /var/lib/emcweb/settings/flask.py with a correct values
+11. Create MySQL DB
+12. Create MySQL tables by running:
+  - cd /var/lib/emcweb && python3 manage.py db upgrade
+13. Touch the EMCSSL config file by running:
+  - touch /etc/emercoin/emcssh.keys.d/emcweb
+14. Make sure Apche has enabled modules: socache_shmcb, ssl, rewrite, as well as the emcweb site
+15. Enable and restart: Supervisor server, Redis server, Apache server

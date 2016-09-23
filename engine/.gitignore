@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# virtualenv
+venv/
+ENV/
+ve/
+
+# PyCharm
+.idea/
+uploads/*
+node_modules/

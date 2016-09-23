@@ -1,0 +1,94 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/receive.js') }}"></script>
+
+<script type="text/ng-template" id="qrcodeModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">QR Code for "<b>{$ address $}</b>"</h3>
+    </div>
+    <div class="modal-body">
+        <div class="text-center">
+            <qrcode data="{$ qrcode_data $}" size="{$ qrcode_width $}" version="{$ getVersion(qrcode_data.length) $}"></qrcode><br/><br/><br/><br/>
+        </div>
+        <form class="form-horizontal" name="qrCodeForm">
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="qrCodeAmount">Amount</label>
+                <div class="col-md-10" data-ng-class="{'has-error': qrCodeForm.qrCodeAmount.$invalid && qrCodeForm.qrCodeAmount.$dirty}">
+                    <input class="form-control" id="qrCodeAmount" name="qrCodeAmount" type="number" data-ng-model="data.amount" min="0.01" step="0.000001" pattern="^\d+(\.[\d]{1,6})?$">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="qrCodeMessage">Message</label>
+                <div class="col-md-10" data-ng-class="{'has-error': qrCodeForm.qrCodeMessage.$invalid && qrCodeForm.qrCodeMessage.$dirty}">
+                    <input class="form-control" id="qrCodeMessage" name="qrCodeMessage" type="text" data-ng-model="data.message">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="emailModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">E-mail Request for "<b>{$ address $}</b>"</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" name="emailForm">
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="emailAmount">Amount</label>
+                <div class="col-md-10" data-ng-class="{'has-error': emailForm.emailAmount.$invalid && emailForm.emailAmount.$dirty}">
+                    <input class="form-control" id="emailAmount" name="emailAmount" type="number" data-ng-model="data.amount" min="0.01" step="0.000001" pattern="^\d+(\.[\d]{1,6})?$">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="emailTo">E-mail</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="emailTo" name="emailTo" type="email" data-ng-model="data.email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="emailMessage">Message</label>
+                <div class="col-md-10" data-ng-class="{'has-error': emailForm.emailMessage.$invalid && emailForm.emailMessage.$dirty}">
+                    <input class="form-control" id="emailMessage" name="emailMessage" type="text" data-ng-model="data.message">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="send()" data-ng-disabled="emailForm.$invalid">Send</button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+{% endblock %}
+
+{% block content %}
+<div data-ng-controller="ReceiveController">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <div>
+                <h5>Address List</h5>
+            </div>
+            <div class="text-right" style="margin-top: -9px;">
+                <button type="submit" class="btn btn-primary" data-ng-click="newAddress()">Get a new address</button>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="table-responsive">
+                <table class="table table-striped" data-ng-if="addresses">
+                    <tr data-ng-class="address.class" data-ng-repeat="address in addresses">
+                        <th>Address</th>
+                        <td >{$ address.address $}</td>
+                        <td class="text-right">
+                            <button class="btn btn-primary" data-ng-click="openQRCode(address)">QR Code</button>
+                            <button class="btn btn-primary" data-ng-click="openEmail(address)" {% if not mailer %}disabled{% endif %}>Send E-mail</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

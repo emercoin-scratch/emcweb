@@ -1,0 +1,29 @@
+{
+  "name": "emcweb-ng",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "1.5.7",
+    "angular-resource": "1.5.7",
+    "angular-sanitize": "1.5.7",
+    "bootstrap": "3.3.6",
+    "ng-file-upload": "12.0.4",
+    "angular-loading-bar": "0.9.0",
+    "jquery": "2.2.4",
+    "font-awesome": "4.6.3",
+    "animate.css": "3.5.2",
+    "metisMenu": "2.4.2",
+    "jquery-slimscroll": "1.3.8",
+    "jquery-ui": "1.10.4",
+    "peity": "2.0.3",
+    "angular-bootstrap": "1.3.3",
+    "angular-ui-select": "0.18.1",
+    "angular-file-saver": "1.1.2",
+    "angular-filter": "0.5.8",
+    "angular-qrcode": "6.2.1",
+    "toastr": "2.1.3",
+    "select2": "3.5.4",
+    "angular-select2": "1.5.2",
+    "angular-block-ui": "0.2.2"
+  },
+  "private": true
+}

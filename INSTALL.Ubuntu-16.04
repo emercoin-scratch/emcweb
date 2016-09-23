@@ -1,0 +1,9 @@
+Quick installation for Ubuntu 16.04 LTS:
+
+apt-key adv --keyserver keyserver.ubuntu.com --recv B58C58F4
+add-apt-repository 'deb http://download.emercoin.com/ubuntu xenial emercoin'
+apt update && apt -y install emcweb redis-server mysql-server
+emcweb-setup -G -C -R="YOUR_MYSQL_ROOT_PASSWORD"
+
+You have to change the 'YOUR_MYSQL_ROOT_PASSWORD' to your MySQL root password.
+You can use outside installed Redis server and MySQL server. In this case please run 'emcweb-setup --help' to find correct parameters.

@@ -1,0 +1,158 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/settings.js') }}"></script>
+
+<script type="text/ng-template" id="restartModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Restart the Emercoin Service</h3>
+        </div>
+        <div class="modal-body">
+            Are you sure want to restart the Emercoin service?
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Restart now</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+</script>
+{% endblock %}
+
+{% block content %}
+<div data-ng-controller="SettingsController">
+<uib-tabset active="activeJustified">
+    <uib-tab index="0" heading="General">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form class="form-horizontal" name="settingsForm">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="open_time">Timeout to Lock the Wallet</label>
+                        <div class="col-md-7">
+                            <ui-select ng-model="$parent.timeout" theme="bootstrap" id="open_time" search-enabled="false">
+                                <ui-select-match>
+                                    <span ng-bind="$select.selected.name"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item in (timeouts | filter: $select.search) track by item.timeout">
+                                    <span ng-bind="item.name"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <div class="col-md-2">
+                            <button data-ng-disabled="old_settings.open_time == timeout.timeout" class="btn btn-primary" data-ng-click="applyTimeouts(timeout.timeout)">Update</button>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-1">
+                            <button class="btn btn-primary" data-ng-click="restartServer()">Restart the Emercoin Service</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </uib-tab>
+    {% if live_coin %}
+    <uib-tab index="1" heading="LiveCoin">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form class="form-horizontal" name="liveCoinForm">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="lc_api_key">LiveCoin API Key</label>
+                        <div class="col-md-9" data-ng-class="{'has-error': liveCoinForm.lc_api_key.$invalid && liveCoinForm.lc_api_key.$dirty}">
+                            <input class="form-control" id="lc_api_key" name="lc_api_key" type="text" data-ng-model="lc_api_key" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="lc_secret_key">LiveCoin Secret Key</label>
+                        <div class="col-md-9" data-ng-class="{'has-error': liveCoinForm.lc_secret_key.$invalid && liveCoinForm.lc_secret_key.$dirty}">
+                            <input class="form-control" id="lc_secret_key" name="lc_secret_key" type="text" data-ng-model="lc_secret_key" required>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-2">
+                            <button data-ng-disabled="liveCoinForm.$invalid || (lc_secret_key == old_settings.lc_secret_key && lc_api_key == old_settings.lc_api_key)" class="btn btn-primary" data-ng-click="applyLCSettings(lc_api_key, lc_secret_key)">Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </uib-tab>
+    {% endif %}
+    <uib-tab index="2" heading="Mailer">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form class="form-horizontal" name="mailForm">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="mail_enabled">Mailer enable</label>
+                        <div class="col-md-10">
+                            <input class="checkbox" id="mail_enabled" name="mail_enabled" type="checkbox" style="margin-top: 3px;" data-ng-model="smtp.enabled">
+                        </div>
+                    </div>
+                    <div data-ng-if="smtp.enabled">
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mail_host">Host</label>
+                            <div class="col-md-10" data-ng-class="{'has-error': mailForm.mail_host.$invalid && mailForm.mail_host.$dirty}">
+                                <input class="form-control" id="mail_host" name="mail_host" type="text" data-ng-model="smtp.host" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mail_port">Port</label>
+                            <div class="col-md-10" data-ng-class="{'has-error': mailForm.mail_port.$invalid && mailForm.mail_port.$dirty}">
+                                <input class="form-control" id="mail_port" name="mail_port" type="number" data-ng-model="smtp.port" required pattern="^[0-9]{1,5}$" min="1" max="65535">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mail_connection">Encryption</label>
+                            <div class="col-md-10">
+                                <ui-select ng-model="$parent.smtp.connection" theme="bootstrap" id="mail_connection" search-enabled="false" required>
+                                    <ui-select-match>
+                                        <span ng-bind="$select.selected.name"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item in (mail_connections | filter: $select.search) track by item.value">
+                                        <span ng-bind="item.name"></span>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mail_from">E-mail</label>
+                            <div class="col-md-10" data-ng-class="{'has-error': mailForm.mail_from.$invalid && mailForm.mail_from.$dirty}">
+                                <input class="form-control" id="mail_from" name="mail_from" type="email" data-ng-model="smtp.email" required>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mail_auth">Authentication</label>
+                            <div class="col-md-10">
+                                <input class="checkbox" id="mail_auth" name="mail_auth" type="checkbox" style="margin-top: 3px;" data-ng-model="smtp.auth">
+                            </div>
+                        </div>
+                        <div data-ng-if="smtp.auth">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="mail_username">Username</label>
+                                <div class="col-md-10" data-ng-class="{'has-error': mailForm.mail_username.$invalid && mailForm.mail_username.$dirty}">
+                                    <input class="form-control" id="mail_username" name="mail_username" type="text" data-ng-model="smtp.username" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="mail_password">Password</label>
+                                <div class="col-md-10" data-ng-class="{'has-error': mailForm.mail_password.$invalid && mailForm.mail_password.$dirty}">
+                                    <input class="form-control" id="mail_password" name="mail_password" type="password" data-ng-model="smtp.password">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-2">
+                            <button data-ng-disabled="mailForm.$invalid || checkSMTPChange(smtp, old_settings)" class="btn btn-primary" data-ng-click="applyMailerSettings(smtp)">Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </uib-tab>
+</uib-tabset>
+</div>
+{% endblock %}

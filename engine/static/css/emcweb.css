@@ -1,0 +1,107 @@
+.wallet_status {
+    padding-top: 17px;
+    cursor: pointer;
+}
+
+.wallet_lock {
+    color: #d9534f;
+}
+
+.wallet_open {
+    color: #449d44;
+}
+
+.wallet_mint {
+    color: #eea236;
+}
+
+.blocks_loading {
+    padding-right: 20px;
+    padding-top: 10px;
+}
+
+.login_body {
+    background: url(/static/img/login_bg.jpg);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.fa_menu_fix {
+    width: 15px;
+}
+
+.fa_menu_fix2 {
+    width: 20px;
+}
+
+#loading-bar-spinner .spinner-icon {
+  border-top-color:  #f8ac59;
+  border-left-color: #f8ac59;
+}
+
+#loading-bar .bar {
+  background: #f8ac59;
+}
+
+#loading-bar .peg {
+  -moz-box-shadow: #f8ac59 1px 0 6px 1px;
+  -ms-box-shadow: #f8ac59 1px 0 6px 1px;
+  -webkit-box-shadow: #f8ac59 1px 0 6px 1px;
+  box-shadow: #f8ac59 1px 0 6px 1px;
+}
+
+.btn[disabled], fieldset[disabled] .btn {
+    cursor: default;
+}
+
+.form-control[disabled], fieldset[disabled] .form-control {
+    cursor: default;
+}
+
+.wb {
+    word-break: break-all;
+}
+
+.top_align {
+    vertical-align: top;
+}
+
+.block_status {
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    height: 100%;
+}
+
+.stop_system {
+    background-color: #ffffff;
+    border-radius: 6px;
+}
+
+.btn-default {
+    background-color: #e7eaec;
+    border-color: #e7eaec;
+}
+
+
+.login-btn {
+    margin-top: -25px;
+}
+
+.login-btns {
+    margin-top: -75px;
+}
+
+.login-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -110px;
+}
+
+.select2-dropdown {
+    z-index: 9001;
+}

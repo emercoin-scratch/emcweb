@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+import datetime
+import os
+
+
+DEBUG = True
+SECRET_KEY = 'secretkey'
+
+PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=15)
+SESSION_REFRESH_EACH_REQUEST = True
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads')
+
+WTF_CSRF_ENABLED = True
+WTF_CSRF_SECRET_KEY = 'wtfsecretkey'
+
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/emcweb'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+MODULES = ('emcweb', 'login', 'emcweb_webapi')
+BACKUP_MODULES = ('google', 'local')
+
+# celery
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+
+EMC_SERVER_HOST = 'localhost'
+EMC_SERVER_PORT = 6662
+EMC_SERVER_USER = 'emccoinrpc'
+EMC_SERVER_PASSWORD = 'password'
+EMC_SERVER_PROTO = 'https'
+EMC_HOME = '/var/lib/emc/.emercoin'
+EMC_OPEN_TIMEOUT = 3000
+
+
+# EMCSSL
+CERTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'certs')
+CA_CERTIFICATE = '/etc/ssl/emc/emcssl_ca.crt'
+CA_PRIVATE_KEY = '/etc/ssl/emc/emcssl_ca.key'
+
+#LIVECOIN
+LIVECOIN_ENABLE = True
+
+# EMAIL
+EMAIL_TEMPLATE = os.path.join(os.path.dirname(__file__), 'email.tpl')
+EMAIL_SUBJECT = 'Emercoin funds request'
+
+#EMCSSH
+EMCSSH_KEYS_DIR = '/etc/emercoin/emcssh.keys.d'
+EMCSSH_BIN_PATH = '/usr/sbin/emcssh'
+EMCSSH_VERIFY_USER = 'emcweb'
+EMCSSH_VERIFY_SSL = True

@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+import argparse
+import sys
+import os
+import types
+
+from hashlib import md5
+from getpass import getpass
+
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
+from sqlalchemy import Column, Integer, String
+
+
+Base = declarative_base()
+
+
+class Credentials(Base):
+    __tablename__ = 'credentials'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    name = Column(String(255))
+    password = Column(String(255))
+
+
+def main():
+    parser = argparse.ArgumentParser(description='EmcWeb - add user.')
+    parser.add_argument('-f',
+                        metavar='<file>',
+                        type=str,
+                        help='Specify configuration file',
+                        default='/var/lib/emcweb/settings/flask.py')
+    parser.add_argument('-u',
+                        metavar='<user>',
+                        type=str,
+                        help='Username for new user',
+                        default=None)
+    parser.add_argument('-p',
+                        metavar='<password>',
+                        type=str,
+                        help='Password for new user',
+                        default=None)
+
+    args = parser.parse_args()
+
+    username = args.u if args.u else input('Username: ')
+    password = None
+    if args.p:
+        password = args.p
+    else:
+        while True:
+            passwd = getpass('Password: ')
+            repasswd = getpass('Confirm password: ')
+            if passwd == repasswd:
+                password = passwd
+                break
+            print('Passwords not match, try again')
+
+    if not os.path.exists(args.f):
+        print('Cannot stat the configuration file (flask.py)')
+        return -1
+
+    conf = types.ModuleType('config')
+    conf.__file__ = args.f
+    with open(args.f) as config_file:
+        exec(compile(config_file.read(), args.f, 'exec'), conf.__dict__)
+
+    engine = create_engine(conf.SQLALCHEMY_DATABASE_URI)
+    sess = Session(engine)
+
+    try:
+        result = sess.execute('select * from alembic_version')
+    except OperationalError:
+        print('Database connection refused')
+        return 101
+    except ProgrammingError:
+        print('Database is not configured')
+        return 102
+
+    strings = [row[0] for row in result]
+    if len(strings) < 1:
+        print('Database is not configured')
+        return 102
+
+    new_credentials = Credentials(user_id=1, name=username, password=md5(password.encode()).hexdigest())
+    sess.add(new_credentials)
+    try:
+        sess.commit()
+    except IntegrityError:
+        print('User already exists')
+        return 1
+    except:
+        print('Database is not configured')
+        return 102
+
+    print('User "{}" has been added'.format(username))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

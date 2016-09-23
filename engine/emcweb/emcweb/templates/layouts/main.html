@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html data-ng-app="emcwebApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emercoin Blockchain Engine</title>
+    <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/angular-loading-bar/build/loading-bar.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/animate.css/animate.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/metisMenu/dist/metisMenu.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/angular-ui-select/dist/select.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/toastr/toastr.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/angular-block-ui/dist/angular-block-ui.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emcweb.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+
+<script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/select2/select2.min.js') }}"></script>
+
+<!-- Angular -->
+<script src="{{ url_for('static', filename='bower_components/angular/angular.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-resource/angular-resource.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-sanitize/angular-sanitize.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/ng-file-upload/ng-file-upload-all.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-loading-bar/build/loading-bar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-filter/dist/angular-filter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-file-saver/dist/angular-file-saver.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-block-ui/dist/angular-block-ui.min.js') }}"></script>
+
+
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='bower_components/jquery-ui/ui/minified/jquery-ui.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/metisMenu/dist/metisMenu.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
+
+
+<script src="{{ url_for('static', filename='bower_components/angular-select2/dist/angular-select2.min.js') }}"></script>
+
+<!-- Bootstrap -->
+<script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+<!-- Peity -->
+<script src="{{ url_for('static', filename='bower_components/peity/jquery.peity.min.js') }}"></script>
+
+<!-- Inspinia -->
+<script src="{{ url_for('static', filename='js/inspinia.js') }}"></script>
+
+<!-- Angular UI -->
+<script src="{{ url_for('static', filename='bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-ui-select/dist/select.min.js') }}"></script>
+
+<!-- QR Code -->
+<script src="{{ url_for('static', filename='bower_components/qrcode-generator/js/qrcode.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/angular-qrcode/angular-qrcode.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bower_components/toastr/toastr.min.js') }}"></script>
+
+<!-- EmcWeb scripts -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/emcweb.js') }}"></script>
+<script src="{{ url_for('static', filename='js/filters.js') }}"></script>
+<script src="{{ url_for('static', filename='js/resources.js') }}"></script>
+<script src="{{ url_for('static', filename='js/services.js') }}"></script>
+<script src="{{ url_for('static', filename='js/controllers/layout.js') }}"></script>
+
+<script type="text/ng-template" id="lockModal.html">
+    <div class="modal-header">
+        <button type="button" class="close" data-ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Wallet Protection</h4>
+    </div>
+    <div class="modal-body">
+        <form name="lockModalForm">
+            <div data-ng-if="[1, 2] | contains:status"><input type="password" class="form-control" name="secretPass" placeholder="Your secret password for the wallet" data-ng-model="$parent.wallet_pass" required><br/><br/></div>
+
+            <button data-ng-if="[1, 2] | contains:status" type="button" class="btn btn-primary" data-ng-click="openWallet()" data-ng-disabled="!lockModalForm.secretPass.$valid" data-dismiss="modal">Unlock the Wallet</button>
+            <button data-ng-if="status == 1" type="button" class="btn btn-primary" data-ng-click="mintWallet()" data-ng-disabled="!lockModalForm.secretPass.$valid" data-dismiss="modal">Open for Minting only</button>
+            <button data-ng-if="[2, 3] | contains:status" type="button" class="btn btn-primary" data-ng-click="closeWallet()" data-dismiss="modal">Lock</button>
+        </form>
+    </div>
+</script>
+
+<script type="text/ng-template" id="makeEncryptModal.html">
+    <div class="modal-header">
+        <button type="button" class="close" data-ng-click="cancel()" aria-label="Close" data-ng-disabled="disable_btn"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Wallet Protection</h4>
+    </div>
+    <div class="modal-body" data-ng-show="form_confirm">
+        Are you sure want to encrypt the wallet? This operation cannot be restored.
+    </div>
+    <div class="modal-body" data-ng-show="!form_confirm">
+        <form class="form-horizontal" name="encryptForm">
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="wallet_pass">Password</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="wallet_pass" name="wallet_pass" type="password" data-ng-model="wallet_pass" placeholder="Your secret password for the wallet" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="wallet_pass_re">Confirm</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="wallet_pass_re" name="wallet_pass_re" type="password" data-ng-model="wallet_pass_re" placeholder="Your secret password for the wallet again" required>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer" data-ng-show="form_confirm">
+            <button class="btn btn-primary" type="button" data-ng-click="confirmed()">Yes, encrypt the wallet</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+    </div>
+    <div class="modal-footer" data-ng-show="!form_confirm">
+            <button data-ng-disabled="!encryptForm.$valid || wallet_pass != wallet_pass_re || disable_btn" class="btn btn-primary" data-ng-click="encrypt()">Encrypt the wallet</button>
+    </div>
+</script>
+
+{% block scripts %}
+{% endblock %}
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" data-ng-controller="MenuController">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+                    <div class="profile-element">
+                        <img src="{{ url_for('static', filename='img/be-logo.png') }}" alt="Blockchain Engine">
+                        <span class="text-muted text-xs block">Emercoin Wallet</span>
+                    </div>
+                    <div class="logo-element">
+                        EMC
+                    </div>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.wallet' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.wallet') }}">
+                        <i class="fa fa-desktop fa_menu_fix"></i>
+                        <span class="nav-label">Dashboard</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.receive' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.receive') }}">
+                        <i class="fa fa-list fa_menu_fix"></i>
+                        <span class="nav-label">Receive Coins</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.nvs' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.nvs') }}">
+                        <i class="fa fa-bookmark fa_menu_fix"></i>
+                        <span class="nav-label">Manage Names</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.sign' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.sign') }}">
+                        <i class="fa fa-pencil-square fa_menu_fix"></i>
+                        <span class="nav-label">Sign Messages</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.minfo' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.minfo') }}">
+                        <i class="fa fa-pie-chart fa_menu_fix"></i>
+                        <span class="nav-label">Information</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.wallets' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.wallets') }}">
+                        <i class="fa fa-google-wallet fa_menu_fix"></i>
+                        <span class="nav-label">Wallets</span>
+                    </a>
+                </li>
+                <li class="{% if request.endpoint in ['emcweb.emcssl', 'emcweb.emcssh', 'emcweb.emclnx'] %}active{% endif %}">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-th-large fa_menu_fix2"></i><span class="nav-label">Tools</span> <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level">
+                        <li class="{% if request.endpoint == 'emcweb.emcssl' %}active{% endif %}">
+                            <a href="{{ url_for('emcweb.emcssl') }}">
+                                <i class="fa fa-key fa_menu_fix"></i>
+                                <span class="nav-label">EMC SSL</span>
+                            </a>
+                        </li>
+                        <li class="{% if request.endpoint == 'emcweb.emcssh' %}active{% endif %}">
+                            <a href="{{ url_for('emcweb.emcssh') }}">
+                                <i class="fa fa-sign-in fa_menu_fix"></i>
+                                <span class="nav-label">EMC SSH</span>
+                            </a>
+                        </li>
+                        <li class="{% if request.endpoint == 'emcweb.emclnx' %}active{% endif %}">
+                            <a href="{{ url_for('emcweb.emclnx') }}" >
+                                <i class="fa fa-tripadvisor fa_menu_fix"></i>
+                                <span class="nav-label">EMC LNX</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="{% if request.endpoint == 'emcweb.settings' %}active{% endif %}">
+                    <a href="{{ url_for('emcweb.settings') }}">
+                        <i class="fa fa-cogs fa_menu_fix"></i>
+                        <span class="nav-label">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('login.logout') }}">
+                        <i class="fa fa-sign-out fa_menu_fix"></i>
+                        <span class="nav-label">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                </div>
+                <div data-ng-controller="WalletStatusController">
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li data-ng-if="lock == 0"><i class="fa fa-unlock-alt fa-2x wallet_open wallet_status" data-ng-click="makeEncryptModal()"></i></li>
+                        <li data-ng-if="lock == 1"><i class="fa fa-2x wallet_status" data-ng-class="lock_class" data-ng-click="lockWalletModal()"></i></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="wrapper wrapper-content" data-ng-controller="MessagesController">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="footer">
+            <div class="pull-right">
+                v2.0
+            </div>
+            <div>
+                <strong>Blockchain Engine</strong> &copy; Emercoin International Development Group, 2016
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

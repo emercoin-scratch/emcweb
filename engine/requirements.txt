@@ -1,0 +1,39 @@
+Flask==0.11
+Flask-Script==2.0.5
+Flask-SQLAlchemy==2.1
+Flask-Login==0.3.2
+Flask-Migrate==1.8.0
+Flask-Testing==0.4.2
+
+Flask-restful==0.3.5
+Jinja2==2.8
+SQLAlchemy==1.0.13
+
+# EMCSSL
+pyOpenSSL==16.0.0
+pycrypto==2.6.1
+
+# for mysql support
+PyMySQL==0.7.4
+
+# ????
+Flask-WTF==0.12
+WTForms==2.1
+WTForms-Components==0.10.0
+
+# for emcapi client support
+requests==2.10.0
+ujson==1.35
+
+# for google drive
+google-api-python-client==1.5.1
+oauth2client==2.1.0
+
+# Celery
+Celery==3.1.23
+redis==2.10.5
+
+# emclnx
+dnspython==1.14.0
+
+bsddb3==6.1.0

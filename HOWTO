@@ -1,0 +1,15 @@
+Create a new UI user:
+ - emcweb-useradd -u <user> -p <password>
+
+Delete an existing UI user:
+ - emcweb-userdel -u <user>
+
+Add a new wallet.dat:
+ - copy it to /var/lib/emcweb/uploads/YOUR_WALLET_NAME
+ - emcweb-walletadd -n <YOUR_WALLET_NAME>
+
+Delete an existing wallet:
+ - make sure you have selected another wallet as active
+ - emcweb-walletdel -n <YOUR_WALLET_NAME>
+ - optionally delete an existing file at /var/lib/emcweb/uploads/YOUR_WALLET_NAME
+

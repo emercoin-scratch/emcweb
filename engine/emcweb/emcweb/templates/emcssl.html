@@ -1,0 +1,97 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/emcssl.js') }}"></script>
+
+<script type="text/ng-template" id="certsModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">EMC SSL Certificate</h3>
+        </div>
+        <div class="modal-body">
+            Your certificate has successfully been created with ID "<b>@{$ data.cn $}</b>"
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(0)">Install certificate</button>
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(1)">Download certificate bundle</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Close</button>
+        </div>
+</script>
+
+<script type="text/ng-template" id="newModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Make a New Certificate</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" name="newModalForm">
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="key_id">Public Key ID</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.key_id.$invalid && newModalForm.key_id.$dirty}">
+                        <input class="form-control" id="key_id" name="key_id" type="text" data-ng-model="newcert.cn" required pattern="^@?[A-Za-z0-9-_]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="first_name">First Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.first_name.$invalid && newModalForm.first_name.$dirty}">
+                        <input class="form-control" id="first_name" name="first_name" type="text" data-ng-model="newcert.first_name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="last_name">Last Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.last_name.$invalid && newModalForm.last_name.$dirty}">
+                        <input class="form-control" id="last_name" name="last_name" type="text" data-ng-model="newcert.last_name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="alias">Alias</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.alias.$invalid && newModalForm.alias.$dirty}">
+                        <input class="form-control" id="alias" name="alias" type="text" data-ng-model="newcert.alias" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="alias">E-mail</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.email.$invalid && newModalForm.email.$dirty}">
+                        <input class="form-control" id="email" name="email" type="email" data-ng-model="newcert.email" required>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid" data-ng-click="makeCert()">Make</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+        </div>
+</script>
+{% endblock %}
+
+{% block content %}
+        <div class="ibox float-e-margins" data-ng-controller="SSLVerifyController">
+            <div class="ibox-title">
+                <div><h5>EMC SSL User List</h5></div>
+                <div class="text-right" style="margin-top: -9px;">
+                    <button type="submit" class="btn btn-primary" data-ng-click="newCertModal()">Make a new certificate</button>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="col-md-12">
+                    <span><b>Authentication Public Key ID</b></span>
+                </div>
+                <br/><br/>
+                <form class="form-horizontal" name="sslUsersForm">
+                    <div class="form-group" data-ng-repeat="line in config_data track by $index">
+                        <div class="col-md-11" data-ng-class="{'has-error': sslUsersForm.ssl_user_{$ $index $}.$invalid && sslUsersForm.ssl_user_{$ $index $}.$dirty}">
+                            <input class="form-control" type="text" name="ssl_user_{$ $index $}" data-ng-model="config_data[$index]" pattern="^@?[A-Za-z0-9-_]+$">
+                        </div>
+                        <div class="col-md-1">
+                            <span class="btn btn-primary" data-ng-if="$index + 1 == config_data.length" data-ng-click="addLine()"><i class="fa fa-plus"></i></span>
+                            <span class="btn btn-primary" data-ng-if="$index + 1 < config_data.length" data-ng-click="delLine($index)"><i class="fa fa-minus"></i></span>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-md-11 col-md-offset-1">
+                            <button class="btn btn-primary" data-ng-disabled="sslUsersForm.$invalid" data-ng-click="saveConfig()">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+{% endblock %}

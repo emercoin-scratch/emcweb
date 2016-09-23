@@ -1,0 +1,160 @@
+#!/bin/bash
+
+# Default values
+MYSQL_HOST="localhost"
+MYSQL_PORT="3306"
+MYSQL_BASE="emcwebdb"
+MYSQL_USER="emcwebuser"
+MYSQL_PASS="$(pwgen 16 1)"
+MYSQL_CLIP="localhost"
+EMC_WALLET="Default"
+WEBUI_USER="admin"
+WEBUI_PASS="$(pwgen 12 1)"
+CELERY_TSP="redis://localhost:6379/0"
+
+function showHelp() {
+  echo "Usage: $0 <option>=\"<value>\""
+  echo "  -h=host | --mysql-host=host        MySQL host"
+  echo "  -P=port | --mysql-port=port        MySQL port"
+  echo "  -b=base | --mysql-base=base        MySQL database name"
+  echo "  -u=user | --mysql-user=user        MySQL username"
+  echo "  -p=pass | --mysql-pass-pass        MySQL password"
+  echo "  -c=clip | --mysql-client-ip=clip   MySQL client IP"
+  echo "  -R=pass | --mysql-root-pass=pass   MySQL ROOT password"
+  echo "  -C      | --create-database        Create MySQL database before"
+  echo "  -W=name | --wallet=name            Default name of the wallet"
+  echo "  -U=user | --user=user              Username to the Web Wallet"
+  echo "  -S=pass | --password=pass          Password to the Web Wallet"
+  echo "  -G      | --create-user            Create user for the Web Wallet"
+  echo "  -r=uri  | --celery-transport=uri   URI for Celery transport"
+  exit 1
+}
+
+[ "$1" ] || showHelp
+[ "$(whoami)" != "root" ] && { echo "Run me by root"; exit 1; }
+
+for i in "$@"
+do
+  case $i in
+    -h=*|--mysql-host=*)
+      MYSQL_HOST="${i#*=}"
+    shift
+    ;;
+    -P=*|--mysql-port=*)
+      MYSQL_PORT="${i#*=}"
+    shift
+    ;;
+    -b=*|--mysql-base=*)
+      MYSQL_BASE="${i#*=}"
+    shift
+    ;;
+    -u=*|--mysql-user=*)
+      MYSQL_USER="${i#*=}"
+    shift
+    ;;
+    -p=*|--mysql-pass=*)
+      MYSQL_PASS="${i#*=}"
+    shift
+    ;;
+    -c=*|--mysql-client-ip=*)
+      MYSQL_CLIP="${i#*=}"
+    shift
+    ;;
+    -R=*|--mysql-root-pass=*)
+      MYSQL_ROOT="${i#*=}"
+    shift
+    ;;
+    -C|--create-database)
+      CREATE_DB=YES
+    shift
+    ;;
+    -W=*|--wallet-name=*)
+      EMC_WALLET="${i#*=}"
+    shift
+    ;;
+    -U=*|--user=*)
+      WEBUI_USER="${i#*=}"
+    shift
+    ;;
+    -S=*|--password=*)
+      WEBUI_PASS="${i#*=}"
+    shift
+    ;;
+    -G|--create-user)
+      CREATE_USER=YES
+    shift
+    ;;
+    -r=*|--celery-transport=*)
+      CELERY_TSP="${i#*=}"
+    shift
+    ;;
+    *)
+      echo "Unknown option found"
+      showHelp
+    ;;
+  esac
+done
+
+[ "$CREATE_DB" ] && {
+  [ "$MYSQL_ROOT" ] || { echo "You have to specify the MySQL ROOT password (-R)"; exit 1; }
+  mysql --password="$MYSQL_ROOT" -u root -h $MYSQL_HOST -P $MYSQL_PORT -e "drop database if exists $MYSQL_BASE; create database $MYSQL_BASE character set utf8; grant all on $MYSQL_BASE.* to $MYSQL_USER@'$MYSQL_CLIP' identified by '$MYSQL_PASS';" || exit 1
+  echo " *** MySQL database has been created:"
+  echo "  - Database Host: $MYSQL_HOST"
+  echo "  - Database Port: $MYSQL_PORT"
+  echo "  - Database Name: $MYSQL_BASE"
+  echo "  - Database User: $MYSQL_USER"
+  echo "  - Database Pass: $MYSQL_PASS"
+  echo "  - Client IP    : $MYSQL_CLIP"
+}
+
+[ -f /var/lib/emcweb/settings/flask.py ] || {
+  [ ! -f /var/lib/emcweb/settings/flask.py.example ] && { echo "Cannot stat /var/lib/emcweb/settings/flask.py.example"; exit 1; }
+  cp /var/lib/emcweb/settings/flask.py.example /var/lib/emcweb/settings/flask.py
+  chown emc.emc /var/lib/emcweb/settings/flask.py
+}
+[ ! -f /var/lib/emc/.emercoin/emercoin.conf ] && { echo "Cannot stat /var/lib/emc/.emercoin/emercoin.conf"; exit 1; }
+sed -i -e "s/\(SECRET_KEY\)\(.*\)/SECRET_KEY = '$(pwgen 30 1)'/" /var/lib/emcweb/settings/flask.py
+sed -i -e "s/\(EMC_SERVER_USER\)\(.*\)/EMC_SERVER_USER = '`grep rpcuser /var/lib/emc/.emercoin/emercoin.conf | sed \"s/rpcuser=//\"`'/" /var/lib/emcweb/settings/flask.py
+sed -i -e "s/\(EMC_SERVER_PASSWORD\)\(.*\)/EMC_SERVER_PASSWORD = '`grep rpcpassword /var/lib/emc/.emercoin/emercoin.conf | sed \"s/rpcpassword=//\"`'/" /var/lib/emcweb/settings/flask.py
+sed -i -e "s|\(SQLALCHEMY_DATABASE_URI\)\(.*\)|SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://$MYSQL_USER:$MYSQL_PASS@$MYSQL_HOST:$MYSQL_PORT/$MYSQL_BASE'|" /var/lib/emcweb/settings/flask.py
+sed -i -e "s|\(BROKER_URL\)\(.*\)|BROKER_URL = '$CELERY_TSP'|" /var/lib/emcweb/settings/flask.py
+sed -i -e "s|\(CELERY_RESULT_BACKEND\)\(.*\)|CELERY_RESULT_BACKEND = '$CELERY_TSP'|" /var/lib/emcweb/settings/flask.py
+
+cd /var/lib/emcweb
+python3 manage.py db upgrade || exit 1
+emcweb-conntest || exit 1
+
+[ "$CREATE_USER" ] && {
+  emcweb-useradd -u "$WEBUI_USER" -p "$WEBUI_PASS" || exit 1
+  echo " *** User for the Web Wallet has been created:"
+  echo " - Login   : $WEBUI_USER"
+  echo " - Password: $WEBUI_PASS"
+}
+
+[ ! -f /etc/emercoin/emcssh.keys.d/emcweb ] && {
+  touch /etc/emercoin/emcssh.keys.d/emcweb
+  chown -R emc.emc /var/lib/emcweb /etc/emercoin/emcssh.keys.d/emcweb
+}
+
+a2enmod   socache_shmcb ssl rewrite >/dev/null 2>&1
+a2dissite 000-default default-ssl >/dev/null 2>&1
+a2ensite  emcweb >/dev/null 2>&1
+
+systemctl stop emercoind
+[ -L /var/lib/emc/.emercoin/wallet.dat ] || {
+  mv /var/lib/emc/.emercoin/wallet.dat /var/lib/emcweb/uploads/$EMC_WALLET
+  ln -s /var/lib/emcweb/uploads/$EMC_WALLET /var/lib/emc/.emercoin/wallet.dat
+  WALLET="YES"
+}
+
+[ "$WALLET" ] && {
+  emcweb-walletadd -n $EMC_WALLET || exit 1
+} || {
+  emcweb-walletadd -n "$(ls -l /var/lib/emc/.emercoin/wallet.dat | awk '{print $NF}' | rev | cut -d'/' -f1 | rev)" || exit 1
+}
+echo " *** Wallet has been commited"
+
+systemctl restart emercoind supervisor apache2 >/dev/null 2>&1
+systemctl enable  emercoind supervisor apache2 >/dev/null 2>&1
+
+echo "Completed!"

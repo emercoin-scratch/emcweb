@@ -1,0 +1,63 @@
+{% extends 'layouts/main.html' %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/info.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="ibox float-e-margins" data-ng-controller="InfoController">
+    <div class="ibox-title">
+        <h5>Information</h5>
+    </div>
+    <div class="ibox-content">
+        <div class="table-responsive">
+            <table class="table table-striped" data-ng-if="info">
+                <tr>
+                    <th>Version</th>
+                    <td>{$ info.info.version $}</td>
+                </tr>
+                <tr>
+                    <th>Protocol Version</th>
+                    <td>{$ info.info.protocolversion $}</td>
+                </tr>
+                    <th>Connections</th>
+                    <td>{$ info.info.connections $}</td>
+                </tr>
+                <tr>
+                    <th>IP</th>
+                    <td>{$ info.info.ip $}</td>
+                </tr>
+                <tr>
+                    <th>Blocks</th>
+                    <td>{$ info.info.blocks $}</td>
+                </tr>
+                <tr>
+                    <th>Newmint</th>
+                    <td>{$ info.info.newmint $}</td>
+                </tr>
+                <tr>
+                    <th>Current Stake</th>
+                    <td>{$ info.info.stake $}</td>
+                </tr>
+                <tr>
+                    <th>Money supply</th>
+                    <td>{$ info.info.moneysupply $}</td>
+                </tr>
+                <tr>
+                    <th>Pay tx fee</th>
+                    <td>{$ info.info.paytxfee $}</td>
+                </tr>
+                <tr>
+                    <th>PoW Difficulty</th>
+                    <td>{$ info.infodif['proof-of-work'] $}</td>
+                </tr>
+                <tr>
+                    <th>PoS Difficulty</th>
+                    <td>{$ info.infodif['proof-of-stake'] $}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

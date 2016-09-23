@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+import argparse
+import sys
+import os
+import types
+
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
+from sqlalchemy import Column, Integer, String
+
+
+Base = declarative_base()
+
+
+class Wallets(Base):
+    __tablename__ = 'wallets'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    name = Column(String(255), nullable=False)
+    path = Column(String(255), nullable=False)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='EmcWeb - add wallet.')
+    parser.add_argument('-f',
+                        metavar='<file>',
+                        type=str,
+                        help='Specify configuration file',
+                        default='/var/lib/emcweb/settings/flask.py')
+    parser.add_argument('-n',
+                        metavar='<name>',
+                        type=str,
+                        help='Wallet name',
+                        default=None)
+
+    args = parser.parse_args()
+
+    wallet_name = args.n if args.n else input('Wallet name: ')
+
+    if not os.path.exists(args.f):
+        print('Cannot stat the configuration file (flask.py)')
+        return -1
+
+    conf = types.ModuleType('config')
+    conf.__file__ = args.f
+    with open(args.f) as config_file:
+        exec(compile(config_file.read(), args.f, 'exec'), conf.__dict__)
+
+    engine = create_engine(conf.SQLALCHEMY_DATABASE_URI)
+    sess = Session(engine)
+
+    try:
+        result = sess.execute('select * from alembic_version')
+    except OperationalError:
+        print('Database connection refused')
+        return 101
+    except ProgrammingError:
+        print('Database is not configured')
+        return 102
+
+    strings = [row[0] for row in result]
+    if len(strings) < 1:
+        print('Database is not configured')
+        return 102
+
+    if sess.query(Wallets).filter(Wallets.user_id==1, Wallets.name==wallet_name).first():
+        print('Wallet name already exists')
+        return 1
+
+    file_path = os.path.join(conf.UPLOAD_FOLDER, wallet_name)
+    new_wallet = Wallets(user_id=1, name=wallet_name, path=file_path)
+    sess.add(new_wallet)
+    try:
+        sess.commit()
+    except IntegrityError:
+        print('Wallet name already exists')
+        return -2
+    except:
+        print('Database is not configured')
+        return 102
+
+    print('Wallet "{}" has been added'.format(wallet_name))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

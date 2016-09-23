@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html style="background-color: #1e3d4f;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emercoin Blockchain Engine</title>
+    <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/animate.css/animate.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/toastr/toastr.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/emcweb.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body class="login_body">
+    <div class="middle-box text-center">
+        <div class="white login-form {% if enable_ssl %}login-btns{% else %}login-btn{% endif %}">
+            {% if enable_ssl %}
+            <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
+            <br/><br/>or<br/><br/>
+            {% endif %}
+            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="login_dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Sign In with Credentials</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('login.login') }}" method="post" id="auth_form">
+                        <div class="form-group">
+                            {{ form.login.label }}
+                            {{ form.login(class="form-control", placeholder="Login", required="") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password.label }}
+                            {{ form.password(class="form-control", placeholder="Password", required="") }}
+                        </div>
+                        {{ form.csrf_token }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="login_btn">Sign In</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/toastr/toastr.min.js') }}"></script>
+    <script type="text/javascript">
+$(document).ready(function() {
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        showMethod: 'slideDown',
+        timeOut: 10000
+    };
+
+    $('#login_btn').click(function() {
+        $('form#auth_form').submit();
+    });
+    $("input").keypress(function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+            $('form#auth_form').submit();
+        }
+    });
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            toastr.error('{{ messages[0] }}');
+        {% endif %}
+    {% endwith %}
+});
+    </script>
+</body>
+</html>
