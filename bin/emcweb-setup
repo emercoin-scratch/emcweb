@@ -21,7 +21,7 @@ function showHelp() {
   echo "  -p=pass | --mysql-pass-pass        MySQL password"
   echo "  -c=clip | --mysql-client-ip=clip   MySQL client IP"
   echo "  -R=pass | --mysql-root-pass=pass   MySQL ROOT password"
-  echo "  -C      | --create-database        Create MySQL database before"
+  echo "  -C      | --create-database        Create (or recreate) MySQL database before"
   echo "  -W=name | --wallet=name            Default name of the wallet"
   echo "  -U=user | --user=user              Username to the Web Wallet"
   echo "  -S=pass | --password=pass          Password to the Web Wallet"
