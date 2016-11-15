@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+case "$1" in
+  remove|deconfigure|abort-install)
+    rm -f /etc/ssl/emc/emcweb.key /etc/ssl/emc/emcweb.crt
+    a2dissite emcweb >/dev/null 2>&1 || true
+    systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1
+  ;;
+esac
+
+exit 0

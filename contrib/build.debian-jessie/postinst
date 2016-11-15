@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+case "$1" in
+  configure)
+    chown -R emc.emc /var/lib/emcweb
+    systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1
+  ;;
+esac
+
+exit 0
