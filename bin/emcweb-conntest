@@ -58,12 +58,12 @@ def main():
         print('Database is not configured')
         return 102
 
-    celery.config_from_object(conf)
-    try:
-        test_celery.delay()
-    except:
-        print('Celery transport connection refused')
-        return 102
+#    celery.config_from_object(conf)
+#    try:
+#        test_celery.delay()
+#    except:
+#        print('Celery transport connection refused')
+#        return 102
 
 
 if __name__ == '__main__':
