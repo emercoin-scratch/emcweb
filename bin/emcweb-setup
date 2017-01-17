@@ -3,8 +3,8 @@
 # Default values
 MYSQL_HOST="localhost"
 MYSQL_PORT="3306"
-MYSQL_BASE="emcwebdb"
-MYSQL_USER="emcwebuser"
+MYSQL_BASE="emcweb"
+MYSQL_USER="emcweb"
 MYSQL_PASS="$(pwgen 16 1)"
 MYSQL_CLIP="localhost"
 EMC_WALLET="Default"
@@ -96,8 +96,11 @@ do
 done
 
 [ "$CREATE_DB" ] && {
-  [ "$MYSQL_ROOT" ] || { echo "You have to specify the MySQL ROOT password (-R)"; exit 1; }
-  mysql --password="$MYSQL_ROOT" -u root -h $MYSQL_HOST -P $MYSQL_PORT -e "drop database if exists $MYSQL_BASE; create database $MYSQL_BASE character set utf8; grant all on $MYSQL_BASE.* to $MYSQL_USER@'$MYSQL_CLIP' identified by '$MYSQL_PASS';" || exit 1
+  [ "$MYSQL_ROOT" ] && {
+    mysql --password="$MYSQL_ROOT" -u root -h $MYSQL_HOST -P $MYSQL_PORT -e "drop database if exists $MYSQL_BASE; create database $MYSQL_BASE character set utf8; grant all on $MYSQL_BASE.* to $MYSQL_USER@'$MYSQL_CLIP' identified by '$MYSQL_PASS';" || exit 1
+  } || {
+    mysql -u root -h $MYSQL_HOST -P $MYSQL_PORT -e "drop database if exists $MYSQL_BASE; create database $MYSQL_BASE character set utf8; grant all on $MYSQL_BASE.* to $MYSQL_USER@'$MYSQL_CLIP' identified by '$MYSQL_PASS';" || exit 1
+  }
   echo " *** MySQL database has been created:"
   echo "  - Database Host: $MYSQL_HOST"
   echo "  - Database Port: $MYSQL_PORT"
