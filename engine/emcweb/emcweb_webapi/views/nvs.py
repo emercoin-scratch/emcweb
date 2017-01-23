@@ -16,10 +16,14 @@ class NVSAPI(LoginResource):
         if data.get('error', False):
             return {'result_status': False, 'message': data['error']['message']}, 400
 
-        for item in data['result']:
-            item['expires_in'] = round(item['expires_in'] / 175)
+        result = []
 
-        return {'result_status': True, 'result': data['result']}
+        for item in data['result']:
+            if not item.get('transferred', False):
+                item['expires_in'] = round(item['expires_in'] / 175)
+                result.append(item)
+
+        return {'result_status': True, 'result': result}
 
     @staticmethod
     def post():
