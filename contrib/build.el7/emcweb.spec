@@ -54,9 +54,6 @@ pip3 install wtforms sqlalchemy jinja2 crypto pycrypto pyopenssl pymysql celery 
 pip3 install mod_wsgi
 mod_wsgi-express install-module
 mod_wsgi-express module-config > /etc/httpd/conf.modules.d/00-wsgi.conf
-setsebool -P httpd_can_network_connect on
-semanage fcontext -a -t httpd_sys_rw_content_t "/var/lib/emcweb(/.*)?"
-restorecon -R /var/lib/emcweb
 systemctl status httpd >/dev/null && systemctl restart httpd || exit 0
 
 %files
