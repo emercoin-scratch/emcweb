@@ -26,7 +26,7 @@ Emercoin Web Wallet
 %{__install} -m 754 bin/* $RPM_BUILD_ROOT%{_sbindir}
 %{__install} -m 644 certs/emcssl_ca.crt $RPM_BUILD_ROOT/etc/ssl/emc
 %{__install} -m 644 certs/emcssl_ca.key $RPM_BUILD_ROOT/etc/ssl/emc
-%{__install} -m 644 config/apache/emcweb.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/emcweb.conf
+%{__install} -m 644 config/apache/emcweb-rhel.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/emcweb.conf
 %{__install} -m 600 config/supervisor/celery.conf $RPM_BUILD_ROOT/etc/supervisord.d/celery.ini
 
 %clean
