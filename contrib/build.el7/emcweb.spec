@@ -44,7 +44,7 @@ getent passwd emc >/dev/null || { echo "User 'emc' not found. Probably you have 
     chmod 600 /etc/ssl/emc/emcweb.key
   } || true
   touch /etc/emercoin/emcssh.keys.d/emcweb
-  chown emc.emc /etc/emercoin/emcssh.keys.d
+  chown emc.emc /etc/emercoin/emcssh.keys.d/emcweb
 } || exit 0
 
 %posttrans
