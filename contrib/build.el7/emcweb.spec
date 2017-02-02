@@ -48,6 +48,12 @@ getent passwd emc >/dev/null || { echo "User 'emc' not found. Probably you have 
 } || exit 0
 
 %posttrans
+pip3 install --upgrade pip
+pip3 install flask flask-login flask-migrate flask-script flask-sqlalchemy flask-restful flask-wtf
+pip3 install wtforms sqlalchemy jinja2 crypto pycrypto pyopenssl pymysql celery requests redis ujson oauth2client dnspython bsddb3 celery google-api-python-client
+pip3 install mod_wsgi
+mod_wsgi-express install-module
+mod_wsgi-express module-config > /etc/httpd/conf.modules.d/00-wsgi.conf
 setsebool -P httpd_can_network_connect on
 semanage fcontext -a -t httpd_sys_rw_content_t "/var/lib/emcweb(/.*)?"
 restorecon -R /var/lib/emcweb
