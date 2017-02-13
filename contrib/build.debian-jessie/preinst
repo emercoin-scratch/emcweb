@@ -10,7 +10,6 @@ case "$1" in
       openssl req -nodes -x509 -newkey rsa:4096 -keyout /etc/ssl/emc/emcweb.key -out /etc/ssl/emc/emcweb.crt -days 3560 -subj /C=CY/L=Nicosia/O=Emercoin/CN=emercoin.emc
       chown emc.emc /etc/ssl/emc/emcweb.key /etc/ssl/emc/emcweb.crt
       chmod 600 /etc/ssl/emc/emcweb.key
-      pip3 install Flask Flask-Script Flask-SQLAlchemy Flask-Login Flask-Migrate Flask-Testing Flask-restful Jinja2 SQLAlchemy pyOpenSSL pycrypto PyMySQL Flask-WTF WTForms WTForms-Components requests ujson google-api-python-client oauth2client Celery redis dnspython vine kombu billiard cryptography
     }
   ;;
 esac
