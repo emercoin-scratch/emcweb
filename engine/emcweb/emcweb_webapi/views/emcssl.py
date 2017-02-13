@@ -51,7 +51,7 @@ class EMCSSLAPI(LoginResource):
         args = parser.parse_args()
 
         resp = client.name_show('ssh:{}'.format(args.common_name))
-        if not resp.get('error', None):
+        if not resp.get('error', None) and not resp.get('deleted', True):
             return {'result_status': False, 'message': 'Public Key ID already used'}, 400
 
         temp_dir_obj = TemporaryDirectory()
