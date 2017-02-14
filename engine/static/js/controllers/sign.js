@@ -57,12 +57,22 @@ emcwebApp.controller('SignController', ['$scope', '$rootScope', '$uibModal', 'Me
             }
         });
     }
+    
+    $('.has-clear input[type="text"]').on('input propertychange', function() {
+      var visible = Boolean($(this).val());
+      $(this).siblings('.form-control-clear').toggleClass('hidden', !visible);
+    }).trigger('propertychange');
+
+    $('.form-control-clear').click(function() {
+        $(this).siblings('input[type="text"]').val('')
+        .trigger('propertychange').focus();
+    });
 
     Address.get().$promise.then(function (data) {
         if (data.result_status) {
             $scope.addresses = data.result;
             $scope.message.address = $scope.addresses[0];
-            $scope.verify.address = $scope.addresses[0];
+
         } else {
             $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get addresses: ' + data.message});
         }

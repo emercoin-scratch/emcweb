@@ -78,10 +78,11 @@
         </div>
         <div class="ibox-content">
             <form class="form-horizontal" name="verifyForm">
-                <div class="form-group">
+                <div class="form-group has-clear">
                     <label class="col-md-2 control-label" for="verify_address">Address</label>
                     <div class="col-md-10">
-                        <input class="form-control" list="addresses" id="verify_address" name="verify_address" required type="text" data-ng-model="verify.address">
+                        <input class="form-control" list="addresses" id="verify_address" name="verify_address" required type="text" data-ng-model="verify.address" >
+                        <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback hidden"></span>
                         <datalist id="addresses">
                           <option ng-repeat="item in (addresses | filter: $select.search)" value="{$ item $}"/>                          
                         </datalist>
