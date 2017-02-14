@@ -1,5 +1,5 @@
 Name:           emcweb
-Version:        2.0
+Version:        2.1
 Release:        1%{?dist}
 Summary:        Emercoin Web Wallet
 Group:          Applications/Internet
