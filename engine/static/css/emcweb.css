@@ -112,6 +112,7 @@
 
 .form-control-clear {
   margin-right: 40px;
+  font-size: 0.8em;
   z-index: 10;
   pointer-events: auto;
   cursor: pointer;
