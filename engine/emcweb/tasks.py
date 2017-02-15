@@ -128,6 +128,5 @@ def create_empty_wallet(wallet_name):
     move(wallet_dat, new_wallet)
     symlink(new_wallet, wallet_dat)
     start_emercoind()
-    f.close()
     return True
 
