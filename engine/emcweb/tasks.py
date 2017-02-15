@@ -112,3 +112,22 @@ def sendmail(to_mails, message):
                     to_mails,
                     mail)
     server.quit()
+
+@celery.task
+def create_empty_wallet(wallet_name):
+    wallet_dat = path.join(flask_app.flask_app.config['EMC_HOME'], 'wallet.dat')
+    new_wallet = path.join(flask_app.flask_app.config['UPLOAD_FOLDER'], wallet_name)
+    stop_emercoind()
+    unlink(wallet_dat)
+    start_emercoind()
+    seconds = 30
+    while not check_emercoind_process() and seconds > 0:
+        seconds -= 1
+        sleep(1)
+    stop_emercoind()
+    move(wallet_dat, new_wallet)
+    symlink(new_wallet, wallet_dat)
+    start_emercoind()
+    f.close()
+    return True
+
