@@ -54,7 +54,7 @@ class WalletAPI(LoginResource):
                     if create_res.ready():
                         result['result_status'] = True
                         result['result'] = True
-                        result['message'] = 'Wallet created'
+                        result['message'] = 'The wallet has been created'
                         break
                     time.sleep(1)
                     seconds -= 1
