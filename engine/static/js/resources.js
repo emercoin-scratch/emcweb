@@ -11,6 +11,13 @@ emcwebResource.factory('Wallets', function($resource) {
         });
 });
 
+emcwebResource.factory('Wallet', function($resource) {
+    return $resource('/webapi/wallet/:name', null,
+        {
+            'create': {method: 'POST'}
+        });
+});
+
 emcwebResource.factory('Encrypt', function($resource) {
     return $resource('/webapi/encrypt', null,
         {

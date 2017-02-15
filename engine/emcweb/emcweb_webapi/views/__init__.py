@@ -57,3 +57,4 @@ import emcweb.emcweb_webapi.views.info
 import emcweb.emcweb_webapi.views.blocks
 import emcweb.emcweb_webapi.views.encrypt
 import emcweb.emcweb_webapi.views.wallets
+import emcweb.emcweb_webapi.views.wallet

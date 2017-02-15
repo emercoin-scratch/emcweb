@@ -59,6 +59,19 @@ emcwebApp.controller('WalletsController', ['$scope', '$window', 'Wallets', '$tim
         });
     };
 
+    $scope.createModal = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'createWalletModal.html',
+            controller: 'walletCreateModalController',
+            resolve: {}
+        });
+
+        modalInstance.result.then(function (result) {
+            $scope.getWallets();
+            $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message });
+        });
+    };
+
     $scope.getWallets = function() {
         Wallets.get().$promise.then(function (data) {
             if (data.result_status) {
@@ -127,3 +140,23 @@ emcwebApp.controller('walletUploadModalController', function walletChoiceModalCo
         $uibModalInstance.dismiss('cancel');
     };
 });
+
+emcwebApp.controller('walletCreateModalController', function ($scope, $uibModalInstance, $rootScope, $http, Wallet) {
+    $scope.creator = function() {
+        
+        Wallet.create({'name': $scope.walletName}).$promise.then(function(data) {
+            if (data.result_status && data.result) {
+                
+                $uibModalInstance.close(data);
+                
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: data.message});
+            }
+        });       
+    }
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
