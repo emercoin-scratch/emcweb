@@ -141,9 +141,8 @@ emcwebApp.controller('walletUploadModalController', function walletChoiceModalCo
     };
 });
 
-emcwebApp.controller('walletCreateModalController', function ($scope, $uibModalInstance, $rootScope, $http, Wallet) {
+emcwebApp.controller('walletCreateModalController', function ($scope, $uibModalInstance, $rootScope, Wallet) {
     $scope.creator = function() {
-        
         Wallet.create({'name': $scope.walletName}).$promise.then(function(data) {
             if (data.result_status && data.result) {
                 
