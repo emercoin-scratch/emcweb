@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from flask import render_template, redirect, url_for, request, current_app
+import datetime
+from flask import (render_template, redirect,
+                   url_for, request, current_app, session)
 from flask_login import current_user
 from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
@@ -33,6 +35,12 @@ def index():
         return render_template('blocks.html')
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
+    
+    if current_user.is_authenticated and serial:
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
+
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
                                                               form=LoginForm(),
