@@ -72,6 +72,24 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
     $scope.get_nvs();
 }]);
 
+emcwebApp.filter('formatText',['$sce', function($sce){
+    return function(text){
+
+        var entityMap = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': '&quot;',
+            "'": '&#39;',
+            "/": '&#x2F;'
+        };
+        var escapedText = String(text).replace(/[&<>"'\/]/g, function (s) {
+                return entityMap[s];
+            });
+
+        return $sce.trustAsHtml(escapedText.replace(new RegExp('\\n','g'), "<br/>"));
+    }
+}]);
 
 emcwebApp.controller('NVSEditController', function NVSEditController($scope, $rootScope, $uibModalInstance, nvs_item, NVS) {
     $scope.nvs_item = nvs_item;
