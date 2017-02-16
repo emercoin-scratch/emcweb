@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import base64
 import os
 import zipfile
 import gzip
@@ -152,7 +153,10 @@ class EMCSSLAPI(LoginResource):
                 'message': format(resp['error']['message'])
             }, 400
 
-        resp = client.name_new('info:{}'.format(index), ze_data.decode(encoding='raw_unicode_escape'), 1000)
+        
+        ze_data_base64 = base64.b64encode(ze_data).decode('utf-8')
+
+        resp = client.name_new('info:{}'.format(index), ze_data_base64, 1000, '', 'base64')
         if resp.get('error', False):
             return {
                 'result_status': False,
