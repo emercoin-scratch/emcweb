@@ -59,6 +59,18 @@
                         <input class="form-control" id="daystoexpire" name="daystoexpire" type="number" min="1" data-ng-model="newcert.daystoexpire" required pattern="^[0-9]+$">
                     </div>
                 </div>
+                <div class="form-group" data-ng-repeat="txt in newcert.txt track by $index">
+                    <div class="col-md-3" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtname_{$ $index $}" name="txtname_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].name" pattern="^[A-Za-z0-9-_]+$">
+                    </div>
+                    <div class="col-md-8" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtvalue_{$ $index $}" name="txtvalue_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].value" >
+                    </div>
+                    <div class="col-md-1">
+                        <span class="btn btn-primary" data-ng-if="$index + 1 == newcert.txt.length" data-ng-click="addTxt()"><i class="fa fa-plus"></i></span>
+                        <span class="btn btn-primary" data-ng-if="$index + 1 < newcert.txt.length" data-ng-click="delTxt($index)"><i class="fa fa-minus"></i></span>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="modal-footer">

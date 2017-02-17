@@ -11,8 +11,13 @@ import binascii
 
 
 def make_info_data(data):
-    info_data = '\n'.join(['{0}\t{1}'.format(key.title().replace('_', ''), value) for key, value in data.items()
-                           if key not in ('common_name','daystoexpire')])
+    info_data = '\n'.join(['{0} \t{1}'.format(key.title().replace('_', ''), value) for key, value in data.items()
+                           if key not in ('common_name','daystoexpire', 'txt')])
+    additional_data = '\n'.join(['{0}+ \t{1}'.format(element['name'].title().replace('_', ''),
+        element['value']) for element in data['txt'] if not(element['name'] == '' or element['value'] == '')])
+
+    if additional_data:
+        info_data += '\n{0}'.format(additional_data)
 
     hask_key = SHA256.new(info_data.encode()).hexdigest()
     return '#!info:{0}:{1}\n{2}\n'.format(hask_key[0:16], hask_key[20:50], info_data), hask_key[0:16], hask_key[20:50]

@@ -50,6 +50,7 @@ class EMCSSLAPI(LoginResource):
         parser.add_argument('alias', type=str, required=True, help='Alias must be set')
         parser.add_argument('email', type=str, required=True, help='Email must be set')
         parser.add_argument('daystoexpire', type=int, required=True, help='Days to expire must be set')
+        parser.add_argument('txt', required=False, location='json', type=list, help='TXT must be set')
 
         args = parser.parse_args()
 
@@ -65,7 +66,7 @@ class EMCSSLAPI(LoginResource):
 
         # make info file
         file_content, index, passwd = make_info_data(args)
-
+        
         # write info file
         writen = False
         name = None

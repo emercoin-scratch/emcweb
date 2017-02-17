@@ -79,7 +79,7 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
 
 
 emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, Cert) {
-    $scope.newcert = {daystoexpire: 365};
+    $scope.newcert = {daystoexpire: 365, txt:[{name:'', value: ''}]};
 
     $scope.makeCert = function () {
         $scope.newcert.common_name = ($scope.newcert.cn.length > 0 && $scope.newcert.cn[0] == '@') ? $scope.newcert.cn.slice(1) : $scope.newcert.cn
@@ -98,6 +98,16 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
+    
+    $scope.addTxt = function() {
+        $scope.newcert.txt.push({name:'', value: ''});
+        console.log($scope.newcert.txt);
+    }
+
+    $scope.delTxt = function(idx) {
+        $scope.newcert.txt.splice(idx, 1);
+    }
+
 });
 
 
