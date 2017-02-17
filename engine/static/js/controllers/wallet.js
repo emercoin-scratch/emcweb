@@ -93,7 +93,7 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
 
     if ($cookies.get('strict_get_expires_nvs') == 1){
         $scope.getNVSExpired();
-        $cookies.remove('strict_get_expires_nvs');
+        $cookies.put('strict_get_expires_nvs', 0);
     }
 }]);
 

@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import datetime
 from hashlib import md5
 
-from flask import redirect, url_for, request, abort, session, current_app
+from flask import (redirect, url_for, request, abort,
+                   session, current_app, make_response)
 from flask_login import login_user
 
 from ..models import Credentials, Users
@@ -12,6 +13,12 @@ from ..ssl_check import check_ssl
 from . import module_bp
 from emcweb.emcweb.views.index import LoginForm
 
+
+def create_cookie(page):
+    cookie_name = 'strict_get_expires_nvs'
+    if request.cookies.get(cookie_name, '0') == '0':
+        resp = make_response(page)
+        resp.set_cookie(cookie_name, value='1')
 
 @module_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -42,7 +49,9 @@ def login():
 
         if user:
             login_user(user)
-            return redirect(url_for('emcweb.index'))
+            page = redirect(url_for('emcweb.index'))
+            create_cookie(page)
+            return page
 
     abort(403)
 
@@ -66,6 +75,8 @@ def login_ssl():
 
         login_user(user)
         session['login_ssl'] = True
-        return redirect(url_for('emcweb.index'))
+        page = redirect(url_for('emcweb.index'))
+        create_cookie(page)
+        return page
 
     abort(403)

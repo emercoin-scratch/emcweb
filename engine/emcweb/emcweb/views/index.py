@@ -33,13 +33,9 @@ def index():
     if status != 2:
         return render_template('blocks.html')
 
-    serial = request.environ.get('SSL_CLIENT_M_SERIAL')
-    if current_user.is_authenticated:
-        redirect_to_index = redirect(url_for('emcweb.wallet'))
-        resp = make_response(redirect_to_index)
-        resp.set_cookie('strict_get_expires_nvs', value='1')
+    serial = request.environ.get('SSL_CLIENT_M_SERIAL')   
 
-    return redirect_to_index \
+    return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
                                                               form=LoginForm(),
                                                               enable_ssl=True if serial else False)
