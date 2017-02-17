@@ -55,6 +55,7 @@ def login_ssl():
             return redirect(url_for('emcweb.index'))
 
         login_user(user)
+        session['login_ssl'] = True
         return redirect(url_for('emcweb.index'))
 
     abort(403)

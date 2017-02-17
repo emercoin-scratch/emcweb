@@ -17,5 +17,6 @@ def logout():
         return redirect(url_for('emcweb.index'))
 
     session['login_password'] = False
+    session['login_ssl'] = False
     logout_user()
     return redirect(url_for('emcweb.index'))

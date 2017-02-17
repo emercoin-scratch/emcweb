@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import datetime
-from flask import (render_template, redirect,
+from flask import (render_template, redirect, app,
                    url_for, request, current_app, session)
 from flask_login import current_user
 from flask_wtf import Form
@@ -17,7 +17,6 @@ from emcweb.utils import apply_db_settings
 class LoginForm(Form):
     login = StringField('Login', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-
 
 @module_bp.route('/')
 def index():
@@ -35,8 +34,8 @@ def index():
         return render_template('blocks.html')
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
-    
-    if current_user.is_authenticated and serial:
+
+    if current_user.is_authenticated and session.get('login_ssl', False):
         session.modified = True
         session.permanent = True
         current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
