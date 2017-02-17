@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
 from hashlib import md5
 
 from flask import redirect, url_for, request, abort, session, current_app
@@ -34,6 +35,11 @@ def login():
             return redirect(url_for('emcweb.index'))
 
         session['login_password'] = True
+
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(minutes=15)
+
         if user:
             login_user(user)
             return redirect(url_for('emcweb.index'))
@@ -53,6 +59,10 @@ def login_ssl():
         except:
             current_app.config['DB_FALL'] = 2
             return redirect(url_for('emcweb.index'))
+        
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
 
         login_user(user)
         session['login_ssl'] = True

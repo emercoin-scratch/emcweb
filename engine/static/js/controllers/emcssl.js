@@ -79,7 +79,7 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
 
 
 emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, Cert) {
-    $scope.newcert = {}
+    $scope.newcert = {daystoexpire: 365};
 
     $scope.makeCert = function () {
         $scope.newcert.common_name = ($scope.newcert.cn.length > 0 && $scope.newcert.cn[0] == '@') ? $scope.newcert.cn.slice(1) : $scope.newcert.cn

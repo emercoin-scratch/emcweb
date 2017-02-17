@@ -49,11 +49,17 @@ class EMCSSLAPI(LoginResource):
         parser.add_argument('last_name', type=str, required=True, help='Last name must be set')
         parser.add_argument('alias', type=str, required=True, help='Alias must be set')
         parser.add_argument('email', type=str, required=True, help='Email must be set')
+        parser.add_argument('daystoexpire', type=int, required=True, help='Days to expire must be set')
+
         args = parser.parse_args()
 
         resp = client.name_show('ssh:{}'.format(args.common_name))
         if not resp.get('error', None) and not resp.get('deleted', True):
             return {'result_status': False, 'message': 'Public Key ID already used'}, 400
+
+        cert_expire = getattr(args, 'daystoexpire', 0)
+        if not isinstance(cert_expire, int) or cert_expire == 0:
+            return {'result_status': False, 'message': 'Days to expire must be set'}, 400
 
         temp_dir_obj = TemporaryDirectory()
 
@@ -107,7 +113,8 @@ class EMCSSLAPI(LoginResource):
             ca_priv_key_path=current_app.config.get('CA_PRIVATE_KEY'),
             cn=args.common_name,
             email=args.email,
-            uid='info:{0}:{1}'.format(index, passwd)
+            uid='info:{0}:{1}'.format(index, passwd),
+            days_to_exp=cert_expire
         )
 
         code = fingerprint.replace(b':', b'').lower().decode()
@@ -146,7 +153,7 @@ class EMCSSLAPI(LoginResource):
 
         temp_dir_obj.cleanup()
 
-        resp = client.name_new('ssl:{}'.format(name), 'sha256={}'.format(code), 1000)
+        resp = client.name_new('ssl:{}'.format(name), 'sha256={}'.format(code), cert_expire + 365)
         if resp.get('error', False):
             return {
                 'result_status': False,
@@ -156,14 +163,14 @@ class EMCSSLAPI(LoginResource):
         
         ze_data_base64 = base64.b64encode(ze_data).decode('utf-8')
 
-        resp = client.name_new('info:{}'.format(index), ze_data_base64, 1000, '', 'base64')
+        resp = client.name_new('info:{}'.format(index), ze_data_base64, cert_expire + 365, '', 'base64')
         if resp.get('error', False):
             return {
                 'result_status': False,
                 'message': format(resp['error']['message'])
             }, 400
 
-        resp = client.name_new('ssh:{}'.format(args.common_name), name, 1000)
+        resp = client.name_new('ssh:{}'.format(args.common_name), name, cert_expire + 365)
         if resp.get('error', False):
             return {
                 'result_status': False,

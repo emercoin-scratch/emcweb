@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
 from flask import (render_template, redirect, app,
                    url_for, request, current_app, session)
 from flask_login import current_user
@@ -34,11 +33,6 @@ def index():
         return render_template('blocks.html')
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
-
-    if current_user.is_authenticated and session.get('login_ssl', False):
-        session.modified = True
-        session.permanent = True
-        current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
 
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
