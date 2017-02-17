@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from flask import session
 from flask_restful import reqparse
 from emcweb.emcweb_webapi.login_resource import LoginResource
 
@@ -8,16 +9,24 @@ from emcweb.emcweb_webapi.utils import client
 from emcweb.emcweb_webapi.views import api
 
 
-def _get_actives_nvs(objects, expires_only=False):
+def get_actives_nvs(objects):
     result = []
 
     for item in objects:
         if not item.get('transferred', False) and item.get('expires_in', 0) >= 0:
             item['expires_in'] = round(item['expires_in'] / 175)
-            if (expires_only and item['expires_in'] <= 10) or (not expires_only):
-                result.append(item)
+            result.append(item)
     return result
 
+def get_expires_nvs(objects):
+    result = []
+     
+    all_nvs = get_actives_nvs(objects)
+    for obj in all_nvs:
+        if obj['expires_in'] <= 10:
+            result.append(obj)
+    
+    return result
 
 class NVSAPI(LoginResource):
 
@@ -33,7 +42,10 @@ class NVSAPI(LoginResource):
         if data.get('error', False):
             return {'result_status': False, 'message': data['error']['message']}, 400
 
-        result = _get_actives_nvs(data['result'], expires_only)
+        if expires_only:
+            result = get_expires_nvs(data['result'])
+        else:
+            result = get_actives_nvs(data['result'])
 
         return {'result_status': True, 'result': result}
 

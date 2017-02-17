@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from flask import (render_template, redirect, app,
-                   url_for, request, current_app, session)
+                   url_for, request, current_app,
+                   make_response, session)
 from flask_login import current_user
 from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
@@ -33,8 +34,12 @@ def index():
         return render_template('blocks.html')
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
+    if current_user.is_authenticated:
+        redirect_to_index = redirect(url_for('emcweb.wallet'))
+        resp = make_response(redirect_to_index)
+        resp.set_cookie('strict_get_expires_nvs', value='1')
 
-    return redirect(url_for('emcweb.wallet')) \
+    return redirect_to_index \
         if current_user.is_authenticated else render_template('index.html',
                                                               form=LoginForm(),
                                                               enable_ssl=True if serial else False)

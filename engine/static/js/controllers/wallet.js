@@ -1,7 +1,7 @@
 'use strict';
 
-emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS',
-                     function WalletController($scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS) {
+emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS',
+                     function WalletController($cookies, $scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS) {
 
     $scope.makeTransfer = function () {
         Transactions.create({ address: $scope.form_address, amount: $scope.form_amount }).$promise.then(function (data) {
@@ -90,7 +90,11 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
 
     $scope.getTransactions();
     $scope.getBalance();
-    $scope.getNVSExpired();
+
+    if ($cookies.get('strict_get_expires_nvs') == 1){
+        $scope.getNVSExpired();
+        $cookies.remove('strict_get_expires_nvs');
+    }
 }]);
 
 
