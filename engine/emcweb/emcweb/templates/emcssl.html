@@ -56,7 +56,7 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="daystoexpire">Days to Expire</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.daystoexpire.$invalid && newModalForm.daystoexpire.$dirty}">
-                        <input class="form-control" id="daystoexpire" name="daystoexpire" type="daystoexpire" data-ng-model="newcert.daystoexpire" required pattern="^[0-9]+$">
+                        <input class="form-control" id="daystoexpire" name="daystoexpire" type="number" min="1" data-ng-model="newcert.daystoexpire" required pattern="^[0-9]+$">
                     </div>
                 </div>
             </form>
