@@ -1,7 +1,7 @@
 'use strict';
 
-emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin',
-                     function WalletController($scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin) {
+emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS',
+                     function WalletController($scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS) {
 
     $scope.makeTransfer = function () {
         Transactions.create({ address: $scope.form_address, amount: $scope.form_amount }).$promise.then(function (data) {
@@ -61,6 +61,19 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
         );
     };
 
+    $scope.getNVSExpired = function() {
+        NVS.getExpires().$promise.then(function (data) {
+            if (data.result_status) {
+                var countExpired = data.result.length
+                if (countExpired > 0){
+                    $rootScope.$broadcast('send_notify', {notify: 'warning', message: 'Warning: You have ' + countExpired + ' NVS records which will soon expire'});
+                }
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get count expires names: ' + data.message});
+            }
+        });
+    }
+
     $scope.form_address = "";
     $scope.form_amount = "";
     $scope.lc_setting = false;
@@ -77,6 +90,7 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
 
     $scope.getTransactions();
     $scope.getBalance();
+    $scope.getNVSExpired();
 }]);
 
 
