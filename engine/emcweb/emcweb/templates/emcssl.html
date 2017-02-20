@@ -32,19 +32,19 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="first_name">First Name</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.first_name.$invalid && newModalForm.first_name.$dirty}">
-                        <input class="form-control" id="first_name" name="first_name" type="text" data-ng-model="newcert.first_name" required>
+                        <input class="form-control" id="first_name" name="first_name" type="text" data-ng-model="newcert.first_name" required pattern="[\w\!@#\$\%\^&*\(\):;\\|/ \-+]+">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="last_name">Last Name</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.last_name.$invalid && newModalForm.last_name.$dirty}">
-                        <input class="form-control" id="last_name" name="last_name" type="text" data-ng-model="newcert.last_name" required>
+                        <input class="form-control" id="last_name" name="last_name" type="text" data-ng-model="newcert.last_name" required pattern="[\w\!@#\$\%\^&*\(\):;\\|/ \-+]+">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="alias">Alias</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.alias.$invalid && newModalForm.alias.$dirty}">
-                        <input class="form-control" id="alias" name="alias" type="text" data-ng-model="newcert.alias" required>
+                        <input class="form-control" id="alias" name="alias" type="text" data-ng-model="newcert.alias" required pattern="[\w\!@#\$\%\^&*\(\):;\\|/ \-+]+">
                     </div>
                 </div>
                 <div class="form-group">
@@ -64,7 +64,7 @@
                         <input class="form-control" id="txtname_{$ $index $}" name="txtname_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].name" pattern="^[A-Za-z0-9-_]+$">
                     </div>
                     <div class="col-md-8" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
-                        <input class="form-control" id="txtvalue_{$ $index $}" name="txtvalue_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].value" >
+                        <input class="form-control" id="txtvalue_{$ $index $}" name="txtvalue_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].value" pattern="[\w\!@#\$\%\^&*\(\):;\\|/ \-+]+">
                     </div>
                     <div class="col-md-1">
                         <span class="btn btn-primary" data-ng-if="$index + 1 == newcert.txt.length" data-ng-click="addTxt()"><i class="fa fa-plus"></i></span>
