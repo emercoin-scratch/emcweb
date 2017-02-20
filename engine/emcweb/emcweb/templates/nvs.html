@@ -10,9 +10,24 @@
         <div class="modal-body">
             <form class="form-horizontal" name="editModalForm">
                 <div class="form-group">
+                    <label class="col-md-3 control-label" for="typeOfData">Type of data</label>
+                    <div class="col-md-3">
+                        <input type="radio" id="utf8" name="typeOfData" value="utf8"  ng-model="nvs_item.typeOfData" ng-disabled="nvs_item.valueIsBinary" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="utf8">utf8</label>
+                    </div> 
+                    <div class="col-md-3">
+                        <input type="radio" id="hex" name="typeOfData" value="hex" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="hex">hex</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="radio" id="base64" name="typeOfData" value="base64" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="base64">base64</label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-3 control-label" for="value">Value</label>
-                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.value.$invalid && editModalForm.value.$dirty}">
-                        <textarea class="form-control" id="value" name="value" type="text" data-ng-model="nvs_item.value" required></textarea>
+                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.tmpValue.$invalid && editModalForm.tmpValue.$dirty}">
+                        <textarea class="form-control" id="value" name="tmpValue" type="text" data-ng-model="nvs_item.tmpValue" required></textarea>
                     </div>
                 </div>
                 <div class="form-group">
@@ -41,6 +56,21 @@
         </div>
         <div class="modal-body">
             <form class="form-horizontal" name="newModalForm">
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="typeOfData">Type of data</label>
+                    <div class="col-md-3">
+                        <input type="radio" id="utf8" name="typeOfData" value="utf8"  ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="utf8">utf8</label>
+                    </div> 
+                    <div class="col-md-3">
+                        <input type="radio" id="hex" name="typeOfData" value="hex" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="hex">hex</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="radio" id="base64" name="typeOfData" value="base64" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData">
+                        <label class="control-label" for="base64">base64</label>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="name_new">Name</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.name_new.$invalid && newModalForm.name_new.$dirty}">
@@ -105,7 +135,7 @@
                     <tbody>
                         <tr data-ng-repeat="nvs_item in nvs_list">
                             <td class="col-sm-2 wb">{$ nvs_item.name $}</td>
-                            <td class="col-sm-4 wb" ng-bind-html="nvs_item.value | formatText"></td>
+                            <td class="col-sm-4 wb" ng-bind-html="nvs_item.value | formatText:this"></td>
                             <td class="col-sm-2 wb">{$ nvs_item.address $}</td>
                             <td class="col-sm-1">{$ nvs_item.expires_in $}</td>
                             <td class="col-sm-2">

@@ -55,9 +55,13 @@ class NVSAPI(LoginResource):
         parser.add_argument('name', type=str, required=True, help='Need set name')
         parser.add_argument('value', type=str, required=True, help='Need set value')
         parser.add_argument('days', type=int, required=True, help='Need set days')
+        parser.add_argument('typeOfData', type=str, required=True, help='Need set type of data')
         args = parser.parse_args()
 
-        data = client.name_new(args.name, args.value, args.days)
+        data_type = ''
+        if not args.typeOfData == 'utf8':
+            data_type = args.typeOfData
+        data = client.name_new(args.name, args.value, args.days, '', data_type)
 
         if data.get('error', False):
             return {'result_status': False, 'message': data['error']['message']}, 400
@@ -83,12 +87,15 @@ class NVSAPI(LoginResource):
         parser.add_argument('value', type=str, required=True, help='Need set value')
         parser.add_argument('days', type=int, required=True, help='Need set days')
         parser.add_argument('address', type=str, required=False, help='Need set address')
+        parser.add_argument('typeOfData', type=str, required=False, help='Need set type of data')
         args = parser.parse_args()
 
-        params = [args.name, args.value, args.days]
-        if args.address:
-            params.append(args.address)
-
+        addr = args.address if args.address else ''
+        datatype = ''
+        if args.typeOfData and not args.typeOfData=='utf8':
+            datatype = args.typeOfData
+        params = [args.name, args.value, args.days, addr, datatype]
+        
         data = client.name_update(*params)
         if data.get('error', False):
             return {'result_status': False, 'message': data['error']['message']}, 400
