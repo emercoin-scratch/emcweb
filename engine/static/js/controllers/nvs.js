@@ -1,24 +1,62 @@
 'use strict';
 
-function _valueIsBinary(text){
-    var unicodeWord = XRegExp('[\u0021-\u007E\u0400-\u04FF\u4E00-\u9FFF\uF900-\uFAFF]+')
-    var chars = 0, len = text.length;
+String.prototype.hexEncode = function(){
+    var hex, i;
 
-    for (var i=0; i<len; i++){
-        if (unicodeWord.test(text[i])){
-            chars = chars + 1;
-        }
+    var result = "";
+    for (i=0; i<this.length; i++) {
+        hex = this.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
     }
-    
-    return !(chars >= len-1);
+
+    return result
+}
+
+String.prototype.hexDecode = function(){
+    var j;
+    var hexes = this.match(/.{1,4}/g) || [];
+    var back = "";
+    for(j = 0; j<hexes.length; j++) {
+        back += String.fromCharCode(parseInt(hexes[j], 16));
+    }
+
+    return back;
+}
+
+function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        }));
+    };
+
+function b64DecodeUnicode(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
+function decodeValue(val, old_type, new_type){
+    var result = val;
+    if (old_type == 'utf8' && new_type == 'base64'){
+        result = b64EncodeUnicode(result);
+    }else if(old_type == 'base64' && new_type == 'utf8'){
+        result = b64DecodeUnicode(result);
+    }else if (old_type == 'utf8' && new_type == 'hex'){
+        result = result.hexEncode();
+    }else if (old_type == 'hex' && new_type == 'utf8'){
+        result = result.hexDecode();
+    }else if (old_type == 'hex' && new_type == 'base64'){
+        result = result.hexDecode();
+        result = b64EncodeUnicode(result);
+    }else if (old_type == 'base64' && new_type == 'hex'){
+        result = b64DecodeUnicode(result);
+        result = result.hexEncode();
+    }
+    return result;
 }
 
 emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal',
                      function NVSController($scope, $rootScope, NVS, $uibModal) {
-
-    $scope.valueIsBinary = function(text){
-        return _valueIsBinary(text);
-    };
 
     $scope.get_nvs = function() {
         NVS.get().$promise.then(function (data) {
@@ -94,21 +132,19 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
 
 
 emcwebApp.controller('NVSEditController', function NVSEditController($scope, $rootScope, $uibModalInstance, nvs_item, NVS) {
-    function b64EncodeUnicode(str) {
-        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-            return String.fromCharCode('0x' + p1);
-        }));
-    };
 
     $scope.nvs_item = nvs_item;
+    $scope.nvs_item.typeOfData = 'utf8';
+    $scope.old_type = $scope.nvs_item.typeOfData;
     $scope.nvs_item.days = 0;
-    if (_valueIsBinary($scope.nvs_item.value)){
-        $scope.nvs_item.tmpValue = b64EncodeUnicode($scope.nvs_item.value);
-        $scope.nvs_item.typeOfData = "base64";
-        $scope.nvs_item.valueIsBinary = true;
-    }else{
-        $scope.nvs_item.tmpValue = $scope.nvs_item.value;
-        $scope.nvs_item.valueIsBinary = false;
+
+    $scope.nvs_item.tmpValue = $scope.nvs_item.value;
+
+    $scope.decodeValue = decodeValue;
+
+    $scope.newValue = function(){
+        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
+        $scope.old_type = $scope.nvs_item.typeOfData;
     }
 
     $scope.ok = function () {
@@ -140,9 +176,17 @@ emcwebApp.controller('NVSRemoveController', function NVSRemoveController($scope,
 
 
 emcwebApp.controller('NVSNewController', function NVSNewController($scope, $rootScope, $uibModalInstance, NVS) {
-    $scope.nvs_item = {days: 300};
+    $scope.nvs_item = {days: 300, typeOfData: "utf8"};
+    $scope.old_type = "utf8"
+    $scope.decodeValue = decodeValue;
+
+    $scope.newValue = function(){
+        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
+        $scope.old_type = $scope.nvs_item.typeOfData;
+    }
 
     $scope.ok = function () {
+        $scope.nvs_item.value = $scope.nvs_item.tmpValue;
         NVS.create($scope.nvs_item).$promise.then(function (data) {
             $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your entry has been saved'});
             $uibModalInstance.close();

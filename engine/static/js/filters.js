@@ -9,10 +9,7 @@ filters.filter('hasError', function() {
 });
  
 emcwebApp.filter('formatText',['$sce', function($sce){
-    return function(text, scope){
-        if (scope.valueIsBinary(text)){
-            return $sce.trustAsHtml("&lt;Binary data&gt;")
-        }
+    return function(text){
         var entityMap = {
             "&": "&amp;",
             "<": "&lt;",
