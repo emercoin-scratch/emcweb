@@ -1,57 +1,26 @@
 'use strict';
 
-String.prototype.hexEncode = function(){
-    var hex, i;
-
-    var result = "";
-    for (i=0; i<this.length; i++) {
-        hex = this.charCodeAt(i).toString(16);
-        result += ("000"+hex).slice(-4);
-    }
-
-    return result
-}
-
-String.prototype.hexDecode = function(){
-    var j;
-    var hexes = this.match(/.{1,4}/g) || [];
-    var back = "";
-    for(j = 0; j<hexes.length; j++) {
-        back += String.fromCharCode(parseInt(hexes[j], 16));
-    }
-
-    return back;
-}
-
-function b64EncodeUnicode(str) {
-        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-            return String.fromCharCode('0x' + p1);
-        }));
+function b64Encode(str) {
+        return btoa(str);
+        // return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        //     return String.fromCharCode('0x' + p1);
+        // }));
     };
 
-function b64DecodeUnicode(str) {
-    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+function b64Decode(str) {
+    return atob(str);
+    // return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+    //     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    // }).join(''));
 }
 
 function decodeValue(val, old_type, new_type){
     var result = val;
     if (old_type == 'utf8' && new_type == 'base64'){
-        result = b64EncodeUnicode(result);
+        result = b64Encode(result);
     }else if(old_type == 'base64' && new_type == 'utf8'){
-        result = b64DecodeUnicode(result);
-    }else if (old_type == 'utf8' && new_type == 'hex'){
-        result = result.hexEncode();
-    }else if (old_type == 'hex' && new_type == 'utf8'){
-        result = result.hexDecode();
-    }else if (old_type == 'hex' && new_type == 'base64'){
-        result = result.hexDecode();
-        result = b64EncodeUnicode(result);
-    }else if (old_type == 'base64' && new_type == 'hex'){
-        result = b64DecodeUnicode(result);
-        result = result.hexEncode();
-    }
+        result = b64Decode(result);
+    };
     return result;
 }
 
@@ -138,7 +107,7 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     $scope.old_type = $scope.nvs_item.typeOfData;
     $scope.nvs_item.days = 0;
 
-    $scope.nvs_item.tmpValue = $scope.nvs_item.value;
+    $scope.nvs_item.tmpValue = b64Decode($scope.nvs_item.value);
 
     $scope.decodeValue = decodeValue;
 
@@ -148,7 +117,13 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     }
 
     $scope.ok = function () {
-        $scope.nvs_item.value = $scope.nvs_item.tmpValue;
+        if ($scope.nvs_item.typeOfData != 'base64'){
+            $scope.nvs_item.value = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.nvs_item.typeOfData, 'base64');
+            $scope.nvs_item.typeOfData = 'base64';
+        }else{
+            $scope.nvs_item.value = $scope.nvs_item.tmpValue;
+        }
+
         NVS.update($scope.nvs_item).$promise.then(function (data) {
             $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your entry has been updated'});
             $uibModalInstance.close();
@@ -186,7 +161,12 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     }
 
     $scope.ok = function () {
-        $scope.nvs_item.value = $scope.nvs_item.tmpValue;
+        if ($scope.nvs_item.typeOfData != 'base64'){
+            $scope.nvs_item.value = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.nvs_item.typeOfData, 'base64');
+            $scope.nvs_item.typeOfData = 'base64';
+        }else{
+            $scope.nvs_item.value = $scope.nvs_item.tmpValue;
+        }
         NVS.create($scope.nvs_item).$promise.then(function (data) {
             $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your entry has been saved'});
             $uibModalInstance.close();

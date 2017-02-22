@@ -38,7 +38,7 @@ class NVSAPI(LoginResource):
         
         expires_only = getattr(args, 'expires', 0) == '1'
 
-        data = client.name_list()
+        data = client.name_list('', 'base64')
         if data.get('error', False):
             return {'result_status': False, 'message': data['error']['message']}, 400
 
