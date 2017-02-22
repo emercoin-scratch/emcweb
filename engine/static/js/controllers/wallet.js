@@ -21,8 +21,8 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
             function (result=false) {
                 if (result){
                     $scope.pay();
-                    $rootScope.$broadcast('update_wallet_status');
                 }
+                $rootScope.$broadcast('update_wallet_status');
             }
         );
     };

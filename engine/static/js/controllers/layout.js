@@ -164,6 +164,7 @@ emcwebApp.controller('lockWalletController', function lockWalletController($scop
             }else{
                 $scope.fineResult('The wallet has been unlocked');
             }
+            $rootScope.$broadcast('update_wallet_status');
         }, function() {
             $uibModalInstance.close();
         });
