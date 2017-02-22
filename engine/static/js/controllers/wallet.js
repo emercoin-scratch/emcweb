@@ -1,9 +1,33 @@
 'use strict';
 
-emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS',
-                     function WalletController($cookies, $scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS) {
+emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS', 'Encrypt',
+                     function WalletController($cookies, $scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS, Encrypt) {
 
-    $scope.makeTransfer = function () {
+    $scope.unlockWalletModalAndPay = function (status, trans) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function() {
+                    return status
+                },
+                createTrans: function() {
+                    return trans
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result=false) {
+                if (result){
+                    $scope.pay();
+                    $rootScope.$broadcast('update_wallet_status');
+                }
+            }
+        );
+    };
+
+    $scope.pay = function(){
         Transactions.create({ address: $scope.form_address, amount: $scope.form_amount }).$promise.then(function (data) {
             if (data.result_status) {
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your payment has been accepted'});
@@ -15,7 +39,25 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Your payment has been declined'});
             }
         });
-    }
+    };
+
+    $scope.makeTransfer = function () {
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                var status = data.result;
+                if (status != 3){
+                    $scope.unlockWalletModalAndPay(status, true);
+                }else{
+                    $scope.pay();
+                }
+
+            }else{
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
+        });
+    };
+
+
 
     $scope.getBalance = function() {
         Balance.get().$promise.then(function (data) {
