@@ -53,6 +53,7 @@ pip3 install flask flask-login flask-migrate flask-script flask-sqlalchemy flask
 mod_wsgi-express install-module >/dev/null 2>&1
 mod_wsgi-express module-config > /etc/httpd/conf.modules.d/00-wsgi.conf
 systemctl status httpd >/dev/null && systemctl restart httpd || exit 0
+systemctl status supervisord >/dev/null && systemctl restart supervisord || exit 0
 
 %files
 %doc LICENSE
