@@ -9,7 +9,11 @@ filters.filter('hasError', function() {
 });
  
 emcwebApp.filter('formatText',['$sce', function($sce){
-    return function(text){
+    return function(text, isInfocard=false){
+        if (isInfocard){
+            return $sce.trustAsHtml('&lt;Infocard&gt;');
+        }
+
         var entityMap = {
             "&": "&amp;",
             "<": "&lt;",

@@ -127,7 +127,7 @@
                     <tbody>
                         <tr data-ng-repeat="nvs_item in nvs_list">
                             <td class="col-sm-2 wb">{$ nvs_item.name $}</td>
-                            <td class="col-sm-4 wb" ng-bind-html="nvs_item.value | formatText"></td>
+                            <td class="col-sm-4 wb" ng-bind-html="nvs_item.value | formatText:nvs_item.isInfocard"></td>
                             <td class="col-sm-2 wb">{$ nvs_item.address $}</td>
                             <td class="col-sm-1">{$ nvs_item.expires_in $}</td>
                             <td class="col-sm-2">

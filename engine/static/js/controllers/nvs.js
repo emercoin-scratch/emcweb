@@ -44,6 +44,16 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
 
             if (data.result_status) {
                 
+                var pattern = new RegExp("^info:[0-9a-fA-F]{16}");
+
+                for (var i=0; i<data.result.length; i++){
+                    var name = data.result[i].name;
+                    if (pattern.test(name)){
+                        data.result[i].isInfocard = true;
+                    }
+                    data.result[i].value = decodeValue(data.result[i].value, 'base64', 'utf8');
+                }
+
                 $scope.nvs_list = data.result;
 
             } else {
@@ -182,8 +192,8 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     $scope.nvs_item.typeOfData = 'utf8';
     $scope.old_type = $scope.nvs_item.typeOfData;
     $scope.nvs_item.days = 0;
-
-    $scope.nvs_item.tmpValue = b64Decode($scope.nvs_item.value);
+    
+    $scope.nvs_item.tmpValue = $scope.nvs_item.value;
 
     $scope.decodeValue = decodeValue;
 
@@ -208,7 +218,7 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     }
 
     $scope.newValue = function(){
-        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
+        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue || "", $scope.old_type, $scope.nvs_item.typeOfData);
         $scope.old_type = $scope.nvs_item.typeOfData;
     }
 
@@ -275,7 +285,7 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     }
 
     $scope.newValue = function(){
-        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
+        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue || "", $scope.old_type, $scope.nvs_item.typeOfData);
         $scope.old_type = $scope.nvs_item.typeOfData;
     }
 
