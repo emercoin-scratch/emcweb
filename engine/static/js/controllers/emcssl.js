@@ -1,8 +1,8 @@
 'use strict';
 
 
-emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal', 'EMCSSH',
-                     function SSLVerifyController($scope, $rootScope, $uibModal, EMCSSH) {
+emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal', 'EMCSSH', 'Encrypt',
+                     function SSLVerifyController($scope, $rootScope, $uibModal, EMCSSH, Encrypt) {
     $scope.addLine = function() {
         $scope.config_data.push('');
     }
@@ -63,34 +63,71 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
 
         modalInstance.result.then(
             function (result_data) {
-                $uibModal.open({
-                    templateUrl: 'certsModal.html',
-                    controller: 'CertsModalController',
-                    resolve: {
-                        data: function() {
-                            return result_data;
-                        }
-                    }
-                });
+                //
             }
         );
     };
 }]);
 
 
-emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, Cert) {
-    $scope.newcert = {daystoexpire: 365, txt:[{name:'', value: ''}]};
+emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, $uibModal, Encrypt, Cert) {
 
-    $scope.makeCert = function () {
+    function makeCert(){
         $scope.newcert.common_name = ($scope.newcert.cn.length > 0 && $scope.newcert.cn[0] == '@') ? $scope.newcert.cn.slice(1) : $scope.newcert.cn
         Cert.create($scope.newcert).$promise.then(function (data) {
             if (data.result_status) {
-                $uibModalInstance.close({
-                    cn: $scope.newcert.common_name,
-                    cert_name: data.result.name
+
+                $uibModal.open({
+                    templateUrl: 'certsModal.html',
+                    controller: 'CertsModalController',
+                    resolve: {
+                        data: function() {
+                            return {
+                                    cn: $scope.newcert.common_name,
+                                    cert_name: data.result.name
+                                    };
+                        }
+                    }
                 });
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t create new certficate: ' + data.message});
+            }
+        });
+    }
+
+    $scope.newcert = {daystoexpire: 365, txt:[{name:'', value: ''}]};
+
+    $scope.unlockWallet = function(status, callback){
+        $uibModalInstance.close();
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function () {
+                    return status;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result) {
+                callback();
+            }
+        );
+
+    }
+
+    $scope.makeCert = function () {
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                if (data.result != 3){
+                    $scope.unlockWallet(data.result, makeCert);
+                }else{
+                    makeCert();
+                }
+
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
             }
         });
     }

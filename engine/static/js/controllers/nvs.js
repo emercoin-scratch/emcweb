@@ -24,8 +24,20 @@ function decodeValue(val, old_type, new_type){
     return result;
 }
 
-emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal',
-                     function NVSController($scope, $rootScope, NVS, $uibModal) {
+
+
+emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal', 'Encrypt',
+                     function NVSController($scope, $rootScope, NVS, $uibModal, Encrypt) {
+
+    $scope.getWalletStatus = function(){
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                $scope.status = data.result;
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
+        });
+    }
 
     $scope.get_nvs = function() {
         NVS.get().$promise.then(function (data) {
@@ -40,7 +52,36 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
         });
     }
 
+    $scope.unlockWallet = function(status, callback){
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function () {
+                    return status;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result) {
+                callback();
+            }
+        );
+
+    }
+
     $scope.removeName = function (item) {
+
+        function remove(){
+            NVS.remove({name:item.name}).$promise.then(function (data) {
+                if (data.result_status) {
+                    $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your entry has been deleted'});
+                    $scope.get_nvs();
+                }
+            });
+        }
+
         var modalInstance = $uibModal.open({
             templateUrl: 'removeModal.html',
             controller: 'NVSRemoveController',
@@ -53,10 +94,16 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
 
         modalInstance.result.then(
             function (selectedItem) {
-                NVS.remove({name:item.name}).$promise.then(function (data) {
+                Encrypt.status().$promise.then(function (data) {
                     if (data.result_status) {
-                        $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your entry has been deleted'});
-                        $scope.get_nvs();
+                        if (data.result != 3){
+                            $scope.unlockWallet(data.result, remove);
+                        }else{
+                            remove();
+                        }
+
+                    } else {
+                        $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
                     }
                 });
             }
@@ -95,28 +142,27 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
         );
     };
 
-
+    $scope.getWalletStatus();
     $scope.get_nvs();
 }]);
 
 
-emcwebApp.controller('NVSEditController', function NVSEditController($scope, $rootScope, $uibModalInstance, nvs_item, NVS) {
-
+emcwebApp.controller('NVSRemoveController', function NVSRemoveController($scope, $rootScope, $uibModalInstance, Encrypt, nvs_item) {
     $scope.nvs_item = nvs_item;
-    $scope.nvs_item.typeOfData = 'utf8';
-    $scope.old_type = $scope.nvs_item.typeOfData;
-    $scope.nvs_item.days = 0;
-
-    $scope.nvs_item.tmpValue = b64Decode($scope.nvs_item.value);
-
-    $scope.decodeValue = decodeValue;
-
-    $scope.newValue = function(){
-        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
-        $scope.old_type = $scope.nvs_item.typeOfData;
-    }
 
     $scope.ok = function () {
+        $uibModalInstance.close();
+    };
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+});
+
+
+emcwebApp.controller('NVSEditController', function NVSEditController($scope, $rootScope, $uibModalInstance, $uibModal, Encrypt, nvs_item, NVS) {
+
+    function ok(){
         if ($scope.nvs_item.typeOfData != 'base64'){
             $scope.nvs_item.value = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.nvs_item.typeOfData, 'base64');
             $scope.nvs_item.typeOfData = 'base64';
@@ -130,30 +176,36 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
         }, function(httpResponse) {
             $uibModalInstance.close();
         });
-    };
+    }
 
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-    };
-});
-
-
-emcwebApp.controller('NVSRemoveController', function NVSRemoveController($scope, $uibModalInstance, nvs_item) {
     $scope.nvs_item = nvs_item;
+    $scope.nvs_item.typeOfData = 'utf8';
+    $scope.old_type = $scope.nvs_item.typeOfData;
+    $scope.nvs_item.days = 0;
 
-    $scope.ok = function () {
-        $uibModalInstance.close();
-    };
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-    };
-});
+    $scope.nvs_item.tmpValue = b64Decode($scope.nvs_item.value);
 
-
-emcwebApp.controller('NVSNewController', function NVSNewController($scope, $rootScope, $uibModalInstance, NVS) {
-    $scope.nvs_item = {days: 300, typeOfData: "utf8"};
-    $scope.old_type = "utf8"
     $scope.decodeValue = decodeValue;
+
+    $scope.unlockWallet = function(status, callback){
+        $uibModalInstance.close();
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function () {
+                    return status;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result) {
+                callback();
+            }
+        );
+
+    }
 
     $scope.newValue = function(){
         $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
@@ -161,6 +213,29 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     }
 
     $scope.ok = function () {
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                if (data.result != 3){
+                    $scope.unlockWallet(data.result, ok);
+                }else{
+                    ok();
+                }
+
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
+        });
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+
+emcwebApp.controller('NVSNewController', function NVSNewController($scope, $rootScope, $uibModalInstance, $uibModal, Encrypt, NVS) {
+
+    function ok(){
         if ($scope.nvs_item.typeOfData != 'base64'){
             $scope.nvs_item.value = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.nvs_item.typeOfData, 'base64');
             $scope.nvs_item.typeOfData = 'base64';
@@ -172,6 +247,50 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
             $uibModalInstance.close();
         }, function(httpResponse) {
             $uibModalInstance.close();
+        });
+    }
+
+    $scope.nvs_item = {days: 300, typeOfData: "utf8"};
+    $scope.old_type = "utf8"
+    $scope.decodeValue = decodeValue;
+
+    $scope.unlockWallet = function(status, callback){
+        $uibModalInstance.close();
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function () {
+                    return status;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result) {
+                callback();
+            }
+        );
+
+    }
+
+    $scope.newValue = function(){
+        $scope.nvs_item.tmpValue = $scope.decodeValue($scope.nvs_item.tmpValue, $scope.old_type, $scope.nvs_item.typeOfData);
+        $scope.old_type = $scope.nvs_item.typeOfData;
+    }
+
+    $scope.ok = function () {
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                if (data.result != 3){
+                    $scope.unlockWallet(data.result, ok);
+                }else{
+                    ok();
+                }
+
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
         });
     };
 

@@ -3,25 +3,20 @@
 emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS', 'Encrypt',
                      function WalletController($cookies, $scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS, Encrypt) {
 
-    $scope.unlockWalletModalAndPay = function (status, trans) {
+    $scope.unlockWalletModalAndPay = function (status) {
         var modalInstance = $uibModal.open({
             templateUrl: 'lockModal.html',
             controller: 'lockWalletController',
             resolve: {
                 status: function() {
                     return status
-                },
-                createTrans: function() {
-                    return trans
                 }
             }
         });
 
         modalInstance.result.then(
-            function (result=false) {
-                if (result){
-                    $scope.pay();
-                }
+            function (opened=false) {
+                $scope.pay();
                 $rootScope.$broadcast('update_wallet_status');
             }
         );
@@ -46,7 +41,7 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
             if (data.result_status) {
                 var status = data.result;
                 if (status != 3){
-                    $scope.unlockWalletModalAndPay(status, true);
+                    $scope.unlockWalletModalAndPay(status);
                 }else{
                     $scope.pay();
                 }

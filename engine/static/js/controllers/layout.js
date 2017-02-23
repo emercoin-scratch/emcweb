@@ -95,9 +95,6 @@ emcwebApp.controller('WalletStatusController', ['$scope', '$rootScope', '$uibMod
             resolve: {
                 status: function() {
                     return $scope.status
-                },
-                createTrans: function() {
-                    return false
                 }
             }
         });
@@ -149,22 +146,18 @@ emcwebApp.controller('makeEncryptController', function makeEncryptController($sc
 });
 
 
-emcwebApp.controller('lockWalletController', function lockWalletController($scope, $rootScope, $uibModalInstance, Encrypt, status, createTrans) {
+emcwebApp.controller('lockWalletController', function lockWalletController($scope, $rootScope, $uibModalInstance, Encrypt, status) {
     $scope.status = status;
 
-    $scope.fineResult = function(msg) {
+    $scope.fineResult = function(msg, opened=false) {
         $rootScope.$broadcast('send_notify', {notify: 'success', message: msg});
-        $uibModalInstance.close();
+        $rootScope.$broadcast('update_wallet_status');
+        $uibModalInstance.close(opened);
     }
 
     $scope.openWallet = function (mode) {
         Encrypt.open({'passphrase': $scope.wallet_pass}).$promise.then(function (data) {
-            if (createTrans){
-                $uibModalInstance.close(true);
-            }else{
-                $scope.fineResult('The wallet has been unlocked');
-            }
-            $rootScope.$broadcast('update_wallet_status');
+            $scope.fineResult('The wallet has been unlocked', true);
         }, function() {
             $uibModalInstance.close();
         });
