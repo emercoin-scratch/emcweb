@@ -101,6 +101,82 @@
             <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
         </div>
 </script>
+
+<script type="text/ng-template" id="certsModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">EMC SSL Certificate</h3>
+        </div>
+        <div class="modal-body">
+            Your certificate has successfully been created with ID "<b>@{$ data.cn $}</b>"
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(0)">Install certificate</button>
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(1)">Download certificate bundle</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Close</button>
+        </div>
+</script>
+
+<script type="text/ng-template" id="reNewCert.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Make a New Certificate</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" name="newModalForm">
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="key_id">Public Key ID</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.key_id.$invalid && newModalForm.key_id.$dirty}">
+                        <input class="form-control" id="key_id" name="key_id" type="text" data-ng-model="newcert.cn" required pattern="^@?[A-Za-z0-9-_]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="first_name">First Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.first_name.$invalid && newModalForm.first_name.$dirty}">
+                        <input class="form-control" id="first_name" name="first_name" type="text" data-ng-model="newcert.first_name" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="last_name">Last Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.last_name.$invalid && newModalForm.last_name.$dirty}">
+                        <input class="form-control" id="last_name" name="last_name" type="text" data-ng-model="newcert.last_name" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="alias">Alias</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.alias.$invalid && newModalForm.alias.$dirty}">
+                        <input class="form-control" id="alias" name="alias" type="text" data-ng-model="newcert.alias" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="email">E-mail</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.email.$invalid && newModalForm.email.$dirty}">
+                        <input class="form-control" id="email" name="email" type="email" data-ng-model="newcert.email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="daystoexpire">Days to Expire</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.daystoexpire.$invalid && newModalForm.daystoexpire.$dirty}">
+                        <input class="form-control" id="daystoexpire" name="daystoexpire" type="number" min="1" data-ng-model="newcert.daystoexpire" required pattern="^[0-9]+$">
+                    </div>
+                </div>
+                <div class="form-group" data-ng-repeat="txt in newcert.txt track by $index">
+                    <div class="col-md-3" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtname_{$ $index $}" name="txtname_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].name" pattern="^[A-Za-z0-9-_]+$">
+                    </div>
+                    <div class="col-md-8" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtvalue_{$ $index $}" name="txtvalue_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].value" pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                    <div class="col-md-1">
+                        <span class="btn btn-primary" data-ng-if="$index + 1 == newcert.txt.length" data-ng-click="addTxt()"><i class="fa fa-plus"></i></span>
+                        <span class="btn btn-primary" data-ng-if="$index + 1 < newcert.txt.length" data-ng-click="delTxt($index)"><i class="fa fa-minus"></i></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid" data-ng-click="makeCert()">Make</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+        </div>
+</script>
 {% endblock %}
 
 {% block content %}
@@ -117,11 +193,14 @@
                 <table class="table table-striped" data-ng-if="nvs_list">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th >Value</th>
-                            <th >Address</th>
-                            <th >Expires in, days</th>
-                            <th >Actions</th>
+                            <th class="col-sm-2">Name</th>
+                            <th class="col-sm-4" >Value</th>
+                            <th class="col-sm-2" >Address</th>
+                            <th class="col-sm-1" >Expires in, days</th>
+                            <th class="col-sm-2" >
+                                <div class="invisible-button"></div>
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,8 +210,10 @@
                             <td class="col-sm-2 wb">{$ nvs_item.address $}</td>
                             <td class="col-sm-1">{$ nvs_item.expires_in $}</td>
                             <td class="col-sm-2">
+                                <button class="btn btn-info" ng-if="nvs_item.isSSL" ng-click="reNewModal(nvs_item)"><i class="fa fa-refresh"></i></button>
+                                <div class="invisible-button" ng-if="!nvs_item.isSSL"></div>
                                 <button class="btn btn-warning" ng-click="editModal(nvs_item)"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-danger" ng-click="removeName(nvs_item)"><i class="fa fa-remove"></i></button>
+                                <button class="btn btn-danger" ng-click="removeName(nvs_item)"><i class="fa fa-remove"></i></button>   
                             </td>
                         </tr>
                     </tbody>

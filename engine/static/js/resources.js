@@ -94,7 +94,8 @@ emcwebResource.factory('Cert', function($resource, Blob) {
                     return {content: new Blob([data])};
                 }
             },
-            'create': {method: 'POST'}
+            'create': {method: 'POST'},
+            'reNew': {method: 'PUT'}
         });
 });
 

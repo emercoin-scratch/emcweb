@@ -63,7 +63,7 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
 
         modalInstance.result.then(
             function (result_data) {
-                //
+                //nope
             }
         );
     };
@@ -76,7 +76,7 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
         $scope.newcert.common_name = ($scope.newcert.cn.length > 0 && $scope.newcert.cn[0] == '@') ? $scope.newcert.cn.slice(1) : $scope.newcert.cn
         Cert.create($scope.newcert).$promise.then(function (data) {
             if (data.result_status) {
-
+                $uibModalInstance.close();
                 $uibModal.open({
                     templateUrl: 'certsModal.html',
                     controller: 'CertsModalController',
@@ -138,7 +138,6 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
     
     $scope.addTxt = function() {
         $scope.newcert.txt.push({name:'', value: ''});
-        console.log($scope.newcert.txt);
     }
 
     $scope.delTxt = function(idx) {
