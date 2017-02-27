@@ -202,7 +202,7 @@ class EMCSSLAPI(LoginResource):
             public_key = resp['result']
         
         if public_key and not public_key['value'] == name:
-            return {'result_status': False, 'Public Key ID belongs to another record'}, 400
+            return {'result_status': False, 'message': 'Public Key ID belongs to another record'}, 400
         
         temp_dir_obj = TemporaryDirectory()
 
