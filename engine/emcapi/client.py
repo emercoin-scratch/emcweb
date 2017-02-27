@@ -15,8 +15,8 @@ class EMCClient(object):
     """
     METHODS = ['getaddressesbyaccount', 'getdifficulty', 'getnewaddress', 'listtransactions', 'sendtoaddress',
                'getbalance', 'getinfo', 'signmessage', 'name_list', 'name_show', 'name_delete', 'name_new',
-               'name_update', 'backupwallet', 'encryptwallet', 'dumpprivkey', 'walletlock', 'walletpassphrase',
-               'verifymessage']
+               'name_update', 'name_history', 'backupwallet', 'encryptwallet', 'dumpprivkey', 'walletlock',
+               'walletpassphrase', 'verifymessage']
 
     def __init__(self,
                  host='localhost',

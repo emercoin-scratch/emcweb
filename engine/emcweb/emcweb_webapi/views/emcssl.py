@@ -201,6 +201,7 @@ class EMCSSLAPI(LoginResource):
         if not resp.get('error', False) and not resp['result'].get('deleted', False):
             public_key = resp['result']
         
+        # #2889
         if public_key and not public_key['value'] == name:
             return {'result_status': False, 'message': 'Public Key ID belongs to another record'}, 400
         
@@ -209,6 +210,12 @@ class EMCSSLAPI(LoginResource):
         # make info file
         file_content, index, passwd = make_info_data(args)
         
+        # #2888
+        if not all((nvs_is_valid('ssl:{}'.format(args.name)),
+                   nvs_is_valid('ssh:{}'.format(args.common_name)),
+                   nvs_is_valid('info:{}'.format(index)))):
+            return {'result_status': False, 'message': 'Required records cannot be created'}, 400
+
         # write info file
         writen = False
         file_path = os.path.join(current_app.config.get('CERTS_FOLDER'), '{0}.'.format(name))
@@ -323,6 +330,18 @@ class EMCSSLAPI(LoginResource):
         temp_dir_obj.cleanup()
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
+
+def nvs_is_valid(name):
+    resp = client.name_history(name)
+    if resp.get('error', False):
+        return True
+
+    last_status = resp['result'][-1]
+
+    if last_status.get('address_is_mine', False):
+        return True
+    else:
+        return False
 
 
 def update_or_create_nvs(name, value, expire, to_address='', valuetype=''):
