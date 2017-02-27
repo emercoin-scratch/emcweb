@@ -155,6 +155,13 @@ class EMCSSLAPI(LoginResource):
             return {'result_status': False, 'message': 'can\'t move p12 file'}, 400
 
         temp_dir_obj.cleanup()
+        
+        created, error = update_or_create_nvs('ssh:{}'.format(args.common_name), name, cert_expire + 365)
+        if error:
+            return {
+                'result_status': False,
+                'message': format(error)
+            }, 400
 
         created, error = update_or_create_nvs('ssl:{}'.format(name), 'sha256={}'.format(code), cert_expire + 365)
         if error:
@@ -163,7 +170,7 @@ class EMCSSLAPI(LoginResource):
                 'message': format(error)
             }, 400
 
-        
+
         ze_data_base64 = base64.b64encode(ze_data).decode('utf-8')
 
         created, error = update_or_create_nvs('info:{}'.format(index), ze_data_base64, cert_expire + 365, '', 'base64')
@@ -172,13 +179,7 @@ class EMCSSLAPI(LoginResource):
                 'result_status': False,
                 'message': format(error)
             }, 400
-
-        created, error = update_or_create_nvs('ssh:{}'.format(args.common_name), name, cert_expire + 365)
-        if error:
-            return {
-                'result_status': False,
-                'message': format(error)
-            }, 400
+        
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
 
