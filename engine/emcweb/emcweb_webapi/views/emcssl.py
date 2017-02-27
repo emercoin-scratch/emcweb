@@ -192,15 +192,18 @@ class EMCSSLAPI(LoginResource):
 
         args = parser.parse_args()
 
+        name = args.name
+        cert_expire = args.daystoexpire
+
         resp = client.name_show('ssh:{}'.format(args.common_name))
         public_key = None
         if not resp.get('error', False) and not resp['result'].get('deleted', False):
             public_key = resp['result']
         
-        temp_dir_obj = TemporaryDirectory()
+        if public_key and not public_key['value'] == name:
+            {'result_status': False, 'Public Key ID belongs to another record'}, 400
         
-        name = args.name
-        cert_expire = args.daystoexpire
+        temp_dir_obj = TemporaryDirectory()
 
         # make info file
         file_content, index, passwd = make_info_data(args)
