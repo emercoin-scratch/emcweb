@@ -178,6 +178,7 @@ class EMCSSLAPI(LoginResource):
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
 
+
     @staticmethod
     def put():
         parser = reqparse.RequestParser()
@@ -201,7 +202,7 @@ class EMCSSLAPI(LoginResource):
             public_key = resp['result']
         
         if public_key and not public_key['value'] == name:
-            {'result_status': False, 'Public Key ID belongs to another record'}, 400
+            return {'result_status': False, 'Public Key ID belongs to another record'}, 400
         
         temp_dir_obj = TemporaryDirectory()
 
