@@ -55,8 +55,9 @@ class EMCSSLAPI(LoginResource):
         args = parser.parse_args()
 
         resp = client.name_show('ssh:{}'.format(args.common_name))
-        if not resp.get('error', None) and not resp.get('deleted', True):
-            return {'result_status': False, 'message': 'Public Key ID already used'}, 400
+        if not resp.get('error', None):
+            if not resp.get('deleted', True):
+                return {'result_status': False, 'message': 'Public Key ID already used'}, 400
 
         cert_expire = args.daystoexpire
 
@@ -93,6 +94,9 @@ class EMCSSLAPI(LoginResource):
             passwd.encode(encoding='utf-8')
         )
 
+        if not (nvs_is_valid('ssl:{}'.format(name)) and nvs_is_valid('info:{}'.format(index))):
+            return {'result_status': False, 'message': 'Required records cannot be created'}, 400
+            
         try:
             with open(os.path.join(temp_dir_obj.name, '{0}.ze'.format(name)), mode='wb') as fd:
                 fd.write(ze_data)
