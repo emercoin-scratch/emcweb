@@ -54,10 +54,8 @@ class EMCSSLAPI(LoginResource):
 
         args = parser.parse_args()
 
-        resp = client.name_show('ssh:{}'.format(args.common_name))
-        if not resp.get('error', False):
-            if not resp['result'].get('deleted', False):
-                return {'result_status': False, 'message': 'Public Key ID already used'}, 400
+        if nvs_is_exists('ssh:{}'.format(args.common_name)):
+            return {'result_status': False, 'message': 'Required records cannot be created'}, 400
 
         cert_expire = args.daystoexpire
 
@@ -94,7 +92,9 @@ class EMCSSLAPI(LoginResource):
             passwd.encode(encoding='utf-8')
         )
 
-        if not (nvs_is_valid('ssl:{}'.format(name)) and nvs_is_valid('info:{}'.format(index))):
+        if (nvs_is_exists('ssl:{}'.format(name)) or
+            nvs_is_exists('info:{}'.format(index)) or not 
+            (nvs_is_valid('ssl:{}'.format(name)) and nvs_is_valid('info:{}'.format(index)))):
             return {'result_status': False, 'message': 'Required records cannot be created'}, 400
             
         try:
@@ -334,6 +334,16 @@ class EMCSSLAPI(LoginResource):
         temp_dir_obj.cleanup()
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
+
+def nvs_is_exists(name):
+    resp = client.name_show(name)
+    if resp.get('error', False):
+        return False
+    elif resp['result'].get('deleted', False):
+        return False
+    else:
+        return True
+
 
 def nvs_is_valid(name):
     resp = client.name_history(name)
