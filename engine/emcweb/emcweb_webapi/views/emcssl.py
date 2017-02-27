@@ -55,8 +55,8 @@ class EMCSSLAPI(LoginResource):
         args = parser.parse_args()
 
         resp = client.name_show('ssh:{}'.format(args.common_name))
-        if not resp.get('error', None):
-            if not resp.get('deleted', True):
+        if not resp.get('error', False):
+            if not resp['result'].get('deleted', False):
                 return {'result_status': False, 'message': 'Public Key ID already used'}, 400
 
         cert_expire = args.daystoexpire
@@ -156,28 +156,28 @@ class EMCSSLAPI(LoginResource):
 
         temp_dir_obj.cleanup()
 
-        resp = client.name_new('ssl:{}'.format(name), 'sha256={}'.format(code), cert_expire + 365)
-        if resp.get('error', False):
+        created, error = update_or_create_nvs('ssl:{}'.format(name), 'sha256={}'.format(code), cert_expire + 365)
+        if error:
             return {
                 'result_status': False,
-                'message': format(resp['error']['message'])
+                'message': format(error)
             }, 400
 
         
         ze_data_base64 = base64.b64encode(ze_data).decode('utf-8')
 
-        resp = client.name_new('info:{}'.format(index), ze_data_base64, cert_expire + 365, '', 'base64')
-        if resp.get('error', False):
+        created, error = update_or_create_nvs('info:{}'.format(index), ze_data_base64, cert_expire + 365, '', 'base64')
+        if error:
             return {
                 'result_status': False,
-                'message': format(resp['error']['message'])
+                'message': format(error)
             }, 400
 
-        resp = client.name_new('ssh:{}'.format(args.common_name), name, cert_expire + 365)
-        if resp.get('error', False):
+        created, error = update_or_create_nvs('ssh:{}'.format(args.common_name), name, cert_expire + 365)
+        if error:
             return {
                 'result_status': False,
-                'message': format(resp['error']['message'])
+                'message': format(error)
             }, 400
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
