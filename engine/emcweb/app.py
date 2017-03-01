@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 
 import importlib
 import os
+import re
 
-from flask import Flask, render_template, redirect, url_for, flash
+from emcweb.config import config_flask
+from flask import Flask, render_template, redirect, url_for, flash, request
 from sqlalchemy.exc import DBAPIError, ProgrammingError, OperationalError
 
 from emcweb.exts import connection, migrate, login_manager, celery
@@ -16,10 +18,41 @@ __author__ = 'Aspanta Limited'
 __email__ = 'info@aspanta.com'
 
 
+def create_flask_config(req, **kwargs):
+    error_msg = 'test'
+    args = req.form
+
+    for key, value in kwargs.items():
+        if key=='db':
+            value['name'] = args['databasename']
+            value['host'] = args['databasehost']
+            value['port'] = args['databaseport']
+            value['username'] = args['databaseusername']
+            value['password'] = args['databasepassword']
+        elif key == 'account':
+            value['username'] = args['username']
+            value['password'] = args['password']
+        elif args.get(key, None):
+            kwargs[key] = args[key]
+    
+    db = kwargs['db']
+    kwargs['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(
+                                                        db['username'],
+                                                        db['password'],
+                                                        db['host'],
+                                                        db['port'],
+                                                        db['name'] )
+    kwargs['CELERY_RESULT_BACKEND'] = kwargs['BROKER_URL']
+    result, error_msg = config_flask(kwargs)
+
+    return result, error_msg
+
+
 class FlaskApp(object):
     def __init__(self):
         self.flask_app = None
         self.celery = None
+
 
     def create_app(self, config=None):
         self.flask_app = Flask(
@@ -27,12 +60,13 @@ class FlaskApp(object):
             static_url_path='/static',
             static_folder=os.path.join(os.path.dirname(__file__), '..', 'static')
         )
-
-        if not os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')):
+        
+        config_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')
+        if not os.path.exists(config_file):
             self.__set_non_config_error()
             return self.flask_app
 
-        self.flask_app.config.from_pyfile(os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py'))
+        self.flask_app.config.from_pyfile(config_file)
         if config:
             self.flask_app.config.from_pyfile(config)
 
@@ -49,7 +83,44 @@ class FlaskApp(object):
 
         @self.flask_app.route('/')
         def index():
-            return render_template('err_conf.html', message='System is not configured')
+            return redirect(url_for('config'))
+
+        @self.flask_app.route('/config', methods=['GET', 'POST'])
+        def config():
+            config_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')
+            if not os.path.exists(config_file):
+                default_settings = {
+                                    'SQLALCHEMY_DATABASE_URI': '',
+                                    'BROKER_URL': 'redis://localhost:6379/0',
+                                    'CELERY_RESULT_BACKEND': 'redis://localhost:6379/0',
+                                    'EMC_SERVER_HOST': 'localhost',
+                                    'EMC_SERVER_PORT': 6662,
+                                    'EMC_SERVER_USER': '',
+                                    'EMC_SERVER_PASSWORD': '',
+                                    'EMC_SERVER_PROTO': 'https',
+                                    'db': {
+                                           'name': 'emcwebdb',
+                                           'host': 'localhost',
+                                           'port': 3306,
+                                           'username': '',
+                                           'password': '',
+                                           },
+                                    'account':{
+                                               'username': '',
+                                               'password': '',
+                                            },
+                                    }
+
+                if request.method == 'GET':
+                    return render_template('config.html', **default_settings)
+                else:
+                    result, message = create_flask_config(request, **default_settings)
+                    if result:
+                        return render_template('config.html', **{'created': True})
+                    else:
+                        default_settings['error_msg'] = message
+                        return render_template('config.html', **default_settings)
+
 
     def __init_exts(self):
         connection.init_app(self.flask_app)
