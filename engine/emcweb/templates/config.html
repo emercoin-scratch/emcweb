@@ -11,8 +11,19 @@
     {% if created %}
     <div class="one-column">
     <div class="logo"></div>
-    <h1 class="pink upper">Please restart your web server</h1>
+    <h1 class="pink upper">{% if message %}{{ message }}{% else %} Please wait while you will be redirected on <a href="/">Index page</a>{% endif %}</h1>
     </div>
+    {% if not message %}
+        <script>
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > 5000){
+                    break;
+                }
+            }
+            window.location.replace("/");
+        </script>
+    {% endif %}
     {% else %}
         <div class="one-column">
             <div class="logo"></div>

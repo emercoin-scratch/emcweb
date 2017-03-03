@@ -15,6 +15,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
 
+from subprocess import check_call
+
 from emcapi import EMCClient
 from celery import Celery
 
@@ -187,6 +189,11 @@ def config_flask(kwargs):
         f.close()
     except:
         return False, 'Error write config file on disk'
+
+    try:
+        check_call(['touch', '/var/lib/emcweb/wsgi.py'], timeout=300)
+    except:
+        return True, "Failed restart wsgi application. Please restart your web server manualy."
 
     return True, ''
 

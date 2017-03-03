@@ -116,7 +116,7 @@ class FlaskApp(object):
                 else:
                     result, message = create_flask_config(request, **default_settings)
                     if result:
-                        return render_template('config.html', **{'created': True})
+                        return render_template('config.html', **{'created': True, 'message': message})
                     else:
                         default_settings['error_msg'] = message
                         return render_template('config.html', **default_settings)
