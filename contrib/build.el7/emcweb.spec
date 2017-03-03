@@ -9,7 +9,7 @@ URL:            http://www.emercoin.com
 Source0:        %{name}.tar.gz
 BuildArch:      noarch
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires:       emercoin emcssh pwgen openssl openssl-devel httpd httpd-devel mod_ssl python34 python34-pip python34-devel supervisor mysql gcc
+Requires:       emercoin emcssh pwgen openssl openssl-devel httpd httpd-devel mod_ssl python34 python34-pip python34-devel mysql gcc supervisor redis mariadb-server
 
 %description
 Emercoin Web Wallet
