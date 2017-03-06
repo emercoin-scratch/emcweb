@@ -153,9 +153,9 @@ def config_flask(kwargs):
 
     if kwargs['account'].get('password', False) and kwargs['account'].get('password2', False):
         if not kwargs['account']['password'] == kwargs['account']['password2']:
-            return False, 'Pasword and confirm password do not match'
+            return False, 'Password and confirm password do not match'
     else:
-        return False, 'Pasword and confirm password can not be empty'
+        return False, 'Password and confirm password can not be empty'
 
     if not os.path.exists(ex_file):
         return False, 'Not exists file "flask.py.example"'
