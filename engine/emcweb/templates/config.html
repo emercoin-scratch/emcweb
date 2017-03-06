@@ -45,6 +45,11 @@
                     <span class="bar"></span>
                     <label class="upper">Password *</label>
                 </div>
+                <div class="txt-input txt-pink">
+                    <input type="password" name="password2" required>
+                    <span class="bar"></span>
+                    <label class="upper">Confirm Password *</label>
+                </div>
 
                 <h3 class="black upper">Database settings</h3>
                 <div class="txt-input txt-pink">
@@ -95,11 +100,10 @@
                     <label class="upper">port</label>
                 </div>
                 <div class="txt-input txt-pink">
-                    <input type="text" name="EMC_SERVER_PROTO" list="protocols" required data-pattern="^(http|https)$" value="{{ EMC_SERVER_PROTO }}">
-                    <datalist id="protocols">
-                        <option selected value="https">
-                        <option value="http">
-                    </datalist>
+                    <select name="EMC_SERVER_PROTO" required>
+                        <option selected value="https">https</option>
+                        <option value="http">http</option>
+                    </select>
                     <span class="bar"></span>
                     <label class="upper">protocol *</label>
                 </div>

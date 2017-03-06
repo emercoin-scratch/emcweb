@@ -18,7 +18,7 @@ __author__ = 'Aspanta Limited'
 __email__ = 'info@aspanta.com'
 
 
-def create_flask_config(req, **kwargs):
+def create_flask_config(req, kwargs):
     error_msg = 'test'
     args = req.form
 
@@ -32,6 +32,7 @@ def create_flask_config(req, **kwargs):
         elif key == 'account':
             value['username'] = args['username']
             value['password'] = args['password']
+            value['password2'] = args['password2']
         elif args.get(key, None):
             kwargs[key] = args[key]
     
@@ -108,13 +109,14 @@ class FlaskApp(object):
                                     'account':{
                                                'username': '',
                                                'password': '',
+                                               'password2': '',
                                             },
                                     }
 
                 if request.method == 'GET':
                     return render_template('config.html', **default_settings)
                 else:
-                    result, message = create_flask_config(request, **default_settings)
+                    result, message = create_flask_config(request, default_settings)
                     if result:
                         return render_template('config.html', **{'created': True, 'message': message})
                     else:

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ -f /var/lib/emcweb/.restart-providers ] && {
+  systemctl restart apache2
+  supervisorctl restart celery
+  rm -f /var/lib/emcweb/.restart-providers
+}
+sleep 5

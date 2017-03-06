@@ -116,9 +116,9 @@ def create_credentials(username, password, sess):
 
 def test_celery_connection(kwargs):
     error_str = ''
-
+    
     celery.config_from_object(kwargs)
-        
+
     try:
         test_celery.delay()
     except:
@@ -151,6 +151,12 @@ def config_flask(kwargs):
     ex_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py.example')
     flask_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')
 
+    if kwargs['account'].get('password', False) and kwargs['account'].get('password2', False):
+        if not kwargs['account']['password'] == kwargs['account']['password2']:
+            return False, 'Pasword and confirm password do not match'
+    else:
+        return False, 'Pasword and confirm password can not be empty'
+
     if not os.path.exists(ex_file):
         return False, 'Not exists file "flask.py.example"'
 
@@ -170,18 +176,19 @@ def config_flask(kwargs):
                     repr(kwargs.get(match_obj.group(1), '')))
         
         new_file.append(line)
-    
-    res, error = test_sql_connection(kwargs)
-    if not res:
-        return False, error
 
-    res, error = test_celery_connection(kwargs)
-    if not res:
-        return False, error
+    # now celery not working
+    # res, error = test_celery_connection(kwargs)
+    # if not res:
+    #     return False, 'Celery: {}'.format(error)
     
     res, error = test_emc_connection(kwargs)
     if not res:
-        return False, error
+        return False, 'EMC: {}'.format(error)
+
+    res, error = test_sql_connection(kwargs)
+    if not res:
+        return False, 'SQL: {}'.format(error)
 
     try:
         f = open(flask_file, 'w')
@@ -195,12 +202,18 @@ def config_flask(kwargs):
     except:
         return True, "Failed restart wsgi application. Please restart your web server manualy."
 
+    try:
+        #for celery start
+        check_call(['touch', '/var/lib/emcweb/.restart-providers'], timeout=300)
+    except:
+        return True, "Failed restart celery application. Please restart celery manualy."
+    
     return True, ''
 
 def generate_secret_key(length):
     result = binascii.hexlify(Random.get_random_bytes(length // 2))
 
     if result[0] == 48:
-        result = b'f' + random_name[1:]
+        result = b'f' + result[1:]
 
     return result.decode()

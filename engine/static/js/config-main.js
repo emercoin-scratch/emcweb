@@ -23,17 +23,26 @@ function fieldsValid(){
             }
         }
     })
-
     return all == accepted;
 }
 
-
+function passwordsValid(){
+    if ($('input[name="password"]').val() != $('input[name="password2"]').val()){
+        $('input[name="password2"]').addClass('invalid-input');
+        return false;
+    }else{
+        $('input[name="password2"]').removeClass('invalid-input');
+        return true;
+    }
+}
 
 $(document).ready(function() {
     
     $('input').keyup(function() {
-
-        if (fieldsValid()){
+        var fValid = fieldsValid();
+        var pValid = passwordsValid();
+        
+        if (fValid && pValid){
             $('#submit').removeClass('btn-pink-inactive').addClass('btn-pink-active').removeAttr('disabled')
         }
         else{
