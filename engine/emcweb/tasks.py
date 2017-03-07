@@ -132,26 +132,3 @@ def create_empty_wallet(wallet_name):
     start_emercoind()
     return True
 
-@celery.task
-def check_wallet_symlink(wallet_name):
-    wallet_dat = path.join(flask_app.flask_app.config['EMC_HOME'], 'wallet.dat')
-    
-    if path.islink(wallet_dat):
-        return 0
-
-    wallet_new = path.join(flask_app.flask_app.config['UPLOAD_FOLDER'], wallet_name)
-
-    stop_emercoind()
-    
-    move(wallet_dat, wallet_new)
-    
-    symlink(wallet_new, wallet_dat)
-    
-    start_emercoind()
-
-    for i in range(60):
-        if check_emercoind_process():
-            return 1
-        sleep(1)
-
-    return -1

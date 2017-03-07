@@ -16,7 +16,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
 # from emcweb.login.models import Users, Credentials
 from subprocess import check_call
-from shutil import chown
+from shutil import chown, move
 from emcapi import EMCClient
 from celery import Celery
 
@@ -35,6 +35,13 @@ class Credentials(Base):
 class Users(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
+
+class Wallets(Base):
+    __tablename__ = 'wallets'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    name = Column(String(255), nullable=False)
+    path = Column(String(255), nullable=False)
 
 
 @celery.task
@@ -63,7 +70,7 @@ def test_sql_connection(sess):
     return True, ''
 
 
-def create_credentials(sess, kwargs):
+def create_credentials_wallet(sess, wallet_name, wallet_path, kwargs):
     error_str = ''
     username = kwargs['account']['username']
     password = kwargs['account']['password']
@@ -114,6 +121,15 @@ def create_credentials(sess, kwargs):
     except:
         return False, 'Error creating credentials "{}" already exists'.format(username)
     
+    new_wallet = Wallets(user_id=max_id,
+                               name=wallet_name,
+                               path=wallet_path)
+    sess.add(new_wallet)
+    try:
+        sess.commit()
+    except:
+        return False, 'Error creating wallet.'
+
     return True, ''
 
 
@@ -156,6 +172,9 @@ def config_flask(kwargs):
 
     ex_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py.example')
     flask_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')
+    emc_home = ''
+    upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads')
+    wallet_name = 'Default'
 
     if kwargs['account'].get('password', False) and kwargs['account'].get('password2', False):
         if not kwargs['account']['password'] == kwargs['account']['password2']:
@@ -175,20 +194,25 @@ def config_flask(kwargs):
     for line in old_file: 
         match_obj = key_pattern.search(line)
         
-        if match_obj and len(match_obj.groups()) == 2 \
-           and kwargs.get(match_obj.group(1), False):
+        if match_obj and len(match_obj.groups()) == 2:
+            if kwargs.get(match_obj.group(1), False):
             
-            line = '{0} = {1}'.format(
-                    match_obj.group(1),
-                    repr(kwargs.get(match_obj.group(1), '')))
+                line = '{0} = {1}'.format(
+                        match_obj.group(1),
+                        repr(kwargs.get(match_obj.group(1), '')))
+
+            if match_obj.group(1) == 'EMC_HOME':
+               emc_home = match_obj.group(2).replace('"', '').replace("'", "")
+
 
         new_file.append(line)
 
-    # now celery not working
-    # res, error = test_celery_connection(kwargs)
-    # if not res:
-    #     return False, 'Celery: {}'.format(error)
-    
+    wallet_dat = os.path.realpath(os.path.join(emc_home, 'wallet.dat'))
+    upload_file_path = os.path.realpath(os.path.join(upload_folder, wallet_name))
+
+    if not os.path.islink(wallet_dat):
+        res, error = check_wallet_symlink(wallet_dat, upload_file_path)
+
     res, error = test_emc_connection(kwargs)
     if not res:
         return False, 'EMC: {}'.format(error)
@@ -216,7 +240,7 @@ def config_flask(kwargs):
     except:
         return False, 'Error creating database'
     
-    res, error = create_credentials(sql_session, kwargs)
+    res, error = create_credentials_wallet(sql_session, wallet_name, upload_file_path, kwargs)
     if not res:
         return False, 'Credentials: {}'.format(error)
     
@@ -240,3 +264,15 @@ def generate_secret_key(length):
         result = b'f' + result[1:]
 
     return result.decode()
+
+def check_wallet_symlink(wallet_dat, wallet_new):
+    
+    try:
+        move(wallet_dat, wallet_new)
+        os.symlink(wallet_new, wallet_dat)
+        os.chmod(wallet_dat,  0o600)
+        os.chmod(wallet_new,  0o750)
+    except:
+        return False, 'Error moving file wallet.dat'
+
+    return True, ''

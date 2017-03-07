@@ -16,11 +16,8 @@ from wtforms.validators import DataRequired
 from . import module_bp
 from emcweb.emcweb.utils import get_block_status
 from emcweb.utils import apply_db_settings
-from emcweb.tasks import check_wallet_symlink
-from emcweb.config import generate_secret_key
 from emcweb.exts import connection
 
-from emcweb.emcweb_webapi.models import Wallets
 
 class LoginForm(Form):
     login = StringField('Login', validators=[DataRequired()])
@@ -41,23 +38,7 @@ def index():
     if status != 2:
         return render_template('blocks.html')
 
-    serial = request.environ.get('SSL_CLIENT_M_SERIAL')   
-    
-    wallet_dat = os.path.join(current_app.config['EMC_HOME'], 'wallet.dat')
-    
-    if current_user.is_authenticated and not os.path.islink(wallet_dat):
-      new_wallet_name = 'Default' # generate_secret_key(8)
-      new_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_wallet_name)
-
-      result = check_wallet_symlink.delay(new_wallet_name)
-      while not result.ready():
-        sleep(1)
-
-      new_wallet = Wallets(user_id=current_user.id,
-                               name=new_wallet_name,
-                               path=new_file_path)
-      connection.session.add(new_wallet)
-      connection.session.commit()
+    serial = request.environ.get('SSL_CLIENT_M_SERIAL')
 
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
