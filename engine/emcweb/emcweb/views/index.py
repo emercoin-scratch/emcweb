@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 import os
 
+from time import sleep
+
 from flask import (render_template, redirect, app,
                    url_for, request, current_app,
                    make_response, session)
@@ -41,16 +43,21 @@ def index():
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')   
     
-    wallet_name = generate_secret_key(8)
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], wallet_name)
+    wallet_dat = os.path.join(current_app.config['EMC_HOME'], 'wallet.dat')
+    
+    if current_user.is_authenticated and not os.path.islink(wallet_dat):
+      new_wallet_name = generate_secret_key(8)
+      new_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_wallet_name)
 
-    result = check_wallet_symlink.delay(wallet_name)
-    if result.get(timeout=500) > 0:
-        new_wallet = Wallets(user_id=current_user.id,
-                                 name=wallet_name,
-                                 path=file_path)
-        connection.session.add(new_wallet)
-        connection.session.commit()
+      result = check_wallet_symlink.delay(new_wallet_name)
+      while not result.ready():
+        sleep(1)
+
+      new_wallet = Wallets(user_id=current_user.id,
+                               name=new_wallet_name,
+                               path=new_file_path)
+      connection.session.add(new_wallet)
+      connection.session.commit()
 
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
