@@ -69,18 +69,17 @@ h3 {
 }
 
 select {
-  border: 1px solid #111;
+  border: none;
   background: transparent;
   width: 384px;
   padding: 5px 35px 5px 5px;
   font-size: 16px;
-  border: 1px solid #ccc;
   height: 34px;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   background: url('../img/keyboard_arrow_down_black_24dp_1x.png') 96% / 5% no-repeat;
-
+  border-bottom: 0.0625em solid #ce93d8 !important;
 }
 
 .header-wide {

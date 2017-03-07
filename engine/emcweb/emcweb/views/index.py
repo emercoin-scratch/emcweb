@@ -46,7 +46,7 @@ def index():
     wallet_dat = os.path.join(current_app.config['EMC_HOME'], 'wallet.dat')
     
     if current_user.is_authenticated and not os.path.islink(wallet_dat):
-      new_wallet_name = generate_secret_key(8)
+      new_wallet_name = 'Default' # generate_secret_key(8)
       new_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], new_wallet_name)
 
       result = check_wallet_symlink.delay(new_wallet_name)
