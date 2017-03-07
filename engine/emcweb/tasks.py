@@ -17,6 +17,8 @@ def check_emercoind_process():
         check_output(['systemctl', 'status', 'emercoind.service'], universal_newlines=True, timeout=300)
     except CalledProcessError:
         return False
+    except UnicodeDecodeError:
+        return True
 
     return True
 

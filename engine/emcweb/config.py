@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
-
+# from emcweb.login.models import Users, Credentials
 from subprocess import check_call
 
 from emcapi import EMCClient
@@ -42,17 +42,32 @@ def test_celery(data):
     print(data)
 
 
-def test_sql_connection(kwargs):
-    error_str = ''
+def get_sql_session(kwargs):
     database_uri = kwargs['SQLALCHEMY_DATABASE_URI']
-    username = kwargs['account']['username']
-    password = kwargs['account']['password']
 
     engine = create_engine(database_uri)
     session_cls = sessionmaker(bind=engine)
     sess = session_cls()
     sess._model_changes = {}
 
+    return sess
+
+def test_sql_connection(sess):
+    error_str = ''
+    
+    try:
+        result = sess.execute('SHOW VARIABLES LIKE "%version%";')
+    except:
+        return False, 'Database connection refused'
+    
+    return True, ''
+
+
+def create_credentials(sess, kwargs):
+    error_str = ''
+    username = kwargs['account']['username']
+    password = kwargs['account']['password']
+    
     try:
         result = sess.execute('select * from alembic_version')
     except OperationalError:
@@ -66,18 +81,6 @@ def test_sql_connection(kwargs):
     
     if error_str:
         return False, error_str
-    else:
-        pass
-        res, error = create_credentials(username, password, sess)
-        if not res:
-            return False, error
-        else:
-            return True, ''
-    return False, error_str
-
-
-def create_credentials(username, password, sess):
-    error_str = ''
 
     try:
         result = sess.execute('select * from credentials where name="{}"'.format(username))
@@ -189,7 +192,8 @@ def config_flask(kwargs):
     if not res:
         return False, 'EMC: {}'.format(error)
 
-    res, error = test_sql_connection(kwargs)
+    sql_session = get_sql_session(kwargs)
+    res, error = test_sql_connection(sql_session)
     if not res:
         return False, 'SQL: {}'.format(error)
 
@@ -200,6 +204,15 @@ def config_flask(kwargs):
     except:
         return False, 'Error write config file on disk'
 
+    try:
+        check_call(['python3', '/var/lib/emcweb/manage.py', 'db', 'upgrade'], timeout=300)
+    except:
+        return False, 'Error creating database'
+    
+    res, error = create_credentials(sql_session, kwargs)
+    if not res:
+        return False, 'Credentials: {}'.format(error)
+    
     try:
         check_call(['touch', '/var/lib/emcweb/wsgi.py'], timeout=300)
     except:
