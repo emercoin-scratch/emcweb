@@ -56,9 +56,9 @@ def test_sql_connection(kwargs):
     try:
         result = sess.execute('select * from alembic_version')
     except OperationalError:
-        error_str = 'Database connection refused'
+        return False, 'Database connection refused'
     except ProgrammingError:
-        error_str = 'Database is not configured.'
+        return False, 'Database is not configured.'
 
     strings = [row[0] for row in result]
     if len(strings) < 1:
@@ -137,8 +137,11 @@ def test_emc_connection(kwargs):
                            password=kwargs['EMC_SERVER_PASSWORD'],
                            protocol=kwargs['EMC_SERVER_PROTO'],
                            verify=False)
-
-    info = emc_client.getinfo()
+    try:
+        info = emc_client.getinfo()
+    except:
+        return False, 'Connection refused'
+        
     if info.get('error', False):
         return False, info['error']['message']
     else:
