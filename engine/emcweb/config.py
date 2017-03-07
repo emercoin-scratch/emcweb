@@ -16,7 +16,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
 # from emcweb.login.models import Users, Credentials
 from subprocess import check_call
-
+from shutil import chown
 from emcapi import EMCClient
 from celery import Celery
 
@@ -168,7 +168,7 @@ def config_flask(kwargs):
 
     old_file = open(ex_file, 'r').read().split('\n')
     new_file = []
-    
+
     kwargs['SECRET_KEY'] = generate_secret_key(32)
     kwargs['WTF_CSRF_SECRET_KEY'] = generate_secret_key(32)
 
@@ -177,10 +177,11 @@ def config_flask(kwargs):
         
         if match_obj and len(match_obj.groups()) == 2 \
            and kwargs.get(match_obj.group(1), False):
+            
             line = '{0} = {1}'.format(
                     match_obj.group(1),
                     repr(kwargs.get(match_obj.group(1), '')))
-        
+
         new_file.append(line)
 
     # now celery not working
@@ -196,6 +197,12 @@ def config_flask(kwargs):
     res, error = test_sql_connection(sql_session)
     if not res:
         return False, 'SQL: {}'.format(error)
+    
+    try:
+        check_call(['touch', '/etc/emercoin/emcssh.keys.d/emcweb'], timeout=300)
+        chown('/etc/emercoin/emcssh.keys.d/emcweb', 'emc', 'emc')
+    except:
+        return False, "Failed creating file for emcssh.keys. {}".format(sys.exc_info())
 
     try:
         f = open(flask_file, 'w')
