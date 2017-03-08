@@ -97,21 +97,26 @@ def create_credentials_wallet(sess, wallet_name, wallet_path, kwargs):
     if result and result.rowcount > 0:
         return False, 'EMC WEB user "{}" already exists'.format(username)
 
-    new_user = Users()
-    sess.add(new_user)
-    try:
-        sess.commit()
-    except:
-        return False, 'Error creating user'
 
     try:
         result = sess.execute('select max(id) AS last_id from users')
     except:
         return False, 'Not found table users in database'
-   
+    
+    max_id = -1
+
     for row in result:
         max_id = row[0]
         break
+
+    if max_id < 0:
+        new_user = Users(id=1)
+        sess.add(new_user)
+        try:
+            sess.commit()
+        except:
+            return False, 'Error creating user'
+        max_id = 1
 
     new_credentials = Credentials(user_id = max_id, name=username, password=md5(password.encode()).hexdigest())
     sess.add(new_credentials)
