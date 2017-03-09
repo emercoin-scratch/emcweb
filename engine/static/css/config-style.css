@@ -451,6 +451,10 @@ body.yellow-bg .error {
 	color: #e1bee7;
 }
 
+.btn-pink-inactive:hover {
+	cursor: default;
+}
+
 .btn-pink-active {
 	background-color: #ba68c8;
 	color: #fff;
