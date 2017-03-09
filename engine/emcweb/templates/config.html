@@ -27,7 +27,7 @@
     {% else %}
         <div class="one-column">
             <div class="logo"></div>
-            <h1 class="pink upper">EMCWEB config</h1>
+            <h1 class="green upper">EMCWEB config</h1>
             <div class="error black {% if error_msg %} active {% endif %}">
                 <h1><i class="material-icons">warning</i>Error</h1>
                 <span>{{ error_msg }}</span>
@@ -35,71 +35,71 @@
             <form id="config" novalidate action="{{ url_for('config') }}" method="post" autocomplete="off">
 
                 <h3 class="black upper">Account settings</h3>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="username" required data-pattern="^[\w\d-_]+$" value="{{ account.username }}">
                     <span class="bar"></span>
                     <label class="upper">login *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="password" name="password" required>
                     <span class="bar"></span>
                     <label class="upper">Password *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="password" name="password2" required>
                     <span class="bar"></span>
                     <label class="upper">Confirm Password *</label>
                 </div>
 
                 <h3 class="black upper">Database settings</h3>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="databasehost" data-pattern="^[\w\d-_:\/\.]+$" value="{{ db.host }}">
                     <span class="bar"></span>
                     <label class="upper">database host</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="databaseport" data-pattern="^[\d]{2,5}$" value="{{ db.port }}">
                     <span class="bar"></span>
                     <label class="upper">database port</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="databasename" required data-pattern="^[\w\d-_]+$" value="{{ db.name }}">
                     <span class="bar"></span>
                     <label class="upper">database name *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="databaseusername" required data-pattern="^[\w\d-_]+$" value="{{ db.username }}">
                     <span class="bar"></span>
                     <label class="upper">database user *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="password" name="databasepassword" required>
                     <span class="bar"></span>
                     <label class="upper">Database password *</label>
                 </div>
 
                 <h3 class="black upper">Emercoin settings</h3>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="EMC_SERVER_USER" required data-pattern="^[\w\d-_]+$" value="{{ EMC_SERVER_USER }}">
                     <span class="bar"></span>
                     <label class="upper">username *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="password" name="EMC_SERVER_PASSWORD" required>
                     <span class="bar"></span>
                     <label class="upper">user password *</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="EMC_SERVER_HOST" data-pattern="^[\w\d-_:\/\.]+$" value="{{ EMC_SERVER_HOST }}">
                     <span class="bar"></span>
                     <label class="upper">host</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <input type="text" name="EMC_SERVER_PORT" data-pattern="^[\d]{2,5}$" value="{{ EMC_SERVER_PORT }}">
                     <span class="bar"></span>
                     <label class="upper">port</label>
                 </div>
-                <div class="txt-input txt-pink">
+                <div class="txt-input txt-green">
                     <select name="EMC_SERVER_PROTO" required>
                         <option value="https">https</option>
                         <option value="http">http</option>
@@ -108,7 +108,7 @@
                     <label class="upper">protocol *</label>
                 </div>
 
-                <input class="btn btn-pink-inactive upper" disabled id="submit" type="submit" value="Apply">
+                <input class="btn btn-green-inactive upper" disabled id="submit" type="submit" value="Apply">
             </form>
         </div>
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>

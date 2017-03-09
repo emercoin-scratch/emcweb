@@ -456,6 +456,16 @@ body.yellow-bg .error {
 	color: #fff;
 }
 
+.btn-green-inactive {
+	background-color: #d2f9ef;
+	color: #1dc5a3;
+}
+
+.btn-green-active {
+	background-color: #1ab394;
+	color: #fff;
+}
+
 .btn-black-inactive {
 	background-color: #bdbdbd;
 	color: #fff;
