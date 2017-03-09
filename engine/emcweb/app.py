@@ -43,7 +43,6 @@ def create_flask_config(req, kwargs):
                                                         db['host'],
                                                         db['port'],
                                                         db['name'] )
-    kwargs['CELERY_RESULT_BACKEND'] = kwargs['BROKER_URL']
     result, error_msg = config_flask(kwargs)
 
     return result, error_msg
@@ -92,8 +91,6 @@ class FlaskApp(object):
             if not os.path.exists(config_file):
                 default_settings = {
                                     'SQLALCHEMY_DATABASE_URI': '',
-                                    'BROKER_URL': 'redis://localhost:6379/0',
-                                    'CELERY_RESULT_BACKEND': 'redis://localhost:6379/0',
                                     'EMC_SERVER_HOST': 'localhost',
                                     'EMC_SERVER_PORT': 6662,
                                     'EMC_SERVER_USER': '',

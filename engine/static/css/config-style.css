@@ -81,7 +81,14 @@ h3 {
   background: url('../img/keyboard_arrow_down_black_24dp_1x.png') 96% / 5% no-repeat;
   text-align: center;
   text-align-last: center;
-  border-bottom: 0.0625em solid #ce93d8 !important;
+}
+
+.txt-pink select{
+	border-bottom: 0.0625em solid #ce93d8 !important;
+}
+
+.txt-green select{
+	border-bottom: 0.0625em solid #1ab394 !important;
 }
 
 .txt-input select:focus,
@@ -292,6 +299,17 @@ body.yellow-bg .error {
 .txt-pink .bar:before,
 .txt-pink .bar:after {
 	background: #ce93d8;
+}
+
+.txt-green input {
+	border-bottom: 0.0625em solid #1ab394 !important;
+}
+.txt-green label {
+	color: #1ab394;
+}
+.txt-green .bar:before,
+.txt-green .bar:after {
+	background: #1ab394;
 }
 
 .txt-gray input {

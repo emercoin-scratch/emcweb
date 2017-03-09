@@ -14,14 +14,13 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
-# from emcweb.login.models import Users, Credentials
+
 from subprocess import check_call
 from shutil import chown, move
 from emcapi import EMCClient
 from celery import Celery
 
 
-celery = Celery('emcweb')
 Base = declarative_base()
 
 
@@ -43,10 +42,6 @@ class Wallets(Base):
     name = Column(String(255), nullable=False)
     path = Column(String(255), nullable=False)
 
-
-@celery.task
-def test_celery(data):
-    print(data)
 
 
 def get_sql_session(kwargs):
@@ -137,21 +132,6 @@ def create_credentials_wallet(sess, wallet_name, wallet_path, kwargs):
 
     return True, ''
 
-
-def test_celery_connection(kwargs):
-    error_str = ''
-    
-    celery.config_from_object(kwargs)
-
-    try:
-        test_celery.delay()
-    except:
-        error_str = 'Celery transport connection refused'
-    
-    if error_str:
-        return False, error_str
-    else:
-        return True, ''
 
 def test_emc_connection(kwargs):
     emc_client = EMCClient(
