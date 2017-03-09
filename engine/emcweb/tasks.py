@@ -14,11 +14,11 @@ from .utils import apply_db_settings
 
 def check_emercoind_process():
     try:
-        check_output(['systemctl', 'status', 'emercoind.service'], universal_newlines=True, timeout=300)
+        check_call(['systemctl', 'status', 'emercoind.service'], timeout=300)
     except CalledProcessError:
         return False
     except UnicodeDecodeError:
-        return True
+        return False
 
     return True
 
