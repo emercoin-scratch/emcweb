@@ -178,7 +178,7 @@ def config_flask(kwargs):
     ex_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py.example')
     flask_file = os.path.join(os.path.dirname(__file__), '..', 'settings', 'flask.py')
     emc_home = ''
-    upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads')
+    upload_file_path = '/var/lib/emcweb/uploads/Default'
     wallet_name = 'Default'
 
     if kwargs['account'].get('password', False) and kwargs['account'].get('password2', False):
@@ -206,17 +206,8 @@ def config_flask(kwargs):
                         match_obj.group(1),
                         repr(kwargs.get(match_obj.group(1), '')))
 
-            if match_obj.group(1) == 'EMC_HOME':
-               emc_home = match_obj.group(2).replace('"', '').replace("'", "")
-
 
         new_file.append(line)
-
-    wallet_dat = os.path.realpath(os.path.join(emc_home, 'wallet.dat'))
-    upload_file_path = os.path.realpath(os.path.join(upload_folder, wallet_name))
-
-    if not os.path.islink(wallet_dat):
-        res, error = check_wallet_symlink(wallet_dat, upload_file_path)
 
     res, error = test_emc_connection(kwargs)
     if not res:
@@ -270,14 +261,4 @@ def generate_secret_key(length):
 
     return result.decode()
 
-def check_wallet_symlink(wallet_dat, wallet_new):
-    
-    try:
-        move(wallet_dat, wallet_new)
-        os.symlink(wallet_new, wallet_dat)
-        os.chmod(wallet_dat,  0o600)
-        os.chmod(wallet_new,  0o750)
-    except:
-        return False, 'Error moving file wallet.dat'
 
-    return True, ''
