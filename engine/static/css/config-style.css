@@ -138,7 +138,7 @@ a {
 
 .one-column {
 	margin: 1em auto 0;
-	width: 24em;
+	width: 25em;
 	text-align: center;
 }
 
@@ -447,7 +447,7 @@ body.yellow-bg .error {
 }
 
 .btn-pink-inactive {
-	background-color: #f3e5f5;
+	background-color: #d4a3db;
 	color: #e1bee7;
 }
 
