@@ -89,6 +89,8 @@ emcwebApp.controller('ContractReadyModalController', function ContractReadyModal
 emcwebApp.controller('ContractDeleteModalController', function ContractDeleteModalController($scope, $uibModal, $uibModalInstance, $rootScope, EMCLNX, contract, Encrypt) {
 
     function deleteContract(){
+        $uibModalInstance.close();
+        
         EMCLNX.del({name: contract.name}).$promise.then(function (data) {
             if (data.result_status) {
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Contract has been deleted'});
