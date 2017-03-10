@@ -97,7 +97,7 @@ class FlaskApp(object):
                                     'EMC_SERVER_PASSWORD': '',
                                     'EMC_SERVER_PROTO': 'https',
                                     'db': {
-                                           'name': 'emcwebdb',
+                                           'name': '',
                                            'host': 'localhost',
                                            'port': 3306,
                                            'username': '',
