@@ -212,6 +212,11 @@ def config_flask(kwargs):
         return False, 'Error write config file on disk'
 
     try:
+        chmod(flask_file, 0o640)
+    except:
+        pass
+
+    try:
         check_call(['python3', '/var/lib/emcweb/manage.py', 'db', 'upgrade'], timeout=300)
     except:
         return False, 'Error creating database'
