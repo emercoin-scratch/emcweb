@@ -121,6 +121,8 @@ emcwebApp.controller('EMCSSHUserRemoveController', function EMCSSHUserRemoveCont
     $scope.user = user;
 
     $scope.ok = function () {
+        $scope.removeIsDisabled = true;
+
         EMCSSHUsers.delete({name: $scope.user}).$promise.then(function (data) {
             if (data.result_status) {
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: 'User has successfully been deleted'});
@@ -140,6 +142,8 @@ emcwebApp.controller('EMCSSHUserNewController', function EMCSSHUserNewController
     $scope.users = users;
 
     $scope.ok = function () {
+        $scope.addIsDisabled = true;
+        
         if ($scope.user.data.length > 0 && $scope.user.data[0] != '@') {
             $scope.user.data = '@' + $scope.user.data;
         }

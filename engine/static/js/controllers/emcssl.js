@@ -23,7 +23,11 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
     });
 
     $scope.saveConfig = function() {
+        $scope.saveIsDisabled = true;
+
         $scope.config_data = $scope.config_data.map(function(item){
+            $scope.saveIsDisabled = false;
+
             if (item.length > 0 && item[0] != '@') {
                 return '@' + item;
             }
@@ -39,6 +43,8 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
         $scope.config_data = uniqueNames;
 
         $scope.config_data = $scope.config_data.filter(function(item) {
+            $scope.saveIsDisabled = false;
+
             return (item) ? true : false;
         });
         if ($scope.config_data.length == 0) {
@@ -51,10 +57,13 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t save emcssh config: ' + data.message});
             }
+
+            $scope.saveIsDisabled = false;
         });
     }
 
     $scope.newCertModal = function () {
+
         var modalInstance = $uibModal.open({
             templateUrl: 'newModal.html',
             controller: 'NewCertController',
@@ -118,6 +127,8 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
     }
 
     $scope.makeCert = function () {
+        $scope.okIsDisabled = true;
+        
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
