@@ -7,6 +7,9 @@ case "$1" in
   configure)
     chown -R emc.emc /var/lib/emcweb
     pip3 install Flask Flask-Script Flask-SQLAlchemy Flask-Login Flask-Migrate Flask-Testing Flask-restful Jinja2 SQLAlchemy pyOpenSSL pycrypto PyMySQL Flask-WTF WTForms WTForms-Components requests ujson google-api-python-client oauth2client Celery redis dnspython vine kombu billiard cryptography
+    a2enmod socache_shmcb ssl rewrite >/dev/null 2>&1
+    a2dissite 000-default default-ssl >/dev/null 2>&1
+    a2ensite emcweb >/dev/null 2>&1
     systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1 || true
     systemctl status supervisor >/dev/null 2>&1 && systemctl restart supervisor >/dev/null 2>&1 || true
   ;;
