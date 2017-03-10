@@ -436,12 +436,6 @@ emcwebApp.controller('CertsModalController', function NewCertController($scope, 
     $scope.data = data
 
     $scope.getCert = function(cert) {
-        
-        if (cert == 0){
-            $scope.installIsDisabled = true;
-        }else{
-            $scope.downloadIsDisabled = true;
-        }
 
         Cert.get({name: data.cert_name, bundle: cert}).$promise.then(function (blob_data) {
             FileSaver.saveAs(blob_data.content, data.cert_name + '.' + ((cert) ? 'zip' : 'p12'));
