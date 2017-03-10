@@ -198,6 +198,8 @@ emcwebApp.controller('NVSRemoveController', function NVSRemoveController($scope,
     $scope.nvs_item = nvs_item;
 
     $scope.ok = function () {
+        $scope.deleteIsDisabled = true;
+
         $uibModalInstance.close();
     };
     $scope.cancel = function () {
@@ -260,6 +262,8 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     }
 
     $scope.ok = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
@@ -327,6 +331,8 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     }
 
     $scope.ok = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
@@ -396,6 +402,8 @@ emcwebApp.controller('reNewCertController', function NewCertController($scope, $
     }
 
     $scope.makeCert = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
@@ -428,6 +436,13 @@ emcwebApp.controller('CertsModalController', function NewCertController($scope, 
     $scope.data = data
 
     $scope.getCert = function(cert) {
+        
+        if (cert == 0){
+            $scope.installIsDisabled = true;
+        }else{
+            $scope.downloadIsDisabled = true;
+        }
+
         Cert.get({name: data.cert_name, bundle: cert}).$promise.then(function (blob_data) {
             FileSaver.saveAs(blob_data.content, data.cert_name + '.' + ((cert) ? 'zip' : 'p12'));
         });

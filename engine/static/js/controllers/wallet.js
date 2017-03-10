@@ -37,6 +37,8 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
     };
 
     $scope.makeTransfer = function () {
+        $scope.makeIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
@@ -48,6 +50,9 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
             }else{
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
             }
+            $scope.makeIsDisabled = false;
+        }, function(res){
+            $scope.makeIsDisabled = false;
         });
     };
 

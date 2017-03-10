@@ -86,7 +86,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" type="button" data-ng-disabled="emclnxForm.$invalid" data-ng-click="makeContract()">Submit</button>
+        <button class="btn btn-primary" type="button" data-ng-disabled="emclnxForm.$invalid || makeIsDisabled" data-ng-click="makeContract()">Submit</button>
         <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
     </div>
 </script>
@@ -113,7 +113,7 @@
             Are you sure want to delete the contract?
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" data-ng-click="deleteContract()">Yes, delete it</button>
+            <button class="btn btn-primary" type="button" data-ng-disabled="deleteIsDisabled" data-ng-click="deleteContract()">Yes, delete it</button>
             <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>

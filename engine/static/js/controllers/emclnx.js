@@ -120,6 +120,8 @@ emcwebApp.controller('ContractDeleteModalController', function ContractDeleteMod
     }
 
     $scope.deleteContract = function () {
+        $scope.deleteIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
@@ -204,11 +206,14 @@ emcwebApp.controller('NewContractModalController', function NewContractModalCont
     $scope.contract = {'txt': [''], days: 30, lang: ["EN","English"]};
 
     $scope.makeContract = function() {
+        $scope.makeIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
                 if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, makeContract);
                 }else{
+                    $uibModalInstance.close();
                     makeContract();
                 }
 
