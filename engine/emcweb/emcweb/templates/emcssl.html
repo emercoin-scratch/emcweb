@@ -74,7 +74,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid" data-ng-click="makeCert()">Make</button>
+            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || okIsDisabled" data-ng-click="makeCert()">Make</button>
             <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
@@ -106,7 +106,7 @@
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
                         <div class="col-md-11 col-md-offset-1">
-                            <button class="btn btn-primary" data-ng-disabled="sslUsersForm.$invalid" data-ng-click="saveConfig()">Save</button>
+                            <button class="btn btn-primary" data-ng-disabled="sslUsersForm.$invalid || saveIsDisabled" data-ng-click="saveConfig()">Save</button>
                         </div>
                     </div>
                 </form>

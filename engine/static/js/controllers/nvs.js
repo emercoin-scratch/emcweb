@@ -110,7 +110,7 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
             function (selectedItem) {
                 Encrypt.status().$promise.then(function (data) {
                     if (data.result_status) {
-                        if (data.result != 3){
+                        if ([0, 3].indexOf(data.result)<0){
                             $scope.unlockWallet(data.result, remove);
                         }else{
                             remove();
@@ -198,6 +198,8 @@ emcwebApp.controller('NVSRemoveController', function NVSRemoveController($scope,
     $scope.nvs_item = nvs_item;
 
     $scope.ok = function () {
+        $scope.deleteIsDisabled = true;
+
         $uibModalInstance.close();
     };
     $scope.cancel = function () {
@@ -260,9 +262,11 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     }
 
     $scope.ok = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, ok);
                 }else{
                     ok();
@@ -327,9 +331,11 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     }
 
     $scope.ok = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, ok);
                 }else{
                     ok();
@@ -396,9 +402,11 @@ emcwebApp.controller('reNewCertController', function NewCertController($scope, $
     }
 
     $scope.makeCert = function () {
+        $scope.okIsDisabled = true;
+
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, makeCert);
                 }else{
                     makeCert();
@@ -428,6 +436,7 @@ emcwebApp.controller('CertsModalController', function NewCertController($scope, 
     $scope.data = data
 
     $scope.getCert = function(cert) {
+
         Cert.get({name: data.cert_name, bundle: cert}).$promise.then(function (blob_data) {
             FileSaver.saveAs(blob_data.content, data.cert_name + '.' + ((cert) ? 'zip' : 'p12'));
         });

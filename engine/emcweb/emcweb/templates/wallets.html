@@ -50,7 +50,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button data-ng-disabled="!walletUploadForm.$valid" data-ng-click="uploader(uploadFile)" class="btn btn-primary">Upload</button>
+            <button data-ng-disabled="!walletUploadForm.$valid || uploadIsDisabled" data-ng-click="uploader(uploadFile)" class="btn btn-primary">Upload</button>
             <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
@@ -70,7 +70,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button data-ng-disabled="!walletCreateForm.$valid" data-ng-click="creator()" class="btn btn-primary">Make</button>
+            <button data-ng-disabled="!walletCreateForm.$valid || makeIsDisabled" data-ng-click="creator()" class="btn btn-primary">Make</button>
             <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
@@ -96,7 +96,7 @@
                 </thead>
                 <tbody>
                     <tr height="55" data-ng-repeat="wallet in wallets.wallets" data-ng-class="{success: wallet == wallets.choose}">
-                        <td data-ng-if="wallet != wallets.choose"><span data-ng-click="choiceModal(wallet)" style="cursor: pointer;"><b>{$ wallet $}</b></span> <i class="fa fa-times wallet_lock" aria-hidden="true" style="cursor: pointer;" data-ng-click="deleteModal(wallet)"></i></td>
+                        <td data-ng-if="wallet != wallets.choose"><span data-ng-click="choiceModal(wallet)" style="cursor: pointer;"><b>{$ wallet $}</b></span> <i class="fa fa-times wallet_lock" aria-hidden="true" style="cursor: pointer;" data-ng-disabled="deleteIsDisabled" data-ng-click="deleteModal(wallet)"></i></td>
                         <td data-ng-if="wallet == wallets.choose" style="padding-top: 16px;"><b>{$ wallet $}</b></td>
                         <td class="text-right">
                             <span data-ng-if="wallet == wallets.choose">

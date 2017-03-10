@@ -95,13 +95,18 @@ emcwebApp.controller('walletDeleteModalController', function walletDeleteModalCo
     $scope.wallet = wallet;
 
     $scope.deleteWallet = function() {
+        $scope.deleteIsDisabled = true;
+
         Wallets.delete({name: $scope.wallet}).$promise.then(function(data){
             if (data.result_status) {
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: 'The wallet has been deleted'});
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: data.message});
             }
+            $scope.deleteIsDisabled = false;
             $uibModalInstance.close();
+        }, function(res){
+            $scope.deleteIsDisabled = false;
         });
     }
 
@@ -126,13 +131,19 @@ emcwebApp.controller('walletChoiceModalController', function walletChoiceModalCo
 
 emcwebApp.controller('walletUploadModalController', function walletChoiceModalController($scope, $uibModalInstance, $rootScope, Upload) {
     $scope.uploader = function(file) {
+        $scope.uploadIsDisabled = true;
+
         file.upload = Upload.upload({
             url: '/webapi/wallets',
             data: {filename: $scope.uploadName, file: file},
         });
 
         file.upload.then(function (response) {
+            $scope.uploadIsDisabled = false;
+
             $uibModalInstance.close();
+        }, function(res){
+            $scope.uploadIsDisabled = false;
         });
     }
 
@@ -143,6 +154,8 @@ emcwebApp.controller('walletUploadModalController', function walletChoiceModalCo
 
 emcwebApp.controller('walletCreateModalController', function ($scope, $uibModalInstance, $rootScope, Wallet) {
     $scope.creator = function() {
+        $scope.makeIsDisabled = true;
+
         Wallet.create({'name': $scope.walletName}).$promise.then(function(data) {
             if (data.result_status && data.result) {
                 
@@ -151,6 +164,9 @@ emcwebApp.controller('walletCreateModalController', function ($scope, $uibModalI
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: data.message});
             }
+            $scope.makeIsDisabled = false;
+        }, function(res){
+            $scope.makeIsDisabled = false;
         });       
     }
 
