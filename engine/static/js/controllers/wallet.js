@@ -39,8 +39,7 @@ emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$
     $scope.makeTransfer = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                var status = data.result;
-                if (status != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWalletModalAndPay(status);
                 }else{
                     $scope.pay();
