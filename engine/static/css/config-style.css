@@ -35,20 +35,17 @@ html {
 .upper { text-transform: uppercase }
 
 .logo {
-	width: 54px;
-	height: 46px;
+	width: 100px;
+	height: 90px;
 	border: none;
 	outline: none;
 	display: inline-block;
-	background-image: url("../img/logo.png");
-	-webkit-background-size: 200%;
-	background-size: 200%;
+	background-image: url("../img/be-logo-config.png");
+	/*-webkit-background-size: 200%;*/
+	/*background-size: 200%;*/
 	background-repeat: no-repeat;
 }
 
-.logo-black {
-	background-position: -54px 0;
-}
 
 h1 {
 	font: 2em "RobotoBlack", sans-serif;
