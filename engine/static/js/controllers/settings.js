@@ -35,8 +35,8 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
                 }
             });
 
-            $scope.lc_api_key = data.lc_api_key;
-            $scope.lc_secret_key = data.lc_secret_key;
+            $scope.lc_api_key = data.lc_api_key || "";
+            $scope.lc_secret_key = data.lc_secret_key || "";
 
             $scope.mail_connections.forEach(function(item) {
                 if (item.value == data.smtp_connection) {
@@ -62,14 +62,19 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
         });
     }
 
-    $scope.applyLCSettings = function (api_key, secret_key) {
+    $scope.applyLCSettings = function (api_key="", secret_key="") {
+        $scope.isUpdateDisabled = true;
+
         Settings.update({
             'lc_api_key': api_key,
             'lc_secret_key': secret_key
         }).$promise.then(function(){
+            $scope.isUpdateDisabled = false;
             $scope.getSettings();
             $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Settings saved!'});
-        });
+        }, function(reason) {
+            $scope.isUpdateDisabled = false;
+        });        
     }
 
     $scope.applyMailerSettings = function (smtp) {
