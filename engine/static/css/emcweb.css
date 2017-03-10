@@ -8,7 +8,7 @@
 }
 
 .wallet_open {
-    color: #449d44;
+    color: #9467aa;
 }
 
 .wallet_mint {
@@ -120,4 +120,23 @@
 .invisible-button{
   display: inline-block;
   margin-left: 38px;
+}
+
+/* Styles emercoin One */
+
+
+
+.table>tbody>tr.success>td,
+.table>tbody>tr.success>th,
+.table>tbody>tr>td.success,
+.table>tbody>tr>th.success,
+.table>tfoot>tr.success>td,
+.table>tfoot>tr.success>th,
+.table>tfoot>tr>td.success,
+.table>tfoot>tr>th.success,
+.table>thead>tr.success>td,
+.table>thead>tr.success>th,
+.table>thead>tr>td.success,
+.table>thead>tr>th.success {
+    background-color: #f3e5f5;
 }
