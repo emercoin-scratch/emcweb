@@ -110,7 +110,7 @@ emcwebApp.controller('NVSController', ['$scope', '$rootScope', 'NVS', '$uibModal
             function (selectedItem) {
                 Encrypt.status().$promise.then(function (data) {
                     if (data.result_status) {
-                        if (data.result != 3){
+                        if ([0, 3].indexOf(data.result)<0){
                             $scope.unlockWallet(data.result, remove);
                         }else{
                             remove();
@@ -262,7 +262,7 @@ emcwebApp.controller('NVSEditController', function NVSEditController($scope, $ro
     $scope.ok = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, ok);
                 }else{
                     ok();
@@ -329,7 +329,7 @@ emcwebApp.controller('NVSNewController', function NVSNewController($scope, $root
     $scope.ok = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, ok);
                 }else{
                     ok();
@@ -398,7 +398,7 @@ emcwebApp.controller('reNewCertController', function NewCertController($scope, $
     $scope.makeCert = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, makeCert);
                 }else{
                     makeCert();

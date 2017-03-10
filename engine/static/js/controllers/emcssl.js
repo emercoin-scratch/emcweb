@@ -120,7 +120,7 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
     $scope.makeCert = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, makeCert);
                 }else{
                     makeCert();

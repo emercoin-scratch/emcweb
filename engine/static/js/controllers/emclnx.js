@@ -122,7 +122,7 @@ emcwebApp.controller('ContractDeleteModalController', function ContractDeleteMod
     $scope.deleteContract = function () {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, deleteContract);
                 }else{
                     deleteContract();
@@ -206,7 +206,7 @@ emcwebApp.controller('NewContractModalController', function NewContractModalCont
     $scope.makeContract = function() {
         Encrypt.status().$promise.then(function (data) {
             if (data.result_status) {
-                if (data.result != 3){
+                if ([0, 3].indexOf(data.result)<0){
                     $scope.unlockWallet(data.result, makeContract);
                 }else{
                     makeContract();
