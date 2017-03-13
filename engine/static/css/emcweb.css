@@ -88,18 +88,17 @@
 
 
 .login-btn {
-    margin-top: -25px;
+    margin-left: -110px;
 }
 
 .login-btns {
-    margin-top: -75px;
+    margin-left: -240px;
 }
 
 .login-form {
     position: absolute;
-    top: 50%;
+    top: 60%;
     left: 50%;
-    margin-left: -110px;
 }
 
 .select2-dropdown {
