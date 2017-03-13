@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html style="background-color: #1e3d4f;" data-ng-app="emcwebApp">
+<html data-ng-app="emcwebApp">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div data-ng-show="status == 1">
-                <h4 class="text-white text-left">Downloading blockchain</h4>
+                <h4 class="text-pink text-left">Downloading blockchain</h4>
                 <uib-progress animate="true">
                     <uib-bar value="percent" type="default" style="min-width: 2em;" ><b>{$ percent $}%</b></uib-bar>
                 </uib-progress>
