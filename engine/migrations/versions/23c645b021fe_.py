@@ -34,7 +34,7 @@ def upgrade():
         'contract_texts',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('contract_id', sa.Integer, nullable=False),
-        sa.Column('txt', sa.Unicode(255), nullable=False, unique=True),
+        sa.Column('txt', sa.Unicode(255), nullable=False, unique=False),
         mysql_charset='utf8'
     )
 
