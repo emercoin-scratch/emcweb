@@ -31,4 +31,4 @@ class ContractTexts(connection.Model):
     __tablename__ = 'contract_texts'
     id = connection.Column(connection.Integer, primary_key=True)
     contract_id = connection.Column(connection.Integer, connection.ForeignKey('contracts.id'), nullable=False)
-    txt = connection.Column(connection.Unicode(255))
+    txt = connection.Column(connection.Unicode(255), unique=True)

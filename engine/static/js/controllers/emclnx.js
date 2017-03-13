@@ -97,6 +97,7 @@ emcwebApp.controller('ContractDeleteModalController', function ContractDeleteMod
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: data.message});
             }
+            $rootScope.$broadcast('update_contracts');
         });
     }
 
