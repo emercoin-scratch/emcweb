@@ -34,8 +34,8 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="address">Address</label>
-                    <div class="col-md-9">
-                        <input disabled class="form-control" id="address" name="address" type="text" data-ng-model="nvs_item.address" required>
+                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.address.$invalid && editModalForm.address.$dirty}">
+                        <input class="form-control" id="address" name="address" type="text" data-ng-model="nvs_item.address" required>
                     </div>
                 </div>
             </form>

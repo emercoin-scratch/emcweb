@@ -132,10 +132,17 @@ KEYWORDS={keywords}
         contract = Contracts.query.filter(Contracts.user_id == current_user.id, Contracts.name == name).first()
         if not contract:
             abort(404)
-
-        data = client.name_delete('lnx:{0}'.format(contract.name))
-        if data.get('error', False):
-            return {'result_status': False, 'message': data['error']['message']}, 400
+        
+        nvs_name = 'lnx:{0}'.format(contract.name)
+        
+        nvs_data = client.name_show(nvs_name)
+        if not nvs_data.get('error', False) \
+                and not nvs_data['result'].get('deleted', False) \
+                and not nvs_data['result'].get('transferred', False):
+            
+            data = client.name_delete(nvs_name)
+            if data.get('error', False):
+                return {'result_status': False, 'message': data['error']['message']}, 400
 
         contract.txt.delete()
         connection.session.delete(contract)
