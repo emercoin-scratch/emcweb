@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: #1e3d4f;">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,7 @@
         <div class="white login-form {% if enable_ssl %}login-btns{% else %}login-btn{% endif %}">
             {% if enable_ssl %}
             <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
-            &nbsp;&nbsp;or&nbsp;&nbsp;
+            <br/><br/>or<br/><br/>
             {% endif %}
             <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
         </div>

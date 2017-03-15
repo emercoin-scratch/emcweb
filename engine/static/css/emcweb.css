@@ -21,7 +21,7 @@
 }
 
 .login_body {
-    background: url(/static/img/emercoin-web-wallet.png);
+    background: url(/static/img/login_bg.jpg);
     position: absolute;
     height: 100%;
     width: 100%;
@@ -88,18 +88,18 @@
 
 
 .login-btn {
-    margin-left: -110px;
+    margin-top: -25px;
 }
 
 .login-btns {
-    margin-left: -240px;
+    margin-top: -75px;
 }
 
 .login-form {
     position: absolute;
-    min-width: 485px;
-    top: 60%;
+    top: 50%;
     left: 50%;
+    margin-left: -110px;
 }
 
 .select2-dropdown {
