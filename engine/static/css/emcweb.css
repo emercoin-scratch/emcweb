@@ -8,7 +8,7 @@
 }
 
 .wallet_open {
-    color: #9467aa;
+    color: #449d44;
 }
 
 .wallet_mint {
@@ -97,6 +97,7 @@
 
 .login-form {
     position: absolute;
+    min-width: 485px;
     top: 60%;
     left: 50%;
 }
