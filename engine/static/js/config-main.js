@@ -43,10 +43,10 @@ $(document).ready(function() {
         var pValid = passwordsValid();
         
         if (fValid && pValid){
-            $('#submit').removeClass('btn-pink-inactive').addClass('btn-pink-active').removeAttr('disabled')
+            $('#submit').removeClass('btn-green-inactive').addClass('btn-green-active').removeAttr('disabled')
         }
         else{
-            $('#submit').removeClass('btn-pink-active').addClass('btn-pink-inactive').attr('disabled', 'disabled')
+            $('#submit').removeClass('btn-green-active').addClass('btn-green-inactive').attr('disabled', 'disabled')
         }
         
     });

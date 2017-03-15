@@ -35,20 +35,15 @@ html {
 .upper { text-transform: uppercase }
 
 .logo {
-	width: 54px;
-	height: 46px;
+	width: 109px;
+	height: 92px;
 	border: none;
 	outline: none;
 	display: inline-block;
 	background-image: url("../img/logo.png");
-	-webkit-background-size: 200%;
-	background-size: 200%;
 	background-repeat: no-repeat;
 }
 
-.logo-black {
-	background-position: -54px 0;
-}
 
 h1 {
 	font: 2em "RobotoBlack", sans-serif;
@@ -451,12 +446,23 @@ body.yellow-bg .error {
 	color: #e1bee7;
 }
 
+.btn-green-inactive:hover,
 .btn-pink-inactive:hover {
 	cursor: default;
 }
 
 .btn-pink-active {
 	background-color: #ba68c8;
+	color: #fff;
+}
+
+.btn-green-inactive {
+	background-color: #d2f9ef;
+	color: #1dc5a3;
+}
+
+.btn-green-active {
+	background-color: #1ab394;
 	color: #fff;
 }
 
