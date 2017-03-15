@@ -13,7 +13,7 @@
     {% if created %}
     <div class="one-column">
     <div class="logo"></div>
-    <h1 class="pink upper">{% if message %}{{ message }}{% else %} PLEASE WAIT<br/>WHILE YOUR SYSTEM<br/><a href="/"> IS CONFIGURED</a>{% endif %}</h1>
+    <h1 class="green upper">{% if message %}{{ message }}{% else %} PLEASE WAIT<br/>WHILE YOUR SYSTEM<br/><a href="/"> IS CONFIGURED</a>{% endif %}</h1>
     </div>
     {% if not message %}
         <script>
@@ -29,7 +29,7 @@
     {% else %}
         <div class="one-column">
             <div class="logo"></div>
-            <h1 class="pink upper">Blockchain engine<br/>config</h1>
+            <h1 class="green upper">Blockchain engine<br/>config</h1>
             <div class="error black {% if error_msg %} active {% endif %}">
                 <h1><i class="material-icons">warning</i>Error</h1>
                 <span>{{ error_msg }}</span>

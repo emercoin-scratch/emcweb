@@ -35,14 +35,12 @@ html {
 .upper { text-transform: uppercase }
 
 .logo {
-	width: 100px;
-	height: 90px;
+	width: 109px;
+	height: 92px;
 	border: none;
 	outline: none;
 	display: inline-block;
-	background-image: url("../img/be-logo-config.png");
-	/*-webkit-background-size: 200%;*/
-	/*background-size: 200%;*/
+	background-image: url("../img/logo.png");
 	background-repeat: no-repeat;
 }
 
