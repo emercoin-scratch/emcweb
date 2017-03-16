@@ -466,6 +466,14 @@ body.yellow-bg .error {
 	color: #fff;
 }
 
+.green a:link {
+	color: #05675e;
+}
+.green a:visited {
+	color: #05675e;
+}
+
+
 .btn-black-inactive {
 	background-color: #bdbdbd;
 	color: #fff;
