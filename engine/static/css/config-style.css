@@ -111,8 +111,6 @@ h3 {
 
 .black { color: #000 }
 
-.pink { color: #9467aa }
-
 .blue { color: #2196f3 }
 
 .white { color: #fff }
@@ -921,3 +919,6 @@ input.invalid-input{
 	border-left: 1px solid red;
 	border-right: 1px solid red;
 }
+
+.pink,
+.pink a { color: #9467aa }
