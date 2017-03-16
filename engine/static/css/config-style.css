@@ -456,6 +456,10 @@ body.yellow-bg .error {
 	color: #fff;
 }
 
+.pink a:link {
+	color: #551a8b;
+}
+
 .btn-green-inactive {
 	background-color: #d2f9ef;
 	color: #1dc5a3;
