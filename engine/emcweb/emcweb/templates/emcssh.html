@@ -12,7 +12,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" data-ng-disabled="removeIsDisabled" type="button" data-ng-click="ok()">Yes, delete</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" data-ng-disabled="removeIsDisabled" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -38,7 +38,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || addIsDisabled" data-ng-click="ok()">Add</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="addIsDisabled" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 {% endblock %}

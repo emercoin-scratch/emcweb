@@ -51,7 +51,7 @@
         </div>
         <div class="modal-footer">
             <button data-ng-disabled="!walletUploadForm.$valid || uploadIsDisabled" data-ng-click="uploader(uploadFile)" class="btn btn-primary">Upload</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button data-ng-disabled="uploadIsDisabled" class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -71,7 +71,7 @@
         </div>
         <div class="modal-footer">
             <button data-ng-disabled="!walletCreateForm.$valid || makeIsDisabled" data-ng-click="creator()" class="btn btn-primary">Make</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button data-ng-disabled="makeIsDisabled" class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 {% endblock %}
