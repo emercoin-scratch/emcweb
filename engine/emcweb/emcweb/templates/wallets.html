@@ -24,8 +24,8 @@
             Are you sure want to delete this wallet? This operation cannot be reverted and you will lose all coins and digital goods of this wallet.
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" data-ng-click="deleteWallet()">Yes, delete the wallet</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button data-ng-disabled="deleteIsDisabled" class="btn btn-primary" type="button" data-ng-click="deleteWallet()">Yes, delete the wallet</button>
+            <button data-ng-disabled="deleteIsDisabled" class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
