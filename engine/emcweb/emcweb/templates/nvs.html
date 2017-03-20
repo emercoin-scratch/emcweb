@@ -42,7 +42,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" data-ng-disabled="editModalForm.$invalid || okIsDisabled" ng-click="ok()">Update</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -85,7 +85,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || okIsDisabled" ng-click="ok()">Save</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -98,7 +98,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" data-ng-disabled="newModalForm.$invalid || deleteIsDisabled" type="button" ng-click="ok()">Delete</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" data-ng-disabled="deleteIsDisabled" type="button" ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
