@@ -68,6 +68,7 @@ emcwebApp.controller('WalletsController', ['$scope', '$window', 'Wallets', '$tim
 
         modalInstance.result.then(function (result) {
             $scope.getWallets();
+            $rootScope.$broadcast('update_wallet_status');
             $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message });
         });
     };
