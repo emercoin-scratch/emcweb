@@ -23,6 +23,7 @@ class LoginForm(Form):
     login = StringField('Login', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
 
+
 @module_bp.route('/')
 def index():
     if current_app.config.get('DB_FALL', None):
@@ -34,9 +35,9 @@ def index():
                                    message='MySQL database is not configured'
                                    if current_app.config['DB_FALL'] == 1 else 'MySQL connection refused')
 
-    status, _ = get_block_status()
+    status, _, error_str = get_block_status()
     if status != 2:
-        return render_template('blocks.html')
+        return render_template('blocks.html', error_message=error_str)
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
 

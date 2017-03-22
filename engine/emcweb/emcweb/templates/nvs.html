@@ -174,7 +174,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || okIsDisabled" data-ng-click="makeCert()">Make</button>
-            <button class="btn btn-default" type="button" data-ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 {% endblock %}
