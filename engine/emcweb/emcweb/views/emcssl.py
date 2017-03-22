@@ -14,7 +14,7 @@ def emcssl():
     if current_app.config.get('DB_FALL', None):
         return redirect(url_for('emcweb.index'))
 
-    status, _ = get_block_status()
+    status, _, error_str = get_block_status()
     if status != 2:
         return redirect(url_for('emcweb.index'))
     confirm_login()

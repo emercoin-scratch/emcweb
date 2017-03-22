@@ -9,5 +9,5 @@ from emcweb.emcweb.utils import get_block_status
 
 @module_bp.route('blocks')
 def blocks():
-    status, blocks = get_block_status()
+    status, blocks, error_str = get_block_status()
     return ujson.dumps({'status': status, 'blocks': blocks})

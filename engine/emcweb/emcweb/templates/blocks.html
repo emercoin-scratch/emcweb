@@ -28,12 +28,7 @@
         <div class="col-lg-8">
             <div class="ibox float-e-margins" data-ng-show="status == 0">
                 <div class="text-center stop_system">
-                    <h2><b>System is not running</b></h2>
-                </div>
-            </div>
-            <div class="ibox float-e-margins" data-ng-show="status == 3">
-                <div class="text-center stop_system">
-                    <h2><b>Server is not responsing</b></h2>
+                    <h2><b>{{ error_message }}</b></h2>
                 </div>
             </div>
             <div data-ng-show="status == 1">

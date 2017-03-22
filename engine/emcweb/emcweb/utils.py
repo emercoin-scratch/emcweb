@@ -22,10 +22,8 @@ client = EMCClient(**PARAMS)
 def get_block_status():
     data = client.getinfo()
 
-    if (data.get('error') and data['error']['code'] == -9999) or not data.get('result'):
-        return 0, None
-    elif (data.get('error') and data['error']['code'] == -9998) or not data.get('result'):
-        return 3, None
+    if data.get('error', False):
+        return 0, None, data['error']['message']
 
     status = 1 if 'Checkpoint is too old' in data['result']['errors'] else 2
-    return status, data['result']['blocks']
+    return status, data['result']['blocks'], ''

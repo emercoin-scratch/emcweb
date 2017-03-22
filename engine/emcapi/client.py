@@ -48,11 +48,15 @@ class EMCClient(object):
             data['params'] = args
 
         try:
-            data = requests.post(url=url, data=ujson.dumps(data), verify=self.verify).json()
+            r = requests.post(url=url, data=ujson.dumps(data), verify=self.verify)
+            data = r.json()
         except requests.exceptions.ConnectionError as e:
-            return {'result': None, 'error': {'message': 'Server connection error', 'code': -9999}}
+            return {'result': None, 'error': {'message': 'System is not running', 'code': -9999}}
         except ValueError:
-            return {'result': None, 'error': {'message': 'Server is not responsing', 'code': -9998}}
+            error_msg = 'Incorrect server response'
+            if r.status_code == 401:
+                error_msg = 'Server authentication failed'
+            return {'result': None, 'error': {'message': error_msg, 'code': -9999}}
 
         return data
 
