@@ -51,6 +51,8 @@ class EMCClient(object):
             data = requests.post(url=url, data=ujson.dumps(data), verify=self.verify).json()
         except requests.exceptions.ConnectionError as e:
             return {'result': None, 'error': {'message': 'Server connection error', 'code': -9999}}
+        except ValueError:
+            return {'result': None, 'error': {'message': 'Server is not responsing', 'code': -9998}}
 
         return data
 

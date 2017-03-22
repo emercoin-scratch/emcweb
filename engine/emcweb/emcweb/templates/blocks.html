@@ -31,6 +31,11 @@
                     <h2><b>System is not running</b></h2>
                 </div>
             </div>
+            <div class="ibox float-e-margins" data-ng-show="status == 3">
+                <div class="text-center stop_system">
+                    <h2><b>Server is not responsing</b></h2>
+                </div>
+            </div>
             <div data-ng-show="status == 1">
                 <h4 class="text-white text-left">Downloading blockchain</h4>
                 <uib-progress animate="true">

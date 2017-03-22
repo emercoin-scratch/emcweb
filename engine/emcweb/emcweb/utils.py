@@ -24,6 +24,8 @@ def get_block_status():
 
     if (data.get('error') and data['error']['code'] == -9999) or not data.get('result'):
         return 0, None
+    elif (data.get('error') and data['error']['code'] == -9998) or not data.get('result'):
+        return 3, None
 
     status = 1 if 'Checkpoint is too old' in data['result']['errors'] else 2
     return status, data['result']['blocks']
