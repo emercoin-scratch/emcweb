@@ -27,7 +27,8 @@ Emercoin Web Wallet
 %{__install} -m 644 certs/emcssl_ca.crt $RPM_BUILD_ROOT/etc/ssl/emc
 %{__install} -m 644 certs/emcssl_ca.key $RPM_BUILD_ROOT/etc/ssl/emc
 %{__install} -m 644 config/apache/emcweb-rhel.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/emcweb.conf
-%{__install} -m 600 config/supervisor/celery.conf $RPM_BUILD_ROOT/etc/supervisord.d/celery.ini
+%{__install} -m 600 config/supervisor/emcweb_celery.conf $RPM_BUILD_ROOT/etc/supervisord.d/emcweb_celery.ini
+%{__install} -m 600 config/supervisor/emcweb_restart_providers.conf $RPM_BUILD_ROOT/etc/supervisord.d/emcweb_restart_providers.ini
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -52,19 +53,23 @@ pip3 install --upgrade pip
 pip3 install flask flask-login flask-migrate flask-script flask-sqlalchemy flask-restful flask-wtf wtforms sqlalchemy jinja2 crypto pycrypto pyopenssl pymysql celery requests redis ujson oauth2client dnspython bsddb3 celery google-api-python-client mod_wsgi || exit 3
 mod_wsgi-express install-module >/dev/null 2>&1
 mod_wsgi-express module-config > /etc/httpd/conf.modules.d/00-wsgi.conf
-systemctl status httpd >/dev/null && systemctl restart httpd || exit 0
-systemctl status supervisord >/dev/null && systemctl restart supervisord || exit 0
+systemctl restart emercoind httpd supervisord redis >/dev/null 2>&1 || true
+systemctl enable  emercoind httpd supervisord redis >/dev/null 2>&1 || true
 
 %files
 %doc LICENSE
 %attr(751,emc,emc)   %dir /var/lib/emcweb
 %attr(644,root,root) %config(noreplace) /etc/httpd/conf.d/emcweb.conf
-%attr(644,root,root) %config(noreplace) /etc/supervisord.d/celery.ini
+%attr(644,root,root) %config(noreplace) /etc/supervisord.d/emcweb_celery.ini
+%attr(644,root,root) %config(noreplace) /etc/supervisord.d/emcweb_restart_providers.ini
 %attr(644,emc,emc)   /etc/ssl/emc/emcssl_ca.crt
 %attr(644,emc,emc)   /etc/ssl/emc/emcssl_ca.key
 %attr(-,emc,emc)     /var/lib/emcweb/*
 %attr(-,root,root)   /usr/sbin/*
 
 %changelog
+* Wed Mar 22 2017 Sergii Vakula <sv@aspanta.com> 2.1
+- Version 2.1
+
 * Thu Feb 02 2017 Sergii Vakula <sv@aspanta.com> 2.0
 - Initial release, v2.0

@@ -2,7 +2,8 @@
 
 [ -f /var/lib/emcweb/.restart-providers ] && {
   supervisorctl restart celery
-  systemctl restart apache2
+  systemctl restart apache2 >/dev/null 2>&1
+  systemctl restart httpd >/dev/null 2>&1
 
   [ -L /var/lib/emc/.emercoin/wallet.dat ] || {
     systemctl stop emercoind >/dev/null 2>&1 || true
@@ -17,7 +18,4 @@
 
   rm -f /var/lib/emcweb/.restart-providers
 }
-
-
-
 sleep 5

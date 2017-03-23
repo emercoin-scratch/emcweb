@@ -111,13 +111,13 @@ h3 {
 
 .black { color: #000 }
 
-.pink { color: #9467aa }
-
 .blue { color: #2196f3 }
 
 .white { color: #fff }
 
 .green { color: #009688 }
+
+.pink { color: #9467aa }
 
 .pale-white { color: rgba(255,255,255,0.5) }
 
@@ -454,6 +454,10 @@ body.yellow-bg .error {
 .btn-pink-active {
 	background-color: #ba68c8;
 	color: #fff;
+}
+
+.pink a:link {
+	color: #551a8b;
 }
 
 .btn-green-inactive {
@@ -929,3 +933,4 @@ input.invalid-input{
 	border-left: 1px solid red;
 	border-right: 1px solid red;
 }
+
