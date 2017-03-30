@@ -7,3 +7,25 @@ filters.filter('hasError', function() {
         return (item) ? 'has-error' : ''
     }
 });
+ 
+emcwebApp.filter('formatText',['$sce', function($sce){
+    return function(text, isInfocard=false){
+        if (isInfocard){
+            return $sce.trustAsHtml('&lt;Infocard&gt;');
+        }
+
+        var entityMap = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': '&quot;',
+            "'": '&#39;',
+            "/": '&#x2F;'
+        };
+        var escapedText = String(text).replace(/[&<>"'\/]/g, function (s) {
+                return entityMap[s];
+            });
+
+        return $sce.trustAsHtml(escapedText.replace(new RegExp('\\n','g'), "<br/>"));
+    }
+}]);

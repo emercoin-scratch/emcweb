@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from flask import render_template, redirect, url_for, request, current_app
+import os
+
+from time import sleep
+
+from flask import (render_template, redirect, app,
+                   url_for, request, current_app,
+                   make_response, session)
 from flask_login import current_user
 from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
@@ -10,6 +16,7 @@ from wtforms.validators import DataRequired
 from . import module_bp
 from emcweb.emcweb.utils import get_block_status
 from emcweb.utils import apply_db_settings
+from emcweb.exts import connection
 
 
 class LoginForm(Form):
@@ -28,11 +35,12 @@ def index():
                                    message='MySQL database is not configured'
                                    if current_app.config['DB_FALL'] == 1 else 'MySQL connection refused')
 
-    status, _ = get_block_status()
+    status, _, error_str = get_block_status()
     if status != 2:
-        return render_template('blocks.html')
+        return render_template('blocks.html', error_message=error_str)
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
+
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
                                                               form=LoginForm(),

@@ -6,7 +6,11 @@ set -e
 case "$1" in
   configure)
     chown -R emc.emc /var/lib/emcweb
-    systemctl status apache2 >/dev/null 2>&1 && systemctl restart apache2 >/dev/null 2>&1
+    a2enmod socache_shmcb ssl rewrite >/dev/null 2>&1
+    a2dissite 000-default default-ssl >/dev/null 2>&1
+    a2ensite emcweb >/dev/null 2>&1
+    systemctl restart apache2 supervisor redis >/dev/null 2>&1 || true
+    systemctl enable  apache2 supervisor redis >/dev/null 2>&1 || true
   ;;
 esac
 

@@ -1,8 +1,8 @@
 'use strict';
 
 
-emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal', 'EMCSSH',
-                     function SSLVerifyController($scope, $rootScope, $uibModal, EMCSSH) {
+emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal', 'EMCSSH', 'Encrypt',
+                     function SSLVerifyController($scope, $rootScope, $uibModal, EMCSSH, Encrypt) {
     $scope.addLine = function() {
         $scope.config_data.push('');
     }
@@ -23,7 +23,11 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
     });
 
     $scope.saveConfig = function() {
+        $scope.saveIsDisabled = true;
+
         $scope.config_data = $scope.config_data.map(function(item){
+            $scope.saveIsDisabled = false;
+
             if (item.length > 0 && item[0] != '@') {
                 return '@' + item;
             }
@@ -39,6 +43,8 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
         $scope.config_data = uniqueNames;
 
         $scope.config_data = $scope.config_data.filter(function(item) {
+            $scope.saveIsDisabled = false;
+
             return (item) ? true : false;
         });
         if ($scope.config_data.length == 0) {
@@ -51,10 +57,13 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t save emcssh config: ' + data.message});
             }
+
+            $scope.saveIsDisabled = false;
         });
     }
 
     $scope.newCertModal = function () {
+
         var modalInstance = $uibModal.open({
             templateUrl: 'newModal.html',
             controller: 'NewCertController',
@@ -63,31 +72,31 @@ emcwebApp.controller('SSLVerifyController', ['$scope', '$rootScope', '$uibModal'
 
         modalInstance.result.then(
             function (result_data) {
-                $uibModal.open({
-                    templateUrl: 'certsModal.html',
-                    controller: 'CertsModalController',
-                    resolve: {
-                        data: function() {
-                            return result_data;
-                        }
-                    }
-                });
+                //nope
             }
         );
     };
 }]);
 
 
-emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, Cert) {
-    $scope.newcert = {}
+emcwebApp.controller('NewCertController', function NewCertController($scope, $rootScope, $uibModalInstance, $uibModal, Encrypt, Cert) {
 
-    $scope.makeCert = function () {
+    function makeCert(){
         $scope.newcert.common_name = ($scope.newcert.cn.length > 0 && $scope.newcert.cn[0] == '@') ? $scope.newcert.cn.slice(1) : $scope.newcert.cn
         Cert.create($scope.newcert).$promise.then(function (data) {
             if (data.result_status) {
-                $uibModalInstance.close({
-                    cn: $scope.newcert.common_name,
-                    cert_name: data.result.name
+                $uibModalInstance.close();
+                $uibModal.open({
+                    templateUrl: 'certsModal.html',
+                    controller: 'CertsModalController',
+                    resolve: {
+                        data: function() {
+                            return {
+                                    cn: $scope.newcert.common_name,
+                                    cert_name: data.result.name
+                                    };
+                        }
+                    }
                 });
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t create new certficate: ' + data.message});
@@ -95,9 +104,57 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
         });
     }
 
+    $scope.newcert = {daystoexpire: 365, txt:[{name:'', value: ''}]};
+
+    $scope.unlockWallet = function(status, callback){
+        $uibModalInstance.close();
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function () {
+                    return status;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (result) {
+                callback();
+            }
+        );
+
+    }
+
+    $scope.makeCert = function () {
+        $scope.okIsDisabled = true;
+        
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                if ([0, 3].indexOf(data.result)<0){
+                    $scope.unlockWallet(data.result, makeCert);
+                }else{
+                    makeCert();
+                }
+
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
+        });
+    }
+
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
+    
+    $scope.addTxt = function() {
+        $scope.newcert.txt.push({name:'', value: ''});
+    }
+
+    $scope.delTxt = function(idx) {
+        $scope.newcert.txt.splice(idx, 1);
+    }
+
 });
 
 

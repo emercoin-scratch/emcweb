@@ -14,8 +14,10 @@ from .utils import apply_db_settings
 
 def check_emercoind_process():
     try:
-        check_output(['systemctl', 'status', 'emercoind.service'], universal_newlines=True, timeout=300)
+        check_call(['systemctl', 'status', 'emercoind.service'], timeout=300)
     except CalledProcessError:
+        return False
+    except UnicodeDecodeError:
         return False
 
     return True
@@ -112,3 +114,24 @@ def sendmail(to_mails, message):
                     to_mails,
                     mail)
     server.quit()
+
+@celery.task
+def create_empty_wallet(wallet_name):
+    wallet_dat = str(path.join(flask_app.flask_app.config['EMC_HOME'], 'wallet.dat'))
+    new_wallet = str(path.realpath(path.join(flask_app.flask_app.config['UPLOAD_FOLDER'], wallet_name)))
+
+    stop_emercoind()
+    unlink(wallet_dat)
+    
+    start_emercoind()
+    seconds = 30
+    while not check_emercoind_process() and seconds > 0:
+        seconds -= 1
+        sleep(1)
+    stop_emercoind()
+
+    move(wallet_dat, new_wallet)
+    symlink(new_wallet, wallet_dat)
+    start_emercoind()
+    return True
+

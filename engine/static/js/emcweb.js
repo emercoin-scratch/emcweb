@@ -13,7 +13,8 @@ var emcwebApp = angular.module('emcwebApp', [
     'ui.select',
     'ngSanitize',
     'rt.select2',
-    'blockUI'
+    'blockUI',
+    'ngCookies'
 ]);
 
 emcwebApp.config(['$interpolateProvider', function($interpolateProvider) {

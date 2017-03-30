@@ -1,0 +1,31 @@
+Version 2.1:
+ * An option has been added to verify signatures not only by personal addresses
+ * During the revision and creation of the NVS record, an option has been added to indicate a data type in Value
+ * During the creation of EMC SSL certificates, the infocard is saved in the base64 format
+ * NVS Values may be multi-line
+ * If there are expiring NVS records, a warning appears after login
+ * In case of debit transactions and a blocked wallet, an invitation to enter the password to unlock the wallet has been added
+ * An option has been added to extend certificates with current ID
+ * If login is made under a certificate, there is no longer any logout by timeout
+ * The following error has been corrected: previously, it was not considered that the NVS record could be deleted or expired
+ * During the creation of the EMC SSL certificate, an option has been added to indicate its validity period, and the expiration date of the NVS record and +365 days has been added to the certificate period
+ * An option has been implemented to add any data to the EMC SSL certificate
+ * NVS records that are no longer included in the wallet, do not appear
+ * An option has been added to enter the initial settings on a web page
+ * An option has been added to create a new empty wallet
+ * The following error has been corrected: If NVS Values are written in a new line, it is displayed similarly in Name List
+ * During the emcweb update, a supervisor restart was carried out
+ * Field validation was added upon the creation of the EMC SSL certificate
+ * During the creation and revision of the NVS record, an option has been added to transcode the field Value to the selected type
+ * During the creation and extension of the EMC SSL certificate, an option has been added to check the availability of all three records
+ * An option has been added to check the "Public Key ID" record for implication into the EMC SSL certificate once it is updated
+ * The redis-server and mysql-server have been added to dependencies
+ * An Apache configuration has been added during package installation
+ * The empty window which was popping up during debit transactions in an unencrypted wallet has been removed
+ * The buttons for creation and revision become inactive when pushed once
+ * An option has been added to save empty values in the LiveCoin settings
+ * For the EMC LNX contract, a record check has been added to NVS before its deletion
+ * During the NVS record revision, an option has been added, which allows to indicate any address (for the transfer of ownership rights)
+ * The Cancel button becomes inactive in pop-up windows after the confirmation button is pushed
+ * A status update has been added for a new empty wallet after its creation
+ * The exception has been fixed if there is a connection to the server, however an authorization error occurs

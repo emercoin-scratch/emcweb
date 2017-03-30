@@ -38,6 +38,16 @@ def get_days(name):
     return round(resp['result']['expires_in'] / 175)
 
 
+def nvs_is_mine(name):
+    resp = client.name_history(name)
+    if resp.get('error', False):
+        return False
+
+    last_status = resp['result'][-1]
+    
+    return last_status.get('address_is_mine', False)
+
+
 class EMCLNXAPI(LoginResource):
 
     @staticmethod
@@ -133,9 +143,17 @@ KEYWORDS={keywords}
         if not contract:
             abort(404)
 
-        data = client.name_delete('lnx:{0}'.format(contract.name))
-        if data.get('error', False):
-            return {'result_status': False, 'message': data['error']['message']}, 400
+        nvs_name = 'lnx:{0}'.format(contract.name)
+
+        nvs_data = client.name_show(nvs_name)
+        if not nvs_data.get('error', False) \
+                and not nvs_data['result'].get('deleted', False) \
+                and not nvs_data['result'].get('transferred', False)\
+                and nvs_is_mine(nvs_name):
+
+            data = client.name_delete(nvs_name)
+            if data.get('error', False):
+                return {'result_status': False, 'message': data['error']['message']}, 400
 
         contract.txt.delete()
         connection.session.delete(contract)

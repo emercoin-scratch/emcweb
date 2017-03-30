@@ -11,8 +11,13 @@ import binascii
 
 
 def make_info_data(data):
-    info_data = '\n'.join(['{0}\t{1}'.format(key.title().replace('_', ''), value) for key, value in data.items()
-                           if key not in ('common_name',)])
+    info_data = '\n'.join(['{0} \t{1}'.format(key.title().replace('_', ''), value) for key, value in data.items()
+                           if key not in ('common_name','daystoexpire', 'txt', 'name')])
+    additional_data = '\n'.join(['{0}+ \t{1}'.format(element['name'].title().replace('_', ''),
+        element['value']) for element in data['txt'] if not(element['name'] == '' or element['value'] == '')])
+
+    if additional_data:
+        info_data += '\n{0}'.format(additional_data)
 
     hask_key = SHA256.new(info_data.encode()).hexdigest()
     return '#!info:{0}:{1}\n{2}\n'.format(hask_key[0:16], hask_key[20:50], info_data), hask_key[0:16], hask_key[20:50]
@@ -49,7 +54,7 @@ def encrypt(src_data, password, key_length=32):
     return encrypted_data
 
 
-def make_certificate(tmp_name, ca_path, ca_priv_key_path, cn, email, uid):
+def make_certificate(tmp_name, ca_path, ca_priv_key_path, cn, email, uid, days_to_exp=365):
     with open(ca_path, 'r') as fd:
         ca = fd.read()
     ca_cert = crypto.load_certificate(crypto.FILETYPE_PEM, ca)
@@ -66,7 +71,7 @@ def make_certificate(tmp_name, ca_path, ca_priv_key_path, cn, email, uid):
     cert.get_subject().emailAddress = email
     cert.get_subject().UID = uid
     cert.gmtime_adj_notBefore(0)
-    cert.gmtime_adj_notAfter(365 * 24 * 60 * 60)
+    cert.gmtime_adj_notAfter(days_to_exp * 24 * 60 * 60)
     cert.set_serial_number(int(tmp_name, 16))
     cert.set_issuer(ca_cert.get_subject())
     cert.set_pubkey(key)

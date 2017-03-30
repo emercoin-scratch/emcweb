@@ -1,9 +1,28 @@
 'use strict';
 
-emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin',
-                     function WalletController($scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin) {
+emcwebApp.controller('WalletController', ['$cookies', '$scope', '$rootScope', '$uibModal', 'Balance', 'Transactions', 'LiveCoin', 'NVS', 'Encrypt',
+                     function WalletController($cookies, $scope, $rootScope, $uibModal, Balance, Transactions, LiveCoin, NVS, Encrypt) {
 
-    $scope.makeTransfer = function () {
+    $scope.unlockWalletModalAndPay = function (status) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'lockModal.html',
+            controller: 'lockWalletController',
+            resolve: {
+                status: function() {
+                    return status
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (opened=false) {
+                $scope.pay();
+                $rootScope.$broadcast('update_wallet_status');
+            }
+        );
+    };
+
+    $scope.pay = function(){
         Transactions.create({ address: $scope.form_address, amount: $scope.form_amount }).$promise.then(function (data) {
             if (data.result_status) {
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: 'Your payment has been accepted'});
@@ -15,7 +34,29 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Your payment has been declined'});
             }
         });
-    }
+    };
+
+    $scope.makeTransfer = function () {
+        $scope.makeIsDisabled = true;
+
+        Encrypt.status().$promise.then(function (data) {
+            if (data.result_status) {
+                if ([0, 3].indexOf(data.result)<0){
+                    $scope.unlockWalletModalAndPay(status);
+                }else{
+                    $scope.pay();
+                }
+
+            }else{
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
+            }
+            $scope.makeIsDisabled = false;
+        }, function(res){
+            $scope.makeIsDisabled = false;
+        });
+    };
+
+
 
     $scope.getBalance = function() {
         Balance.get().$promise.then(function (data) {
@@ -61,6 +102,19 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
         );
     };
 
+    $scope.getNVSExpired = function() {
+        NVS.getExpires().$promise.then(function (data) {
+            if (data.result_status) {
+                var countExpired = data.result.length
+                if (countExpired > 0){
+                    $rootScope.$broadcast('send_notify', {notify: 'warning', message: 'Warning: You have ' + countExpired + ' NVS records which will soon expire'});
+                }
+            } else {
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get count expires names: ' + data.message});
+            }
+        });
+    }
+
     $scope.form_address = "";
     $scope.form_amount = "";
     $scope.lc_setting = false;
@@ -77,6 +131,11 @@ emcwebApp.controller('WalletController', ['$scope', '$rootScope', '$uibModal', '
 
     $scope.getTransactions();
     $scope.getBalance();
+
+    if ($cookies.get('strict_get_expires_nvs') == 1){
+        $scope.getNVSExpired();
+        $cookies.put('strict_get_expires_nvs', 0);
+    }
 }]);
 
 

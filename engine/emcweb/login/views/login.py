@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
 from hashlib import md5
 
-from flask import redirect, url_for, request, abort, session, current_app
+from flask import (redirect, url_for, request, abort,
+                   session, current_app, make_response)
 from flask_login import login_user
 
 from ..models import Credentials, Users
@@ -11,6 +13,12 @@ from ..ssl_check import check_ssl
 from . import module_bp
 from emcweb.emcweb.views.index import LoginForm
 
+
+def create_cookie(page):
+    cookie_name = 'strict_get_expires_nvs'
+    if request.cookies.get(cookie_name, '0') == '0':
+        resp = make_response(page)
+        resp.set_cookie(cookie_name, value='1')
 
 @module_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -34,9 +42,16 @@ def login():
             return redirect(url_for('emcweb.index'))
 
         session['login_password'] = True
+
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(minutes=15)
+
         if user:
             login_user(user)
-            return redirect(url_for('emcweb.index'))
+            page = redirect(url_for('emcweb.index'))
+            create_cookie(page)
+            return page
 
     abort(403)
 
@@ -53,8 +68,15 @@ def login_ssl():
         except:
             current_app.config['DB_FALL'] = 2
             return redirect(url_for('emcweb.index'))
+        
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
 
         login_user(user)
-        return redirect(url_for('emcweb.index'))
+        session['login_ssl'] = True
+        page = redirect(url_for('emcweb.index'))
+        create_cookie(page)
+        return page
 
     abort(403)

@@ -1,2 +1,3 @@
 /etc/apache2/sites-available/emcweb.conf
-/etc/supervisor/conf.d/celery.conf
+/etc/supervisor/conf.d/emcweb_celery.conf
+/etc/supervisor/conf.d/emcweb_restart_providers.conf

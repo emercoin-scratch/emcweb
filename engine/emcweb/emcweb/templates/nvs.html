@@ -10,9 +10,20 @@
         <div class="modal-body">
             <form class="form-horizontal" name="editModalForm">
                 <div class="form-group">
+                    <label class="col-md-3 control-label" for="typeOfData">Type of Data</label>
+                    <div class="col-md-3">
+                        <input type="radio" id="utf8" name="typeOfData" value="utf8"  ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData" ng-change="newValue()">
+                        <label class="control-label" for="utf8">utf8</label>
+                    </div> 
+                    <div class="col-md-3">
+                        <input type="radio" id="base64" name="typeOfData" value="base64" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData" ng-change="newValue()">
+                        <label class="control-label" for="base64">base64</label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-3 control-label" for="value">Value</label>
-                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.value.$invalid && editModalForm.value.$dirty}">
-                        <input class="form-control" id="value" name="value" type="text" data-ng-model="nvs_item.value" required>
+                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.tmpValue.$invalid && editModalForm.tmpValue.$dirty}">
+                        <textarea class="form-control" id="value" name="tmpValue" type="text" data-ng-model="nvs_item.tmpValue" required></textarea>
                     </div>
                 </div>
                 <div class="form-group">
@@ -23,15 +34,15 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="address">Address</label>
-                    <div class="col-md-9">
-                        <input disabled class="form-control" id="address" name="address" type="text" data-ng-model="nvs_item.address" required>
+                    <div class="col-md-9" data-ng-class="{'has-error': editModalForm.address.$invalid && editModalForm.address.$dirty}">
+                        <input class="form-control" id="address" name="address" type="text" data-ng-model="nvs_item.address" required>
                     </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" data-ng-disabled="editModalForm.$invalid" ng-click="ok()">Update</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" data-ng-disabled="editModalForm.$invalid || okIsDisabled" ng-click="ok()">Update</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -42,6 +53,17 @@
         <div class="modal-body">
             <form class="form-horizontal" name="newModalForm">
                 <div class="form-group">
+                    <label class="col-md-3 control-label" for="typeOfData">Type of Data</label>
+                    <div class="col-md-3">
+                        <input type="radio" id="utf8" name="typeOfData" value="utf8"  ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData" ng-change="newValue()">
+                        <label class="control-label" for="utf8">utf8</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="radio" id="base64" name="typeOfData" value="base64" ng-model="nvs_item.typeOfData" ng-required="!nvs_item.typeOfData" ng-change="newValue()">
+                        <label class="control-label" for="base64">base64</label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-3 control-label" for="name_new">Name</label>
                     <div class="col-md-9" data-ng-class="{'has-error': newModalForm.name_new.$invalid && newModalForm.name_new.$dirty}">
                         <input class="form-control" id="name_new" name="name_new" type="text" data-ng-model="nvs_item.name" required>
@@ -49,8 +71,8 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="value_new">Value</label>
-                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.value_new.$invalid && newModalForm.value_new.$dirty}">
-                        <input class="form-control" id="value_new" name="value_new" type="text" data-ng-model="nvs_item.value" required>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.tmpValue.$invalid && newModalForm.tmpValue.$dirty}">
+                        <textarea class="form-control" id="value_new" name="value_new" type="text" data-ng-model="nvs_item.tmpValue" required></textarea>
                     </div>
                 </div>
                 <div class="form-group">
@@ -62,8 +84,8 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid" ng-click="ok()">Save</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || okIsDisabled" ng-click="ok()">Save</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" ng-click="cancel()">Cancel</button>
         </div>
 </script>
 
@@ -75,8 +97,84 @@
             Are you sure want to delete the name?
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">Delete</button>
-            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" data-ng-disabled="newModalForm.$invalid || deleteIsDisabled" type="button" ng-click="ok()">Delete</button>
+            <button class="btn btn-default" data-ng-disabled="deleteIsDisabled" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+</script>
+
+<script type="text/ng-template" id="certsModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">EMC SSL Certificate</h3>
+        </div>
+        <div class="modal-body">
+            Your certificate has successfully been created with ID "<b>@{$ data.cn $}</b>"
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(0)">Install certificate</button>
+            <button class="btn btn-primary" type="button" data-ng-click="getCert(1)">Download certificate bundle</button>
+            <button class="btn btn-default" type="button" data-ng-click="cancel()">Close</button>
+        </div>
+</script>
+
+<script type="text/ng-template" id="reNewCert.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Make a New Certificate</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" name="newModalForm">
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="key_id">Public Key ID</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.key_id.$invalid && newModalForm.key_id.$dirty}">
+                        <input class="form-control" id="key_id" name="key_id" type="text" data-ng-model="newcert.cn" required pattern="^@?[A-Za-z0-9-_]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="first_name">First Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.first_name.$invalid && newModalForm.first_name.$dirty}">
+                        <input class="form-control" id="first_name" name="first_name" type="text" data-ng-model="newcert.first_name" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="last_name">Last Name</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.last_name.$invalid && newModalForm.last_name.$dirty}">
+                        <input class="form-control" id="last_name" name="last_name" type="text" data-ng-model="newcert.last_name" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="alias">Alias</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.alias.$invalid && newModalForm.alias.$dirty}">
+                        <input class="form-control" id="alias" name="alias" type="text" data-ng-model="newcert.alias" required pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="email">E-mail</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.email.$invalid && newModalForm.email.$dirty}">
+                        <input class="form-control" id="email" name="email" type="email" data-ng-model="newcert.email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="daystoexpire">Days to Expire</label>
+                    <div class="col-md-9" data-ng-class="{'has-error': newModalForm.daystoexpire.$invalid && newModalForm.daystoexpire.$dirty}">
+                        <input class="form-control" id="daystoexpire" name="daystoexpire" type="number" min="1" data-ng-model="newcert.daystoexpire" required pattern="^[0-9]+$">
+                    </div>
+                </div>
+                <div class="form-group" data-ng-repeat="txt in newcert.txt track by $index">
+                    <div class="col-md-3" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtname_{$ $index $}" name="txtname_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].name" pattern="^[A-Za-z0-9-_]+$">
+                    </div>
+                    <div class="col-md-8" data-ng-class="{'has-error': newModalForm.keywords.$invalid && newModalForm.keywords.$dirty}">
+                        <input class="form-control" id="txtvalue_{$ $index $}" name="txtvalue_{$ $index $}" type="text" data-ng-model="newcert.txt[$index].value" pattern="^[\w\!\@\#\$\%\^\&\*\(\)\:\;\\\|\/ \-\+\{\}\[\]\?\<\>\.\,\~\=]+$">
+                    </div>
+                    <div class="col-md-1">
+                        <span class="btn btn-primary" data-ng-if="$index + 1 == newcert.txt.length" data-ng-click="addTxt()"><i class="fa fa-plus"></i></span>
+                        <span class="btn btn-primary" data-ng-if="$index + 1 < newcert.txt.length" data-ng-click="delTxt($index)"><i class="fa fa-minus"></i></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" data-ng-disabled="newModalForm.$invalid || okIsDisabled" data-ng-click="makeCert()">Make</button>
+            <button class="btn btn-default" type="button" data-ng-disabled="okIsDisabled" data-ng-click="cancel()">Cancel</button>
         </div>
 </script>
 {% endblock %}
@@ -95,22 +193,27 @@
                 <table class="table table-striped" data-ng-if="nvs_list">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th >Value</th>
-                            <th >Address</th>
-                            <th >Expires in, days</th>
-                            <th >Actions</th>
+                            <th class="col-sm-2">Name</th>
+                            <th class="col-sm-4" >Value</th>
+                            <th class="col-sm-2" >Address</th>
+                            <th class="col-sm-1" >Expires in, days</th>
+                            <th class="col-sm-2" >
+                                <div class="invisible-button"></div>
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr data-ng-repeat="nvs_item in nvs_list">
                             <td class="col-sm-2 wb">{$ nvs_item.name $}</td>
-                            <td class="col-sm-4 wb">{$ nvs_item.value $}</td>
+                            <td class="col-sm-4 wb" ng-bind-html="nvs_item.value | formatText:nvs_item.isInfocard"></td>
                             <td class="col-sm-2 wb">{$ nvs_item.address $}</td>
                             <td class="col-sm-1">{$ nvs_item.expires_in $}</td>
                             <td class="col-sm-2">
+                                <button class="btn btn-info" ng-if="nvs_item.isSSL" ng-click="reNewModal(nvs_item)"><i class="fa fa-refresh"></i></button>
+                                <div class="invisible-button" ng-if="!nvs_item.isSSL"></div>
                                 <button class="btn btn-warning" ng-click="editModal(nvs_item)"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-danger" ng-click="removeName(nvs_item)"><i class="fa fa-remove"></i></button>
+                                <button class="btn btn-danger" ng-click="removeName(nvs_item)"><i class="fa fa-remove"></i></button>   
                             </td>
                         </tr>
                     </tbody>

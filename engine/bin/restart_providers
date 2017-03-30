@@ -1,0 +1,21 @@
+#!/bin/bash
+
+[ -f /var/lib/emcweb/.restart-providers ] && {
+  supervisorctl restart celery
+  systemctl restart apache2 >/dev/null 2>&1
+  systemctl restart httpd >/dev/null 2>&1
+
+  [ -L /var/lib/emc/.emercoin/wallet.dat ] || {
+    systemctl stop emercoind >/dev/null 2>&1 || true
+    mv /var/lib/emc/.emercoin/wallet.dat /var/lib/emcweb/uploads/Default
+    ln -s /var/lib/emcweb/uploads/Default /var/lib/emc/.emercoin/wallet.dat
+    chown -R emc:emc /var/lib/emc/.emercoin/wallet.dat
+    chown -R emc:emc /var/lib/emcweb/uploads/Default
+    chmod 600 /var/lib/emc/.emercoin/wallet.dat
+    chmod 600 /var/lib/emcweb/uploads/Default
+    systemctl start emercoind
+    }
+
+  rm -f /var/lib/emcweb/.restart-providers
+}
+sleep 5

@@ -58,19 +58,19 @@
                     <div class="form-group">
                         <label class="col-md-3 control-label" for="lc_api_key">LiveCoin API Key</label>
                         <div class="col-md-9" data-ng-class="{'has-error': liveCoinForm.lc_api_key.$invalid && liveCoinForm.lc_api_key.$dirty}">
-                            <input class="form-control" id="lc_api_key" name="lc_api_key" type="text" data-ng-model="lc_api_key" required>
+                            <input class="form-control" id="lc_api_key" name="lc_api_key" type="text" data-ng-model="lc_api_key">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label" for="lc_secret_key">LiveCoin Secret Key</label>
                         <div class="col-md-9" data-ng-class="{'has-error': liveCoinForm.lc_secret_key.$invalid && liveCoinForm.lc_secret_key.$dirty}">
-                            <input class="form-control" id="lc_secret_key" name="lc_secret_key" type="text" data-ng-model="lc_secret_key" required>
+                            <input class="form-control" id="lc_secret_key" name="lc_secret_key" type="text" data-ng-model="lc_secret_key">
                         </div>
                     </div>
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
                         <div class="col-md-10 col-md-offset-2">
-                            <button data-ng-disabled="liveCoinForm.$invalid || (lc_secret_key == old_settings.lc_secret_key && lc_api_key == old_settings.lc_api_key)" class="btn btn-primary" data-ng-click="applyLCSettings(lc_api_key, lc_secret_key)">Update</button>
+                            <button  class="btn btn-primary" data-ng-disabled="isUpdateDisabled" data-ng-click="applyLCSettings(lc_api_key, lc_secret_key)">Update</button>
                         </div>
                     </div>
                 </form>

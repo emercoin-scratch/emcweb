@@ -11,6 +11,13 @@ emcwebResource.factory('Wallets', function($resource) {
         });
 });
 
+emcwebResource.factory('Wallet', function($resource) {
+    return $resource('/webapi/wallet/:name', null,
+        {
+            'create': {method: 'POST'}
+        });
+});
+
 emcwebResource.factory('Encrypt', function($resource) {
     return $resource('/webapi/encrypt', null,
         {
@@ -87,7 +94,8 @@ emcwebResource.factory('Cert', function($resource, Blob) {
                     return {content: new Blob([data])};
                 }
             },
-            'create': {method: 'POST'}
+            'create': {method: 'POST'},
+            'reNew': {method: 'PUT'}
         });
 });
 
@@ -95,6 +103,7 @@ emcwebResource.factory('NVS', function($resource) {
     return $resource('/webapi/nvs', null,
         {
             'get': {method: 'GET'},
+            'getExpires': {method: 'GET', params: {expires: 1}},
             'update': {method: 'PUT'},
             'create': {method: 'POST'},
             'remove': {method: 'DELETE'}

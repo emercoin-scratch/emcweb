@@ -105,3 +105,19 @@
 .select2-dropdown {
     z-index: 9001;
 }
+
+::-ms-clear {
+  display: none;
+}
+
+.form-control-clear {
+  margin-right: 40px;
+  font-size: 0.8em;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.invisible-button{
+  display: inline-block;
+  margin-left: 38px;
+}
