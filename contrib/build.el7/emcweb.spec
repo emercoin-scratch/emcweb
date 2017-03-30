@@ -68,8 +68,8 @@ systemctl enable  emercoind httpd supervisord redis >/dev/null 2>&1 || true
 %attr(-,root,root)   /usr/sbin/*
 
 %changelog
-* Wed Mar 22 2017 Sergii Vakula <sv@aspanta.com> 2.1
-- Version 2.1
+* Fri Mar 31 2017 Sergii Vakula <sv@aspanta.com> 2.1
+- Refer to the CHANGELOG
 
 * Thu Feb 02 2017 Sergii Vakula <sv@aspanta.com> 2.0
 - Initial release, v2.0
