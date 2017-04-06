@@ -14,7 +14,7 @@ def get_actives_nvs(objects):
 
     for item in objects:
         if not item.get('transferred', False) and item.get('expires_in', 0) >= 0:
-            item['expires_in'] = round(item['expires_in'] / 182)
+            item['expires_in'] = round(item['expires_in'] / 175)
             result.append(item)
     return result
 
