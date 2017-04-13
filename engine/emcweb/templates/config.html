@@ -3,8 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=0.85, user-scalable=0">
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-    <link rel="apple-touch-icon-precomposed" sizes="115x115" href="{{ url_for('static', filename='img/favicon-retina.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/config-style.css') }}">
     <title>EMCWEB config</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -13,7 +11,7 @@
     {% if created %}
     <div class="one-column">
     <div class="logo"></div>
-    <h1 class="green upper">{% if message %}{{ message }}{% else %} PLEASE WAIT<br/>WHILE YOUR SYSTEM<br/><a href="/"> IS CONFIGURED</a>{% endif %}</h1>
+    <h1 class="pink upper">{% if message %}{{ message }}{% else %} PLEASE WAIT<br/>WHILE YOUR SYSTEM<br/><a href="/"> IS CONFIGURED</a>{% endif %}</h1>
     </div>
     {% if not message %}
         <script>
@@ -29,7 +27,7 @@
     {% else %}
         <div class="one-column">
             <div class="logo"></div>
-            <h1 class="green upper">Blockchain engine<br/>config</h1>
+            <h1 class="green upper">EMCWEB config</h1>
             <div class="error black {% if error_msg %} active {% endif %}">
                 <h1><i class="material-icons">warning</i>Error</h1>
                 <span>{{ error_msg }}</span>

@@ -10,9 +10,7 @@ SECRET_KEY = 'secretkey'
 
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=15)
 SESSION_REFRESH_EACH_REQUEST = True
-
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads')
-BACKUP_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'backups')
 
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'wtfsecretkey'

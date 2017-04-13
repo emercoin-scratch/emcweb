@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
 import importlib
 import random
 import string
 
-from flask import request, render_template, current_app
+from flask import request, render_template
 from flask_login import login_required
 
 from ..utils import client
@@ -24,8 +23,7 @@ def backup():
     if data:
         return data
 
-    backup_folder = current_app.config['BACKUP_FOLDER']
-    filename = os.path.join(backup_folder, ''.join([random.choice(string.ascii_lowercase + string.digits) for _ in range(10)]))
+    filename = '/tmp/%s' % ''.join([random.choice(string.ascii_lowercase + string.digits) for _ in range(10)])
     data = client.backupwallet(filename)
     if data['error']:
         return render_template('backup_error.html', error='Get wallet error')
