@@ -1,5 +1,5 @@
 Name:           emcweb
-Version:        2.1
+Version:        2.1.1
 Release:        1%{?dist}
 Summary:        Emercoin Web Wallet
 Group:          Applications/Internet
@@ -68,8 +68,5 @@ systemctl enable  emercoind httpd supervisord redis >/dev/null 2>&1 || true
 %attr(-,root,root)   /usr/sbin/*
 
 %changelog
-* Fri Mar 31 2017 Sergii Vakula <sv@aspanta.com> 2.1
-- Refer to the CHANGELOG
-
 * Thu Feb 02 2017 Sergii Vakula <sv@aspanta.com> 2.0
-- Initial release, v2.0
+- There is no changelog availavle. Please refer to the CHANGELOG file.

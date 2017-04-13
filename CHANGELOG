@@ -29,3 +29,6 @@ Version 2.1:
  * The Cancel button becomes inactive in pop-up windows after the confirmation button is pushed
  * A status update has been added for a new empty wallet after its creation
  * The exception has been fixed if there is a connection to the server, however an authorization error occurs
+
+Version 2.1.1:
+ * Change location of the temporary backup folder to prevent conflicts with the Private Temp Folder by Apache
