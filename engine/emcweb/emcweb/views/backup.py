@@ -24,7 +24,12 @@ def backup():
     if data:
         return data
 
-    backup_folder = current_app.config['BACKUP_FOLDER']
+    upload_folder = current_app.config.get('UPLOAD_FOLDER','/var/lib/emcweb/uploads')
+    default_backup = os.path.join(
+                  os.path.dirname(upload_folder),
+                  'backups')
+    backup_folder = current_app.config.get('BACKUP_FOLDER', default_backup)
+
     filename = os.path.join(backup_folder, ''.join([random.choice(string.ascii_lowercase + string.digits) for _ in range(10)]))
     data = client.backupwallet(filename)
     if data['error']:
