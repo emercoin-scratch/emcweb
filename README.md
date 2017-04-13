@@ -1,2 +1,2 @@
-EmerCoin Web Wallet 2.1
+Emercoin Web Wallet
 https://github.com/emercoin/emcweb
