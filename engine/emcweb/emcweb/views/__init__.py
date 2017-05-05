@@ -20,3 +20,4 @@ import emcweb.emcweb.views.emcssl
 import emcweb.emcweb.views.emcssh
 import emcweb.emcweb.views.emclnx
 import emcweb.emcweb.views.block
+import emcweb.emcweb.views.config
