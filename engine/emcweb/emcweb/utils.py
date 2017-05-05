@@ -20,10 +20,13 @@ client = EMCClient(**PARAMS)
 
 
 def get_block_status():
-    data = client.getinfo()
+    data = client.getblockchaininfo()
+    status = 2
 
     if data.get('error', False):
         return 0, None, data['error']['message']
+    result = data['result']
+    if round(result['verificationprogress'], 2) < 0.99 or result['blocks'] + 1 < result['headers']:
+        status = 1
 
-    status = 1 if 'Checkpoint is too old' in data['result']['errors'] else 2
-    return status, data['result']['blocks'], ''
+    return status, result['blocks'], ''
