@@ -24,5 +24,6 @@ def wallets():
     return render_template(
         'wallets.html',
         google=os.path.exists(os.path.join(os.path.dirname(__file__),
-                                           '..', '..', '..', 'static', 'google_secrets.json'))
+                                           '..', '..', '..', 'static',
+                                           'google_secrets.json'))
     )
