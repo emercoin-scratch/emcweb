@@ -50,6 +50,37 @@
             </div>
         </div>
     </uib-tab>
+    <uib-tab index="3" heading="Password">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form class="form-horizontal" name="passwordForm">
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            <label for="password" class="control-label">Old password:</label>
+                            <input type="password" class="form-control" id="password" name="password" data-ng-model="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-5" data-ng-class="{'has-error': passwordForm.new_password.$dirty && new_password != '' && new_password != new_password2}">
+                            <label for="new_password" class="control-label">New password:</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" data-ng-model="new_password" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-5" data-ng-class="{'has-error': passwordForm.new_password2.$dirty && new_password2 != '' && new_password != new_password2}">
+                            <label for="new_password2" class="control-label">New password confirmation:</label>
+                            <input type="password" class="form-control" id="new_password2" name="new_password2" data-ng-model="new_password2" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-7">
+                            <button class="btn btn-primary" data-ng-click="changePassword()" data-ng-disabled="isChangePasswordDisabled || new_password == '' || new_password != new_password2">Change password</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </uib-tab>
     {% if live_coin %}
     <uib-tab index="1" heading="LiveCoin">
         <div class="ibox float-e-margins">
