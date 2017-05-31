@@ -17,10 +17,18 @@
     <div class="middle-box text-center">
         <div class="white login-form {% if enable_ssl %}login-btns{% else %}login-btn{% endif %}">
             {% if enable_ssl %}
-            <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
+                {% if set_password %}
+                    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_set_password">Sign In with Certificate</button>
+                {% else %}
+                    <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
+                {% endif %}
             <br/><br/>or<br/><br/>
             {% endif %}
-            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
+            {% if set_password %}
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_set_password">Sign In with Credentials</button>
+            {% else %}
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
+            {% endif %}
         </div>
     </div>
 
@@ -39,6 +47,37 @@
                         <div class="form-group">
                             {{ form.password.label }}
                             {{ form.password(class="form-control", placeholder="Password", required="") }}
+                        </div>
+                        {{ form.csrf_token }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="login_btn">Sign In</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="login_set_password">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create a New User</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('login.login') }}" method="post" id="auth_form">
+                        <div class="form-group">
+                            {{ create_form.login.label }}
+                            {{ create_form.login(class="form-control", placeholder="Login", required="") }}
+                        </div>
+                        <div class="form-group">
+                            {{ create_form.password.label }}
+                            {{ create_form.password(class="form-control", placeholder="New Password", required="") }}
+                        </div>
+                        <div class="form-group">
+                            {{ create_form.password2.label }}
+                            {{ create_form.password2(class="form-control", placeholder="New Password Confirmation", required="") }}
                         </div>
                         {{ form.csrf_token }}
                     </form>
