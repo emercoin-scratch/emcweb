@@ -30,7 +30,7 @@ class SettingsAPI(LoginResource):
         for key, value in CONFIGS_DB.items():
             if key not in params:
                 params[key] = value['default']
-
+        params['login'] = Credentials.query.first().name
         return params
 
     @staticmethod
@@ -85,25 +85,30 @@ class PasswordAPI(Resource):
     @staticmethod
     def put():
         parser = reqparse.RequestParser()
-        parser.add_argument('password', type=str, required=True, help='Need set old password')
-        parser.add_argument('new_password', type=str, required=True, help='Need set new password')
+        parser.add_argument('login', type=str, required=True, help='Need set login')
+        parser.add_argument('password', type=str, required=False, help='Need set old password')
+        parser.add_argument('new_password', type=str, required=False, help='Need set new password')
         args = parser.parse_args()
 
         old_password = md5(args['password'].encode()).hexdigest()
+        new_password = args.get('new_password', None)
+
         cred = Credentials.query.first()
+        cred.name = args['login']
 
         # verify old password
-        if not cred.password == old_password:
+        if new_password and not cred.password == old_password:
             return {'result_status': False,
                     'message': 'Old password is invalid'}, 400
-        else:
+        elif new_password and cred.password == old_password:
             # set new_password
-            cred.password = md5(args['new_password'].encode()).hexdigest()
-            connection.session.commit()
+            cred.password = md5(new_password.encode()).hexdigest()
+
+        connection.session.commit()
 
         # logout (maybe on client)
         return {'result_status': True,
-                'message': 'Your password has been changed successfully'}
+                'message': 'Your account has been updated successfully'}
 
 
 api.add_resource(SettingsAPI, '/settings')

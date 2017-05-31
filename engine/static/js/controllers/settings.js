@@ -56,6 +56,9 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
             $scope.smtp.auth = data.smtp_auth;
             $scope.smtp.username = data.smtp_username;
             $scope.smtp.password = data.smtp_password;
+
+            $scope.login = data.login;
+            $scope.old_login = data.login;
         });
     }
 
@@ -81,9 +84,10 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
         });        
     }
 
-    $scope.changePassword = function (password, new_password){
+    $scope.changePassword = function (login, password, new_password){
         $scope.isChangePasswordDisabled = true;
         Password.change({
+            'login': login,
             'password': password,
             'new_password': new_password
         }).$promise.then(function(result){
@@ -91,7 +95,15 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
             if(result.result_status){
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message});
                 
-                $window.setInterval(function(){ $window.location.href = '/auth/logout'; }, 3000);
+                $scope.login = login;
+                $scope.old_login = login;
+
+                $scope.$dirty = true;
+                $window.setInterval(function(){
+                    if (new_password){
+                        $window.location.href = '/auth/logout';
+                    }
+                }, 3000);
 
             }else{
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: result.message});
