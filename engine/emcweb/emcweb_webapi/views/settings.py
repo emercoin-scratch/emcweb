@@ -3,12 +3,16 @@ from __future__ import unicode_literals
 
 import time
 
+from hashlib import md5
+
 from flask import current_app
+from flask_restful import Resource
 from flask_restful import reqparse
 from emcweb.emcweb_webapi.login_resource import LoginResource
 
 from emcweb.exts import connection
 from emcweb.models import Settings
+from emcweb.login.models import Credentials
 from emcweb.utils import apply_db_settings, CONFIGS_DB
 from emcweb.emcweb_webapi.views import api
 from emcweb.tasks import restart_emercoind
@@ -76,4 +80,36 @@ class SettingsAPI(LoginResource):
         return {'result_status': False, 'message': 'Celery hasn\'t reported about finish'}, 500
 
 
+class PasswordAPI(Resource):
+
+    @staticmethod
+    def post():
+        return {'result_status': True,
+                'message': 'Password changed successfully!'}
+
+    @staticmethod
+    def put():
+        parser = reqparse.RequestParser()
+        parser.add_argument('password', type=str, required=True, help='Need set old password')
+        parser.add_argument('new_password', type=str, required=True, help='Need set new password')
+        args = parser.parse_args()
+
+        old_password = md5(args['password'].encode()).hexdigest()
+        cred = Credentials.query.first()
+
+        # verify old password
+        if not cred.password == old_password:
+            return {'result_status': False,
+                    'message': 'Old password is invalid'}, 400
+        else:
+            # set new_password
+            cred.password = md5(args['new_password'].encode()).hexdigest()
+            connection.session.commit()
+
+        # logout (maybe on client)
+        return {'result_status': True,
+                'message': 'Your password has been changed successfully'}
+
+
 api.add_resource(SettingsAPI, '/settings')
+api.add_resource(PasswordAPI, '/password')

@@ -1,7 +1,7 @@
 'use strict';
 
-emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', '$uibModal', 'blockUI',
-                     function SettingsController($scope, $rootScope, Settings, $uibModal, blockUI) {
+emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', 'Settings', 'Password', '$uibModal', 'blockUI',
+                     function SettingsController($scope, $rootScope, $window, Settings, Password, $uibModal, blockUI) {
     $scope.timeouts = [
         {'timeout': 3600, 'name': '1 hour'},
         {'timeout': 10800, 'name': '3 hours'},
@@ -24,6 +24,10 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
     $scope.timeout = null;
     $scope.smtp = {};
     $scope.old_settings = {};
+
+    $scope.password = "";
+    $scope.new_password = "";
+    $scope.new_password2 = "";
 
     $scope.getSettings = function () {
         Settings.get().$promise.then(function(data) {
@@ -75,6 +79,24 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
         }, function(reason) {
             $scope.isUpdateDisabled = false;
         });        
+    }
+
+    $scope.changePassword = function (password, new_password){
+        $scope.isChangePasswordDisabled = true;
+        Password.change({
+            'password': password,
+            'new_password': new_password
+        }).$promise.then(function(result){
+            $scope.isChangePasswordDisabled = false;
+            if(result.result_status){
+                $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message});
+                $window.location.href = '/auth/logout';
+            }else{
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: result.message});
+            }
+        }, function(reason) {
+            $scope.isChangePasswordDisabled = false;
+        })
     }
 
     $scope.applyMailerSettings = function (smtp) {
