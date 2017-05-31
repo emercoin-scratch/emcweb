@@ -56,3 +56,5 @@ EMCSSH_KEYS_DIR = '/etc/emercoin/emcssh.keys.d'
 EMCSSH_BIN_PATH = '/usr/sbin/emcssh'
 EMCSSH_VERIFY_USER = 'emcweb'
 EMCSSH_VERIFY_SSL = True
+
+FREE_LOGIN = False
