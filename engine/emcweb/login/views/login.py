@@ -5,13 +5,15 @@ import datetime
 from hashlib import md5
 
 from flask import (redirect, url_for, request, abort,
-                   session, current_app, make_response)
+                   session, current_app, make_response,
+                   flash)
 from flask_login import login_user
 
 from ..models import Credentials, Users
 from ..ssl_check import check_ssl
 from . import module_bp
 from emcweb.emcweb.views.index import LoginForm, CreateLoginForm
+from emcweb.exts import connection
 
 
 def create_cookie(page):
@@ -19,6 +21,7 @@ def create_cookie(page):
     if request.cookies.get(cookie_name, '0') == '0':
         resp = make_response(page)
         resp.set_cookie(cookie_name, value='1')
+
 
 @module_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,7 +71,7 @@ def login_ssl():
         except:
             current_app.config['DB_FALL'] = 2
             return redirect(url_for('emcweb.index'))
-        
+
         session.modified = True
         session.permanent = True
         current_app.permanent_session_lifetime = datetime.timedelta(days=365*10)
@@ -97,25 +100,42 @@ def create_user():
     form = CreateLoginForm()
     password = md5(form.password.data.encode()).hexdigest()
 
-    if form.validate():
-        try:
-            user = Users.query.filter(Credentials.name == form.login.data,
-                                      Credentials.password == password).first()
-            current_app.config['DB_FALL'] = 0
-        except:
-            current_app.config['DB_FALL'] = 2
-            return redirect(url_for('emcweb.index'))
+    user = Users.query.first()
 
+    if not user:
+        user = Users(id=1)
+        connection.session.add(user)
+
+    cred = None
+    if form.validate():
+        cred = Credentials(user_id=user.id,
+                           name=form.login.data,
+                           password=password)
+        connection.session.add(cred)
+        connection.session.commit()
         session['login_password'] = True
 
         session.modified = True
         session.permanent = True
         current_app.permanent_session_lifetime = datetime.timedelta(minutes=15)
 
-        if user:
-            login_user(user)
-            page = redirect(url_for('emcweb.index'))
-            create_cookie(page)
-            return page
+    if user and cred:
+        login_user(user)
+        page = redirect(url_for('emcweb.index'))
+        create_cookie(page)
+        return page
 
-    abort(403)
+    if form.errors:
+        error_str = ''
+        for k, v in form.errors.items():
+            if isinstance(v, list):
+                value = v[0]
+            else:
+                value = v
+
+            error_str = error_str + '%s: %s, ' % (form[k].label.text, value)
+
+        flash(error_str, 'danger')
+    else:
+        flash('Error creating user', 'danger')
+    return redirect(url_for('emcweb.index'))

@@ -66,7 +66,7 @@
                     <h4 class="modal-title">Create a New User</h4>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ url_for('login.login') }}" method="post" id="auth_form">
+                    <form action="{{ url_for('login.create_user') }}" method="post" id="create_user_form">
                         <div class="form-group">
                             {{ create_form.login.label }}
                             {{ create_form.login(class="form-control", placeholder="Login", required="") }}
@@ -83,7 +83,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="login_btn">Sign In</button>
+                    <button type="button" class="btn btn-primary" id="new_user_btn">Create User</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -105,10 +105,46 @@ $(document).ready(function() {
     $('#login_btn').click(function() {
         $('form#auth_form').submit();
     });
-    $("input").keypress(function(event) {
+    
+    $('#new_user_btn').click(function() {
+        $('form#create_user_form').submit();
+    });
+
+    $("form#auth_form input").keypress(function(event) {
         if (event.which == 13) {
             event.preventDefault();
             $('form#auth_form').submit();
+        }
+    });
+
+    $("form#create_user_form input").on("keyup", function(event) {
+        var login = $("form#create_user_form input#login");
+        var password = $("form#create_user_form input#password");
+        var password2 = $("form#create_user_form input#password2");
+
+        if ((password.val() || password2.val()) && password.val() != password2.val()){
+            password.addClass('error');
+            password2.addClass('error');
+        }else{
+            password.removeClass('error');
+            password2.removeClass('error');
+        }
+
+        if (/[^a-zA-Z0-9_]/.test(login.val())){
+            login.addClass('error');
+        }else{
+            login.removeClass('error');
+        }
+
+        if ($("form#create_user_form input.error").length > 0){
+            $("button#new_user_btn").attr("disabled", '1');
+        }else{
+            $("button#new_user_btn").removeAttr("disabled");
+        }
+
+        if (event.which == 13) {
+            event.preventDefault();
+            $('form#create_user_form').submit();
         }
     });
 

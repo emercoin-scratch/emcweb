@@ -19,17 +19,20 @@ from emcweb.utils import apply_db_settings
 
 
 def password_not_set():
-    pass
-    return True
+    from emcweb.login.models import Credentials
+    return len(Credentials.query.all()) == 0 and current_app.config.get('FREE_LOGIN', False)
 
 
 class LoginForm(Form):
-    login = StringField('Login', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    login = StringField('Login',
+                        validators=[DataRequired()])
+    password = PasswordField('Password',
+                             validators=[DataRequired()])
 
 
 class CreateLoginForm(LoginForm):
-    password2 = PasswordField('Password Confirmation', validators=[DataRequired()])
+    password2 = PasswordField('Password Confirmation',
+                              validators=[DataRequired()])
 
 
 @module_bp.route('/')

@@ -83,11 +83,6 @@ class SettingsAPI(LoginResource):
 class PasswordAPI(Resource):
 
     @staticmethod
-    def post():
-        return {'result_status': True,
-                'message': 'Password changed successfully!'}
-
-    @staticmethod
     def put():
         parser = reqparse.RequestParser()
         parser.add_argument('password', type=str, required=True, help='Need set old password')
