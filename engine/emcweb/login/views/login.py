@@ -11,7 +11,7 @@ from flask_login import login_user
 from ..models import Credentials, Users
 from ..ssl_check import check_ssl
 from . import module_bp
-from emcweb.emcweb.views.index import LoginForm
+from emcweb.emcweb.views.index import LoginForm, CreateLoginForm
 
 
 def create_cookie(page):
@@ -78,5 +78,44 @@ def login_ssl():
         page = redirect(url_for('emcweb.index'))
         create_cookie(page)
         return page
+
+    abort(403)
+
+
+@module_bp.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    if current_app.config.get('DB_FALL', None):
+        return redirect(url_for('emcweb.index'))
+
+    if request.method == 'GET':
+        return redirect(url_for('emcweb.index'))
+
+    # get parameters
+    # add credentials
+
+    session['loggined'] = True
+    form = CreateLoginForm()
+    password = md5(form.password.data.encode()).hexdigest()
+
+    if form.validate():
+        try:
+            user = Users.query.filter(Credentials.name == form.login.data,
+                                      Credentials.password == password).first()
+            current_app.config['DB_FALL'] = 0
+        except:
+            current_app.config['DB_FALL'] = 2
+            return redirect(url_for('emcweb.index'))
+
+        session['login_password'] = True
+
+        session.modified = True
+        session.permanent = True
+        current_app.permanent_session_lifetime = datetime.timedelta(minutes=15)
+
+        if user:
+            login_user(user)
+            page = redirect(url_for('emcweb.index'))
+            create_cookie(page)
+            return page
 
     abort(403)
