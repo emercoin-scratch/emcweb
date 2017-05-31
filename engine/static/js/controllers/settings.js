@@ -90,7 +90,9 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
             $scope.isChangePasswordDisabled = false;
             if(result.result_status){
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message});
-                $window.location.href = '/auth/logout';
+                
+                $window.setInterval(function(){ $window.location.href = '/auth/logout'; }, 3000);
+
             }else{
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: result.message});
             }
