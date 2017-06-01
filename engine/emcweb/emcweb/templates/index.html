@@ -83,7 +83,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="new_user_btn">Create User</button>
+                    <button type="button" class="btn btn-primary" id="new_user_btn" disabled>Create User</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -136,7 +136,7 @@ $(document).ready(function() {
             login.removeClass('error');
         }
 
-        if ($("form#create_user_form input.error").length > 0){
+        if ($("form#create_user_form input.error").length > 0 || login.val() == '' || password.val() == ''){
             $("button#new_user_btn").attr("disabled", '1');
         }else{
             $("button#new_user_btn").removeAttr("disabled");
