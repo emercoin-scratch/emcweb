@@ -86,6 +86,7 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
 
     $scope.changePassword = function (login, password, new_password){
         $scope.isChangePasswordDisabled = true;
+        blockUI.start('Updating...');
         Password.change({
             'login': login,
             'password': password,
@@ -94,12 +95,11 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', '
             $scope.isChangePasswordDisabled = false;
             if(result.result_status){
                 $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message});
-            
                 $window.setInterval(function(){
                     $window.location.href = '/auth/logout';
-                }, 3000);
-
+                }, 2000);
             }else{
+                blockUI.stop()
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: result.message});
             }
         }, function(reason) {
