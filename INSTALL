@@ -2,8 +2,9 @@ Prerequisites:
 1.  MySQL server access
 2.  Redis server access
 3.  emercoin, emcssh, pwgen, openssl, apache, python3, supervisor, celery
+4.  flask, flask-login, flask-migrate, flask-script, flask-sqlalchemy, flask-restful, flask-wtf, wtforms, sqlalchemy, jinja2, crypto, pycrypto, pyopenssl, pymysql, celery, requests, redis, ujson, oauth2client, dnspython, bsddb3, celery, google-api-python-client, mod_wsgi
 
-How to install (linux):
+How to manually install (for linux):
 1.  Copy engine/* to /var/lib/emcweb
 2.  Copy certs/* to /etc/ssl/emc
 3.  Copy bin/* to /usr/sbin
@@ -13,5 +14,6 @@ How to install (linux):
 7.  Make sure Apache's config is correct
 8.  Create MySQL DB
 9.  Make sure Apche has enabled modules: socache_shmcb, ssl, rewrite, as well as the emcweb site
-10. Enable and restart: Supervisor server, Redis server, Apache server
-11. Point your browser to the server's IP and follow instructions to continue setup
+10. Update flask.py configuration file with valid parameters
+11. Enable and restart: Supervisor server, Redis server, Apache server
+12. Point your browser to the server's IP and follow instructions to continue setup

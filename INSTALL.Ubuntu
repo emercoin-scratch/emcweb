@@ -1,0 +1,7 @@
+For Ubuntu 16.04 LTS (amd64):
+
+apt-key adv --keyserver keyserver.ubuntu.com --recv B58C58F4
+add-apt-repository 'deb http://download.emercoin.com/ubuntu xenial emercoin'
+apt update && DEBIAN_FRONTEND=noninteractive apt -y install emcweb
+
+After that, you can point your browser to the server's IP and follow instructions to continue setup

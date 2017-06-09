@@ -5,6 +5,9 @@ set -e
 
 case "$1" in
   configure)
+    [ ! -f /var/lib/emcweb/settings/flask.py ] && [ -f /var/lib/emc/.emercoin/emercoin.conf ] && [ -f /etc/mysql/mysql.cnf ] && {
+      /usr/sbin/emcweb-setup -C >/dev/null 2>&1 || true
+    } || true
     chown -R emc.emc /var/lib/emcweb
     pip3 install Flask Flask-Script Flask-SQLAlchemy Flask-Login Flask-Migrate Flask-Testing Flask-restful Jinja2 SQLAlchemy pyOpenSSL pycrypto PyMySQL Flask-WTF WTForms WTForms-Components requests ujson google-api-python-client oauth2client Celery redis dnspython vine kombu billiard cryptography
     a2enmod socache_shmcb ssl rewrite >/dev/null 2>&1
