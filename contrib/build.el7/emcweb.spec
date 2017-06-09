@@ -53,11 +53,11 @@ pip3 install --upgrade pip
 pip3 install flask flask-login flask-migrate flask-script flask-sqlalchemy flask-restful flask-wtf wtforms sqlalchemy jinja2 crypto pycrypto pyopenssl pymysql celery requests redis ujson oauth2client dnspython bsddb3 celery google-api-python-client mod_wsgi || exit 3
 mod_wsgi-express install-module >/dev/null 2>&1
 mod_wsgi-express module-config > /etc/httpd/conf.modules.d/00-wsgi.conf
+systemctl restart emercoind httpd supervisord redis mariadb >/dev/null 2>&1 || true
+systemctl enable  emercoind httpd supervisord redis mariadb >/dev/null 2>&1 || true
 [ ! -f /var/lib/emcweb/settings/flask.py ] && [ -f /var/lib/emc/.emercoin/emercoin.conf ] && [ -f /etc/my.cnf ] && {
   /usr/sbin/emcweb-setup -C >/dev/null 2>&1 || true
 } || true
-systemctl restart emercoind httpd supervisord redis >/dev/null 2>&1 || true
-systemctl enable  emercoind httpd supervisord redis >/dev/null 2>&1 || true
 
 %files
 %doc LICENSE

@@ -6,6 +6,7 @@ set -e
 case "$1" in
   configure)
     [ ! -f /var/lib/emcweb/settings/flask.py ] && [ -f /var/lib/emc/.emercoin/emercoin.conf ] && [ -f /etc/mysql/my.cnf ] && {
+      systemctl restart mysql  >/dev/null 2>&1 || true
       /usr/sbin/emcweb-setup -C >/dev/null 2>&1 || true
     } || true
     chown -R emc.emc /var/lib/emcweb
