@@ -5,8 +5,7 @@ set -e
 
 case "$1" in
   install)
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password password your_password'
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password your_password'
+    export DEBIAN_FRONTEND=noninteractive
     [ ! -f /etc/ssl/emc/emcweb.key ] || [ ! -f /etc/ssl/emc/emcweb.crt ] && {
       mkdir -p /etc/ssl/emc
       openssl req -nodes -x509 -newkey rsa:4096 -keyout /etc/ssl/emc/emcweb.key -out /etc/ssl/emc/emcweb.crt -days 3560 -subj /C=CY/L=Nicosia/O=Emercoin/CN=emercoin.emc
