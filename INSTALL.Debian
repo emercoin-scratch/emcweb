@@ -1,0 +1,8 @@
+For Debian 8 (amd64, armhf):
+
+apt-key adv --keyserver keyserver.ubuntu.com --recv B58C58F4
+echo "deb http://download.emercoin.com/debian jessie emercoin" > /etc/apt/sources.list.d/emercoin.list
+apt update && DEBIAN_FRONTEND=noninteractive apt -y install mysql-server redis-server && apt -y install emcweb
+emcweb-setup -C
+
+After that, you can point your browser to the server's IP and follow instructions to continue setup

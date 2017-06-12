@@ -17,10 +17,18 @@
     <div class="middle-box text-center">
         <div class="white login-form {% if enable_ssl %}login-btns{% else %}login-btn{% endif %}">
             {% if enable_ssl %}
-            <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
+                {% if set_password %}
+                    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_set_password">Sign In with Certificate</button>
+                {% else %}
+                    <a href="{{ url_for('login.login_ssl') }}" class="btn btn-primary btn-lg">Sign In with Certificate</a>
+                {% endif %}
             <br/><br/>or<br/><br/>
             {% endif %}
-            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
+            {% if set_password %}
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_set_password">Sign In with Credentials</button>
+            {% else %}
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#login_dialog">Sign In with Credentials</button>
+            {% endif %}
         </div>
     </div>
 
@@ -51,6 +59,37 @@
         </div>
     </div>
 
+    <div class="modal fade" tabindex="-1" role="dialog" id="login_set_password">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create a New User</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('login.create_user') }}" method="post" id="create_user_form">
+                        <div class="form-group">
+                            {{ create_form.login.label }}
+                            {{ create_form.login(class="form-control", placeholder="Login", required="") }}
+                        </div>
+                        <div class="form-group">
+                            {{ create_form.password.label }}
+                            {{ create_form.password(class="form-control", placeholder="New Password", required="") }}
+                        </div>
+                        <div class="form-group">
+                            {{ create_form.password2.label }}
+                            {{ create_form.password2(class="form-control", placeholder="New Password Confirmation", required="") }}
+                        </div>
+                        {{ form.csrf_token }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="new_user_btn" disabled>Create User</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/toastr/toastr.min.js') }}"></script>
@@ -66,10 +105,46 @@ $(document).ready(function() {
     $('#login_btn').click(function() {
         $('form#auth_form').submit();
     });
-    $("input").keypress(function(event) {
+    
+    $('#new_user_btn').click(function() {
+        $('form#create_user_form').submit();
+    });
+
+    $("form#auth_form input").keypress(function(event) {
         if (event.which == 13) {
             event.preventDefault();
             $('form#auth_form').submit();
+        }
+    });
+
+    $("form#create_user_form input").on("keyup", function(event) {
+        var login = $("form#create_user_form input#login");
+        var password = $("form#create_user_form input#password");
+        var password2 = $("form#create_user_form input#password2");
+
+        if ((password.val() || password2.val()) && password.val() != password2.val()){
+            password.addClass('error');
+            password2.addClass('error');
+        }else{
+            password.removeClass('error');
+            password2.removeClass('error');
+        }
+
+        if (/[^a-zA-Z0-9_]/.test(login.val())){
+            login.addClass('error');
+        }else{
+            login.removeClass('error');
+        }
+
+        if ($("form#create_user_form input.error").length > 0 || login.val() == '' || password.val() == ''){
+            $("button#new_user_btn").attr("disabled", '1');
+        }else{
+            $("button#new_user_btn").removeAttr("disabled");
+        }
+
+        if (event.which == 13) {
+            event.preventDefault();
+            $('form#create_user_form').submit();
         }
     });
 

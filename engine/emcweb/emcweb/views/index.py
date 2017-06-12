@@ -16,12 +16,23 @@ from wtforms.validators import DataRequired
 from . import module_bp
 from emcweb.emcweb.utils import get_block_status
 from emcweb.utils import apply_db_settings
-from emcweb.exts import connection
+
+
+def password_not_set():
+    from emcweb.login.models import Credentials
+    return len(Credentials.query.all()) == 0 and current_app.config.get('FREE_LOGIN', False)
 
 
 class LoginForm(Form):
-    login = StringField('Login', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    login = StringField('Login',
+                        validators=[DataRequired()])
+    password = PasswordField('Password',
+                             validators=[DataRequired()])
+
+
+class CreateLoginForm(LoginForm):
+    password2 = PasswordField('Password Confirmation',
+                              validators=[DataRequired()])
 
 
 @module_bp.route('/')
@@ -41,7 +52,11 @@ def index():
 
     serial = request.environ.get('SSL_CLIENT_M_SERIAL')
 
+    set_password = password_not_set()
+
     return redirect(url_for('emcweb.wallet')) \
         if current_user.is_authenticated else render_template('index.html',
                                                               form=LoginForm(),
+                                                              create_form=CreateLoginForm(),
+                                                              set_password=set_password,
                                                               enable_ssl=True if serial else False)

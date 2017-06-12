@@ -1,7 +1,7 @@
 'use strict';
 
-emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', '$uibModal', 'blockUI',
-                     function SettingsController($scope, $rootScope, Settings, $uibModal, blockUI) {
+emcwebApp.controller('SettingsController', ['$scope', '$rootScope', '$window', 'Settings', 'Password', '$uibModal', 'blockUI',
+                     function SettingsController($scope, $rootScope, $window, Settings, Password, $uibModal, blockUI) {
     $scope.timeouts = [
         {'timeout': 3600, 'name': '1 hour'},
         {'timeout': 10800, 'name': '3 hours'},
@@ -24,6 +24,10 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
     $scope.timeout = null;
     $scope.smtp = {};
     $scope.old_settings = {};
+
+    $scope.password = "";
+    $scope.new_password = "";
+    $scope.new_password2 = "";
 
     $scope.getSettings = function () {
         Settings.get().$promise.then(function(data) {
@@ -52,6 +56,9 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
             $scope.smtp.auth = data.smtp_auth;
             $scope.smtp.username = data.smtp_username;
             $scope.smtp.password = data.smtp_password;
+
+            $scope.login = data.login;
+            $scope.old_login = data.login;
         });
     }
 
@@ -75,6 +82,29 @@ emcwebApp.controller('SettingsController', ['$scope', '$rootScope', 'Settings', 
         }, function(reason) {
             $scope.isUpdateDisabled = false;
         });        
+    }
+
+    $scope.changePassword = function (login, password, new_password){
+        $scope.isChangePasswordDisabled = true;
+        blockUI.start('Updating...');
+        Password.change({
+            'login': login,
+            'password': password,
+            'new_password': new_password
+        }).$promise.then(function(result){
+            $scope.isChangePasswordDisabled = false;
+            if(result.result_status){
+                $rootScope.$broadcast('send_notify', {notify: 'success', message: result.message});
+                $window.setInterval(function(){
+                    $window.location.href = '/auth/logout';
+                }, 2000);
+            }else{
+                blockUI.stop()
+                $rootScope.$broadcast('send_notify', {notify: 'danger', message: result.message});
+            }
+        }, function(reason) {
+            $scope.isChangePasswordDisabled = false;
+        })
     }
 
     $scope.applyMailerSettings = function (smtp) {

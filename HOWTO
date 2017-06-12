@@ -1,3 +1,9 @@
+Create (or recreate) a MySQL DB:
+ - If MySQL has a root password:
+   emcweb-setup -C -R=<MYSQL_ROOT_PASS>
+ - Of MySQL hasn't a root password:
+   emcweb-setup -C
+
 Create a new UI user:
  - emcweb-useradd -u <user> -p <password>
 
@@ -12,4 +18,3 @@ Delete an existing wallet:
  - make sure you have selected another wallet as active
  - emcweb-walletdel -n <YOUR_WALLET_NAME>
  - optionally delete an existing file at /var/lib/emcweb/uploads/YOUR_WALLET_NAME
-

@@ -3,12 +3,16 @@ from __future__ import unicode_literals
 
 import time
 
+from hashlib import md5
+
 from flask import current_app
+from flask_restful import Resource
 from flask_restful import reqparse
 from emcweb.emcweb_webapi.login_resource import LoginResource
 
 from emcweb.exts import connection
 from emcweb.models import Settings
+from emcweb.login.models import Credentials
 from emcweb.utils import apply_db_settings, CONFIGS_DB
 from emcweb.emcweb_webapi.views import api
 from emcweb.tasks import restart_emercoind
@@ -26,7 +30,7 @@ class SettingsAPI(LoginResource):
         for key, value in CONFIGS_DB.items():
             if key not in params:
                 params[key] = value['default']
-
+        params['login'] = Credentials.query.first().name
         return params
 
     @staticmethod
@@ -76,4 +80,36 @@ class SettingsAPI(LoginResource):
         return {'result_status': False, 'message': 'Celery hasn\'t reported about finish'}, 500
 
 
+class PasswordAPI(Resource):
+
+    @staticmethod
+    def put():
+        parser = reqparse.RequestParser()
+        parser.add_argument('login', type=str, required=True, help='Need set login')
+        parser.add_argument('password', type=str, required=False, help='Need set old password')
+        parser.add_argument('new_password', type=str, required=False, help='Need set new password')
+        args = parser.parse_args()
+
+        old_password = md5(args['password'].encode()).hexdigest()
+        new_password = args.get('new_password', None)
+
+        cred = Credentials.query.first()
+        cred.name = args['login']
+
+        # verify old password
+        if new_password and not cred.password == old_password:
+            return {'result_status': False,
+                    'message': 'Old password is invalid'}, 400
+        elif new_password and cred.password == old_password:
+            # set new_password
+            cred.password = md5(new_password.encode()).hexdigest()
+
+        connection.session.commit()
+
+        # logout (maybe on client)
+        return {'result_status': True,
+                'message': 'Your account has been updated successfully'}
+
+
 api.add_resource(SettingsAPI, '/settings')
+api.add_resource(PasswordAPI, '/password')

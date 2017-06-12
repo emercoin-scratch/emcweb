@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 
 from emcweb.emcweb_webapi.login_resource import LoginResource
 
-from emcweb.emcweb_webapi.utils import client
 from emcweb.emcweb_webapi.views import api
+from emcweb.emcweb.utils import get_block_status
 
 
 class BlocksAPI(LoginResource):
@@ -14,13 +14,12 @@ class BlocksAPI(LoginResource):
         """
         Get blocks loading status
         """
-        data = client.getinfo()
+        status, blocks, error_str = get_block_status()
 
-        if (data.get('error') and data['error']['code'] == -9999) or not data.get('result'):
-            return {'result_status': False, 'message': 'Server connection error'}, 500
+        if error_str:
+            return {'result_status': False, 'message': error_str}, 500
 
-        status = False if 'Checkpoint is too old' in data['result']['errors'] else True
-        return {'result_status': True, 'result': {'blocks_ready': status, 'blocks': data['result']['blocks']}}
-
+        return {'result_status': True, 'result': {'blocks_ready': status,
+                                                  'blocks': blocks}}
 
 api.add_resource(BlocksAPI, '/blocks')

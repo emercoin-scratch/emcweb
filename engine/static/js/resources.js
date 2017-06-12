@@ -75,6 +75,13 @@ emcwebResource.factory('Settings', function($resource) {
         });
 });
 
+emcwebResource.factory('Password', function($resource) {
+    return $resource('/webapi/password', null,
+        {
+            'change': {method: 'PUT'}
+        });
+});
+
 emcwebResource.factory('Messages', function($resource) {
     return $resource('/webapi/messages', null,
         {
