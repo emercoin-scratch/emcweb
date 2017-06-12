@@ -32,3 +32,9 @@ Version 2.1:
 
 Version 2.1.1:
  * Change location of the temporary backup folder to prevent conflicts with the Private Temp Folder by Apache
+
+Version 2.2:
+ * Login/password change feature
+ * Setup a new login/password if not been set
+ * Hide Google Drive buttons if it disabled by config
+ * Wallet protection fixes
