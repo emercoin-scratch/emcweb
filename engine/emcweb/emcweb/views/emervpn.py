@@ -5,13 +5,12 @@ from flask import render_template, redirect, url_for, current_app
 from flask_login import login_required, confirm_login
 
 from . import module_bp
-from emcweb.emcweb.utils import get_block_status
-from emcweb.emcweb.utils import get_tools_endpoint_list
+from emcweb.emcweb.utils import get_block_status, get_tools_endpoint_list
 
 
-@module_bp.route('emclnx', methods=['GET'])
+@module_bp.route('emervpn', methods=['GET'])
 @login_required
-def emclnx():
+def emervpn():
     if current_app.config.get('DB_FALL', None):
         return redirect(url_for('emcweb.index'))
 
@@ -19,8 +18,6 @@ def emclnx():
     if status != 2:
         return redirect(url_for('emcweb.index'))
     confirm_login()
- 
     endpoint_list = get_tools_endpoint_list()
-
-    return render_template('emclnx.html',
+    return render_template('emervpn.html',
                            endpoint_list=endpoint_list)

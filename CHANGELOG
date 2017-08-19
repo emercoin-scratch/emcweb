@@ -38,3 +38,8 @@ Version 2.2:
  * Setup a new login/password if not been set
  * Hide Google Drive buttons if it disabled by config
  * Wallet protection fixes
+
+Version 2.2.1:
+ * EmerVPN support
+ * Dedicated Python virtual environment usage instead of global
+ * Minor bug fixes

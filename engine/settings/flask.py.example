@@ -52,3 +52,7 @@ EMCSSH_VERIFY_SSL = True
 CERTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'certs')
 CA_CERTIFICATE = '/etc/ssl/emc/emcssl_ca.crt'
 CA_PRIVATE_KEY = '/etc/ssl/emc/emcssl_ca.key'
+
+# EMERVPN Settings
+#EMERVPN_HOST = 'myvpnhost.mydomain'
+EMERVPN_EMCSSH = 'emervpn'

@@ -20,12 +20,12 @@ def get_actives_nvs(objects):
 
 def get_expires_nvs(objects):
     result = []
-     
+
     all_nvs = get_actives_nvs(objects)
     for obj in all_nvs:
         if obj['expires_in'] <= 10:
             result.append(obj)
-    
+
     return result
 
 class NVSAPI(LoginResource):
@@ -35,7 +35,7 @@ class NVSAPI(LoginResource):
         parser = reqparse.RequestParser()
         parser.add_argument('expires', required=False, help='Get expires only')
         args = parser.parse_args()
-        
+
         expires_only = getattr(args, 'expires', 0) == '1'
 
         data = client.name_list('', 'base64')

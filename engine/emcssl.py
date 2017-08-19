@@ -13,8 +13,15 @@ import binascii
 def make_info_data(data):
     info_data = '\n'.join(['{0} \t{1}'.format(key.title().replace('_', ''), value) for key, value in data.items()
                            if key not in ('common_name','daystoexpire', 'txt', 'name')])
-    additional_data = '\n'.join(['{0}+ \t{1}'.format(element['name'].title().replace('_', ''),
-        element['value']) for element in data['txt'] if not(element['name'] == '' or element['value'] == '')])
+
+    additional_data = ''
+    if not isinstance(data['txt'], list):
+        data['txt'] = [data['txt']]
+
+    for element in data['txt']:
+        if isinstance(element, dict) and not(element['name'] == '' or element['value'] == ''):
+            additional_data += '{0}+ \t{1}\n'.format(element['name'].title().replace('_', ''),
+                                                     element['value'])
 
     if additional_data:
         info_data += '\n{0}'.format(additional_data)

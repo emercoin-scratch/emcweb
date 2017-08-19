@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import os
 from flask import flash
 
 from emcweb.app import flask_app
@@ -30,3 +30,11 @@ def get_block_status():
         status = 1
 
     return status, result['blocks'], ''
+
+
+def get_tools_endpoint_list():
+    result = ['emcweb.emcssl', 'emcweb.emcssh', 'emcweb.emclnx']
+    if os.path.exists('/etc/emercoin/emcssh.keys.d/emervpn'):
+        result.append('emcweb.emervpn')
+
+    return result

@@ -17,6 +17,7 @@ import emcweb.emcweb.views.settings
 import emcweb.emcweb.views.backup
 import emcweb.emcweb.views.wallets
 import emcweb.emcweb.views.emcssl
+import emcweb.emcweb.views.emervpn
 import emcweb.emcweb.views.emcssh
 import emcweb.emcweb.views.emclnx
 import emcweb.emcweb.views.block

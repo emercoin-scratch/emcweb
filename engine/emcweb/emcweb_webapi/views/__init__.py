@@ -43,6 +43,7 @@ api = Api(module_bp, errors=errors)
 import emcweb.emcweb_webapi.views.emcssh
 import emcweb.emcweb_webapi.views.emcssh_users
 import emcweb.emcweb_webapi.views.emcssl
+import emcweb.emcweb_webapi.views.emervpn
 import emcweb.emcweb_webapi.views.emclnx
 import emcweb.emcweb_webapi.views.email
 import emcweb.emcweb_webapi.views.livecoin

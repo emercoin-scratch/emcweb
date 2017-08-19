@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import os
 import sys
 import time
-from bsddb3 import db
 from pathlib import Path
 
 from flask import current_app
@@ -28,7 +27,7 @@ class WalletAPI(LoginResource):
         """
         result = {'result_status': False,
                   'result': False,
-                  'message':''}
+                  'message': ''}
 
         parser = reqparse.RequestParser()
         parser.add_argument('name')

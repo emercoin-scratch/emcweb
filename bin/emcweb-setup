@@ -124,7 +124,7 @@ sed -i -e "s|\(BROKER_URL\)\(.*\)|BROKER_URL = '$CELERY_TSP'|" /var/lib/emcweb/s
 sed -i -e "s|\(CELERY_RESULT_BACKEND\)\(.*\)|CELERY_RESULT_BACKEND = '$CELERY_TSP'|" /var/lib/emcweb/settings/flask.py
 
 cd /var/lib/emcweb
-python3 manage.py db upgrade || exit 1
+/var/lib/emcweb/.env/bin/python3 manage.py db upgrade || exit 1
 emcweb-conntest || exit 1
 
 [ "$CREATE_USER" ] && {

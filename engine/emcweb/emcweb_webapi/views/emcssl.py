@@ -5,16 +5,22 @@ import base64
 import os
 import zipfile
 import gzip
+import re
 import shutil
+
 from tempfile import TemporaryDirectory
 
 from flask import current_app, make_response, abort
-from flask_restful import reqparse
+from flask_restful import fields, marshal_with, reqparse, Resource
 from emcweb.emcweb_webapi.login_resource import LoginResource
 
 from emcssl import make_info_data, make_random_name, make_certificate, encrypt
 from emcweb.emcweb_webapi.views import api
 from emcweb.emcweb_webapi.utils import client
+
+
+def txt_loads(value, *args, **kwargs):
+    return value
 
 
 class EMCSSLAPI(LoginResource):
@@ -50,8 +56,7 @@ class EMCSSLAPI(LoginResource):
         parser.add_argument('alias', type=str, required=True, help='Alias must be set')
         parser.add_argument('email', type=str, required=True, help='Email must be set')
         parser.add_argument('daystoexpire', type=int, required=True, help='Days to expire must be set')
-        parser.add_argument('txt', required=False, location='json', type=list, help='TXT must be set')
-
+        parser.add_argument('txt', required=False, location='json', action='append', type=txt_loads, help='TXT must be set')
         args = parser.parse_args()
 
         if nvs_is_exists('ssh:{}'.format(args.common_name)):
@@ -63,7 +68,7 @@ class EMCSSLAPI(LoginResource):
 
         # make info file
         file_content, index, passwd = make_info_data(args)
-        
+
         # write info file
         writen = False
         name = None
@@ -93,10 +98,10 @@ class EMCSSLAPI(LoginResource):
         )
 
         if (nvs_is_exists('ssl:{}'.format(name)) or
-            nvs_is_exists('info:{}'.format(index)) or not 
+            nvs_is_exists('info:{}'.format(index)) or not
             (nvs_is_valid('ssl:{}'.format(name)) and nvs_is_valid('info:{}'.format(index)))):
             return {'result_status': False, 'message': 'Required records cannot be created'}, 400
-            
+
         try:
             with open(os.path.join(temp_dir_obj.name, '{0}.ze'.format(name)), mode='wb') as fd:
                 fd.write(ze_data)
@@ -122,6 +127,8 @@ class EMCSSLAPI(LoginResource):
 
         code = fingerprint.replace(b':', b'').lower().decode()
 
+        ovpn_content = get_ovpn_content(pkey, crt)
+
         try:
             with open(os.path.join(temp_dir_obj.name, '{0}.key'.format(name)), mode='wb') as fd:
                 fd.write(pkey)
@@ -129,6 +136,8 @@ class EMCSSLAPI(LoginResource):
                 fd.write(crt)
             with open(os.path.join(temp_dir_obj.name, '{0}.p12'.format(name)), mode='wb') as fd:
                 fd.write(p12)
+            with open(os.path.join(temp_dir_obj.name, '{0}.ovpn'.format(name)), mode='w') as fd:
+                fd.write(ovpn_content)
         except OSError:
             return {'result_status': False, 'message': 'can\'t save files'}, 400
 
@@ -137,7 +146,7 @@ class EMCSSLAPI(LoginResource):
             with zipfile.ZipFile(os.path.join(temp_dir_obj.name, '{0}.zip'.format(name)),
                                  mode='w',
                                  compression=zipfile.ZIP_DEFLATED) as zf:
-                for ext in ('key', 'crt', 'p12', 'info', 'ze'):
+                for ext in ('key', 'crt', 'p12', 'info', 'ze', 'ovpn'):
                     zf.write(os.path.join(temp_dir_obj.name, '{0}.{1}'.format(name, ext)), '{0}.{1}'.format(name, ext))
         except OSError:
             return {'result_status': False, 'message': 'can\'t create zip file'}, 400
@@ -173,13 +182,15 @@ class EMCSSLAPI(LoginResource):
 
         ze_data_base64 = base64.b64encode(ze_data).decode('utf-8')
 
-        created, error = update_or_create_nvs('info:{}'.format(index), ze_data_base64, cert_expire + 365, '', 'base64')
+        created, error = update_or_create_nvs('info:{}'.format(index),
+                                              ze_data_base64,
+                                              cert_expire + 365,
+                                              '', 'base64')
         if error:
             return {
                 'result_status': False,
                 'message': format(error)
             }, 400
-        
 
         return {'result_status': True, 'result': {'name': name, 'value': code}}
 
@@ -194,7 +205,7 @@ class EMCSSLAPI(LoginResource):
         parser.add_argument('alias', type=str, required=True, help='Alias must be set')
         parser.add_argument('email', type=str, required=True, help='Email must be set')
         parser.add_argument('daystoexpire', type=int, required=True, help='Days to expire must be set')
-        parser.add_argument('txt', required=False, location='json', type=list, help='TXT must be set')
+        parser.add_argument('txt', required=False, location='json', action='append', type=txt_loads, help='TXT must be set')
 
         args = parser.parse_args()
 
@@ -214,7 +225,7 @@ class EMCSSLAPI(LoginResource):
 
         # make info file
         file_content, index, passwd = make_info_data(args)
-        
+
         # #2888
         if not all((nvs_is_valid('ssl:{}'.format(args.name)),
                    nvs_is_valid('ssh:{}'.format(args.common_name)),
@@ -268,6 +279,8 @@ class EMCSSLAPI(LoginResource):
             days_to_exp=cert_expire
         )
 
+        ovpn_content = get_ovpn_content(pkey, crt)
+
         code = fingerprint.replace(b':', b'').lower().decode()
 
         try:
@@ -277,6 +290,8 @@ class EMCSSLAPI(LoginResource):
                 fd.write(crt)
             with open(os.path.join(temp_dir_obj.name, '{0}.p12'.format(name)), mode='wb') as fd:
                 fd.write(p12)
+            with open(os.path.join(temp_dir_obj.name, '{0}.ovpn'.format(name)), mode='w') as fd:
+                fd.write(ovpn_content)
         except OSError:
             return {'result_status': False, 'message': 'can\'t save files'}, 400
 
@@ -285,7 +300,7 @@ class EMCSSLAPI(LoginResource):
             with zipfile.ZipFile(os.path.join(temp_dir_obj.name, '{0}.zip'.format(name)),
                                  mode='w',
                                  compression=zipfile.ZIP_DEFLATED) as zf:
-                for ext in ('key', 'crt', 'p12', 'info', 'ze'):
+                for ext in ('key', 'crt', 'p12', 'info', 'ze', 'ovpn'):
                     zf.write(os.path.join(temp_dir_obj.name, '{0}.{1}'.format(name, ext)), '{0}.{1}'.format(name, ext))
         except OSError:
             return {'result_status': False, 'message': 'can\'t create zip file'}, 400
@@ -377,6 +392,37 @@ def update_or_create_nvs(name, value, expire, to_address='', valuetype=''):
 
     return created, error_string
 
+
+def get_ip_address():
+    ip = current_app.config.get('EMERVPN_HOST', None)
+    if not ip:
+        resp = client.getinfo()
+        if not resp.get('error', False) and resp['result']:
+            ip = resp['result']['ip']
+
+    return ip
+
+
+def get_ovpn_content(pkey, crt):
+    result = ''
+    ovpn_file = os.path.join(os.path.dirname(__file__),
+                             '..', '..', '..', 'settings',
+                             'client.ovpn.example')
+    with open(ovpn_file, mode='r') as o_f:
+        result = o_f.read()
+
+    if os.path.isdir('/etc/emervpn'):
+        ip = get_ip_address()
+        if ip:
+            result = result.replace(r'%YOUR_EMERVPN_SERVER_IP%',
+                                    ip)
+    result = re.sub('<cert>.*</cert>',
+                    '<cert>\n{}</cert>'.format(crt.decode()),
+                    result, flags=re.S)
+    result = re.sub('<key>.*</key>',
+                    '<key>\n{}</key>'.format(pkey.decode()),
+                    result, flags=re.S)
+    return result
 
 
 api.add_resource(EMCSSLAPI, '/certs', '/certs/<string:filename>')

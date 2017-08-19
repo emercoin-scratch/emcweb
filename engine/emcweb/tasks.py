@@ -115,6 +115,7 @@ def sendmail(to_mails, message):
                     mail)
     server.quit()
 
+
 @celery.task
 def create_empty_wallet(wallet_name):
     wallet_dat = str(path.join(flask_app.flask_app.config['EMC_HOME'], 'wallet.dat'))
@@ -135,3 +136,19 @@ def create_empty_wallet(wallet_name):
     start_emercoind()
     return True
 
+
+@celery.task
+def save_to_file(filepath, data):
+    try:
+        with open(filepath, 'w') as f:
+            f.write(data)
+    except FileNotFoundError:
+        return {'result_status': False, 'message': 'Emervpn file doesn\'t found'}
+    except PermissionError:
+        return {'result_status': False, 'message': 'Emervpn file permission denied'}
+    except IsADirectoryError:
+        return {'result_status': False, 'message': 'Emervpn file is a directory'}
+    except OSError:
+        return {'result_status': False, 'message': 'Emervpn file access problem'}
+
+    return {'result_status': True, 'message': 'Saved'}

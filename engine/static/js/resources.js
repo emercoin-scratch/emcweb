@@ -106,6 +106,14 @@ emcwebResource.factory('Cert', function($resource, Blob) {
         });
 });
 
+emcwebResource.factory('EMERVPN', function($resource, Blob) {
+    return $resource('/webapi/emervpn', null,
+        {
+            'get': {method: 'GET'},
+            'save': {method: 'POST'}
+        });
+});
+
 emcwebResource.factory('NVS', function($resource) {
     return $resource('/webapi/nvs', null,
         {

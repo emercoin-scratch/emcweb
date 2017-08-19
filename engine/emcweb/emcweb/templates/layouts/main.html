@@ -170,7 +170,7 @@
                         <span class="nav-label">Wallets</span>
                     </a>
                 </li>
-                <li class="{% if request.endpoint in ['emcweb.emcssl', 'emcweb.emcssh', 'emcweb.emclnx'] %}active{% endif %}">
+                <li class="{% if request.endpoint in endpoint_list %}active{% endif %}">
                     <a href="javascript:void(0)">
                         <i class="fa fa-th-large fa_menu_fix2"></i><span class="nav-label">Tools</span> <span class="fa arrow"></span>
                     </a>
@@ -181,6 +181,14 @@
                                 <span class="nav-label">EMC SSL</span>
                             </a>
                         </li>
+                        {% if 'emcweb.emervpn' in endpoint_list %}
+                        <li class="{% if request.endpoint == 'emcweb.emervpn' %}active{% endif %}">
+                            <a href="{{ url_for('emcweb.emervpn') }}">
+                                <i class="fa fa-exchange fa_menu_fix"></i>
+                                <span class="nav-label">EmerVPN</span>
+                            </a>
+                        </li>
+                        {% endif %}
                         <li class="{% if request.endpoint == 'emcweb.emcssh' %}active{% endif %}">
                             <a href="{{ url_for('emcweb.emcssh') }}">
                                 <i class="fa fa-sign-in fa_menu_fix"></i>
@@ -229,7 +237,7 @@
         </div>
         <div class="footer">
             <div class="pull-right">
-                v2.2
+                v2.2.1
             </div>
             <div>
                 <strong>Emercoin Web Wallet</strong> &copy; Aspanta Limited, 2016-2017

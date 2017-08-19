@@ -21,7 +21,7 @@ class EMCSSHUsersAPI(LoginResource):
 
         users = []
         for user in emcssh_users:
-            if user == current_app.config.get('EMCSSH_VERIFY_USER', 'emc'):
+            if user == current_app.config.get('EMCSSH_VERIFY_USER', 'emc') or user == current_app.config.get('EMERVPN_EMCSSH', 'emervpn'):
                 continue
             emcssh_user_file = os.path.join(current_app.config.get('EMCSSH_KEYS_DIR', '/etc/emercoin/emcssh.keys.d'),
                                             user)

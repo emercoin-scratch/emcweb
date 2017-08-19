@@ -7,7 +7,7 @@ from flask import render_template, redirect, url_for, current_app
 from flask_login import login_required, confirm_login
 
 from . import module_bp
-from emcweb.emcweb.utils import get_block_status
+from emcweb.emcweb.utils import get_block_status, get_tools_endpoint_list
 
 
 @module_bp.route('wallets', methods=['GET'])
@@ -21,9 +21,11 @@ def wallets():
         return redirect(url_for('emcweb.index'))
 
     confirm_login()
+    endpoint_list = get_tools_endpoint_list()
     return render_template(
         'wallets.html',
         google=os.path.exists(os.path.join(os.path.dirname(__file__),
                                            '..', '..', '..', 'static',
-                                           'google_secrets.json'))
+                                           'google_secrets.json')),
+        endpoint_list=endpoint_list
     )

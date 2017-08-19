@@ -140,6 +140,9 @@ emcwebApp.controller('NewCertController', function NewCertController($scope, $ro
             } else {
                 $rootScope.$broadcast('send_notify', {notify: 'danger', message: 'Can\'t get wallet status: ' + data.message});
             }
+            $scope.okIsDisabled = false;
+        }, function(reason){
+            $scope.okIsDisabled = false;
         });
     }
 
