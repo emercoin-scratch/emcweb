@@ -1,0 +1,7 @@
+config/apache/emcweb.conf etc/apache2/sites-available/
+config/supervisor/emcweb_celery.conf etc/supervisor/conf.d/
+config/supervisor/emcweb_restart_providers.conf etc/supervisor/conf.d/
+certs/emcssl_ca.crt etc/ssl/emc/
+certs/emcssl_ca.key etc/ssl/emc/
+engine/* var/lib/emcweb/
+bin/* usr/sbin/

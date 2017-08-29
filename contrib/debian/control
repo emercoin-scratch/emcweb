@@ -1,9 +1,11 @@
-Package: emcweb
-Version: 2.2.1
-Maintainer: Aspanta Limited <info@aspanta.com>
-Architecture: all
-Section: net
+Source: emcweb
+Section: web
 Priority: optional
+Maintainer: Aspanta Limited <info@aspanta.com>
+Build-Depends: debhelper
+
+Package: emcweb
+Architecture: all
 Description: Emercoin Web Wallet
 Pre-Depends: debconf
 Depends: emercoin, emcssh, apache2, supervisor, virtualenv, gcc, openssl, libssl-dev, libffi-dev, python-celery-common, python3-pkg-resources, python3-dev, python3-pip, libapache2-mod-wsgi-py3, libdb4.8-dev, libdb4.8++-dev, mysql-client
