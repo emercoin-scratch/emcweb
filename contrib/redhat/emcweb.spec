@@ -1,16 +1,16 @@
-Name:           emcweb
-Version:        2.2.1
-Release:        1%{?dist}
-Summary:        Emercoin Web Wallet
-Group:          Applications/Internet
-Vendor:         Aspanta Limited
-License:        GPLv3
-URL:            http://www.emercoin.com
-Source0:        %{name}.tar.gz
-BuildArch:      noarch
-BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires:       emercoin emcssh openssl httpd httpd-devel mod_ssl mysql supervisor gcc python34-pip python34-devel libffi-devel
-AutoReqProv:    no
+Name: emcweb
+Version: 2.2.1
+Release: 1%{?dist}
+Summary: Emercoin Web Wallet
+Group: Applications/Internet
+Vendor: Aspanta Limited
+License: GPLv3
+URL: https://www.emercoin.com
+Source0: %{name}.tar.gz
+BuildArch: noarch
+BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Requires: emercoin emcssh openssl httpd httpd-devel mod_ssl mysql supervisor gcc python34-pip python34-devel libffi-devel
+AutoReqProv: no
 
 %global _python_bytecompile_errors_terminate_build 0
 
