@@ -6,7 +6,7 @@ Group: Applications/Internet
 Vendor: Aspanta Limited
 License: GPLv3
 URL: https://www.emercoin.com
-Source0: %{name}.tar.gz
+Source0: %{name}-%{version}.tar.gz
 BuildArch: noarch
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 Requires: emercoin emcssh openssl httpd httpd-devel mod_ssl mysql supervisor gcc python34-pip python34-devel libffi-devel
@@ -18,7 +18,7 @@ AutoReqProv: no
 Emercoin Web Wallet
 
 %prep
-%setup -q -n emcweb
+%setup -q
 
 %build
 
